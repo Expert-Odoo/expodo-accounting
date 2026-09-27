@@ -15,6 +15,7 @@ la demande (CDC F-21).
 
 from odoo import api, models
 from odoo.exceptions import AccessError, UserError
+from odoo.tools import float_is_zero
 from odoo.tools.misc import format_amount, format_date
 
 
@@ -498,7 +499,41 @@ class AccountReport(models.Model):
                         0.0, colonne["figure_type"], colonne["blank_if_zero"]
                     )
 
-        return [fusionnees[cle] for cle in ordre]
+        # Un groupe nul de bout en bout n'apprend rien et noie ceux qui parlent.
+        #
+        # La balance générale lit le solde depuis l'origine : le groupement
+        # ramène donc tout compte ayant bougé un jour, y compris ceux dont la
+        # période demandée ne retient rien. Sur une base réelle ouverte sur le
+        # mois en cours, vingt lignes à zéro pour huit lignes utiles. Même
+        # effet sur les balances âgées et les écritures ouvertes, qui lisent
+        # elles aussi depuis l'origine.
+        #
+        # Le filtre ne porte que sur les groupes : les lignes déclarées du
+        # rapport restent affichées à zéro, parce qu'un bilan doit montrer ses
+        # rubriques vides. Et une ligne qui porte une valeur non numérique — la
+        # date d'une écriture au grand livre, le nom d'un partenaire — n'est
+        # jamais nulle, donc le détail des écritures n'est jamais masqué.
+        #
+        # L'export passe par cette même méthode : écran et classeur ne peuvent
+        # pas diverger.
+        arrondi = self.env.company.currency_id.rounding
+
+        def _entierement_nul(ligne):
+            for cellule in ligne["columns"]:
+                for valeur in cellule["raw"].values():
+                    if isinstance(valeur, bool) or valeur is None:
+                        continue
+                    if isinstance(valeur, (int, float)):
+                        if not float_is_zero(valeur, precision_rounding=arrondi):
+                            return False
+                    elif valeur != "":
+                        return False
+            return True
+
+        return [
+            fusionnees[cle] for cle in ordre
+            if not _entierement_nul(fusionnees[cle])
+        ]
 
     # ------------------------------------------------------------------
     # Audit — accès aux écritures sous-jacentes (F-20)

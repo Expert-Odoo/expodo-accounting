@@ -1487,6 +1487,109 @@ class TestExpodoReports(TransactionCase):
                         "lecteur à deviner si le compte n'existait pas ou s'il "
                         "n'a rien enregistré." % enfant["name"])
 
+    def _ecriture_nulle_sur_un_compte(self, compte, montant, jour):
+        """Écriture qui débite et crédite le même compte : solde nul partout.
+
+        Le compte a bougé — il existe des écritures à auditer — mais aucune
+        colonne de la balance ne le distingue d'un compte jamais touché.
+        """
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general")], limit=1)
+        move = self.env["account.move"].create({
+            "journal_id": journal.id,
+            "date": jour,
+            "ref": "NULLE",
+            "line_ids": [
+                Command.create({
+                    "name": "NULLE D", "account_id": compte.id,
+                    "debit": montant, "credit": 0.0}),
+                Command.create({
+                    "name": "NULLE C", "account_id": compte.id,
+                    "debit": 0.0, "credit": montant}),
+            ],
+        })
+        move.action_post()
+        return move
+
+    def test_un_compte_nul_sur_toute_la_periode_ne_figure_pas_a_la_balance(self):
+        """La balance générale ne liste pas les comptes qu'elle n'a rien à dire.
+
+        Le solde de la balance se lit depuis l'origine : le groupement ramène
+        donc tout compte ayant bougé un jour, même si la période demandée n'en
+        retient rien. Sur une base réelle ouverte sur le mois en cours, cela
+        donnait vingt lignes à zéro pour huit lignes utiles, et la balance
+        devenait illisible au moment précis où le comptable l'ouvre.
+
+        Le compte reste affiché dès que l'une des colonnes le distingue.
+        """
+        compte = self.env["account.account"].search(
+            [("account_type", "=", "expense")], limit=1)
+        self.assertTrue(compte, "Le test suppose un compte de charge")
+        self._ecriture_nulle_sur_un_compte(compte, 500.0, "2026-03-20")
+        self._invoice("out_invoice", self.customer, 1200.0, self.sale_tax,
+                      "BAL0", day="2026-06-10")
+
+        report = self.env.ref("expodo_account_reports.report_balance_fr")
+
+        juin = {"mode": "range", "filter": "custom",
+                "date_from": date(2026, 6, 1), "date_to": date(2026, 6, 30)}
+        donnees = report.expodo_get_report_data({"date": juin})
+        enfants = report.expodo_expand_line(
+            donnees["lines"][0]["line_id"], donnees["options"])
+        self.assertTrue(
+            enfants, "La facture de juin doit laisser des comptes à afficher")
+        noms = [e["name"] for e in enfants]
+        self.assertFalse(
+            [n for n in noms if n.startswith(compte.code)],
+            "%s est nul sur toute la période et depuis l'origine : il ne "
+            "doit pas occuper une ligne. Lignes rendues : %s"
+            % (compte.code, noms))
+        for enfant in enfants:
+            valeurs = [v for cellule in enfant["columns"]
+                       for v in cellule["raw"].values()]
+            self.assertTrue(
+                any(v not in (0.0, 0, None, "", False) for v in valeurs),
+                "%s ne porte que des zéros et aurait dû être écarté"
+                % enfant["name"])
+
+        annee = report.expodo_get_report_data({"date": self.period})
+        noms_annee = [
+            e["name"] for e in report.expodo_expand_line(
+                annee["lines"][0]["line_id"], annee["options"])]
+        self.assertTrue(
+            [n for n in noms_annee if n.startswith(compte.code)],
+            "Sur l'exercice entier le compte porte 500 au débit et 500 au "
+            "crédit : le masquer effacerait un mouvement réel. Lignes "
+            "rendues : %s" % noms_annee)
+
+    def test_le_detail_des_ecritures_n_est_jamais_masque(self):
+        """Le filtre des groupes nuls ne doit pas manger le grand livre.
+
+        Une écriture porte une date et un libellé : ces colonnes ne valent
+        jamais zéro, donc aucune ligne de détail ne peut être prise pour un
+        groupe vide — y compris une écriture de montant nul.
+        """
+        compte = self.env["account.account"].search(
+            [("account_type", "=", "expense")], limit=1)
+        self._ecriture_nulle_sur_un_compte(compte, 700.0, "2026-04-05")
+
+        report = self.env.ref("expodo_account_reports.report_grand_livre_fr")
+        donnees = report.expodo_get_report_data({"date": self.period})
+        comptes = report.expodo_expand_line(
+            donnees["lines"][0]["line_id"], donnees["options"])
+        cible = [c for c in comptes if c["name"].startswith(compte.code)]
+        self.assertTrue(
+            cible,
+            "Le compte a 700 au débit et 700 au crédit sur l'exercice : il "
+            "doit figurer au grand livre")
+
+        ecritures = report.expodo_expand_line(
+            cible[0]["line_id"], donnees["options"],
+            parent_group=cible[0]["group"], level=cible[0]["next_level"])
+        self.assertTrue(
+            ecritures,
+            "Les deux écritures du compte doivent rester visibles au détail")
+
     def test_export_rows_are_all_the_same_width(self):
         """Toutes les lignes exportées doivent avoir le même nombre de colonnes.
 
