@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_asset_list" model="ir.ui.view">
+            <field name="name">expodo.asset.list</field>
+            <field name="model">expodo.asset</field>
+            <field name="arch" type="xml">
+                <list string="Assets" decoration-muted="state in ('closed','disposed')">
+                    <field name="name"/>
+                    <field name="partner_id" optional="show"/>
+                    <field name="date_start"/>
+                    <field name="duration_months" string="Months"/>
+                    <field name="acquisition_value" sum="Total"/>
+                    <field name="depreciated_value" sum="Total"/>
+                    <field name="remaining_value" sum="Total"/>
+                    <field name="pending_count" string="To post"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-success="state == 'running'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_asset_form" model="ir.ui.view">
+            <field name="name">expodo.asset.form</field>
+            <field name="model">expodo.asset</field>
+            <field name="arch" type="xml">
+                <form string="Asset">
+                    <header>
+                        <button name="action_compute_board" type="object"
+                                string="Compute board" class="btn-secondary"
+                                invisible="state != 'draft'"/>
+                        <button name="action_validate" type="object"
+                                string="Validate" class="btn-primary"
+                                invisible="state != 'draft'"/>
+                        <button name="action_set_draft" type="object"
+                                string="Set to draft" class="btn-secondary"
+                                invisible="state != 'running' or posted_count > 0"/>
+                        <button name="action_open_disposal" type="object"
+                                string="Dispose" class="btn-secondary"
+                                invisible="state not in ('running', 'closed')"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,running,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_open_lines" type="object"
+                                    class="oe_stat_button" icon="fa-list-ol">
+                                <field name="pending_count" widget="statinfo"
+                                       string="To post"/>
+                            </button>
+                        </div>
+                        <div class="alert alert-warning" role="alert"
+                             invisible="not acquisition_warning or state == 'disposed'">
+                            <field name="acquisition_warning" nolabel="1"/>
+                        </div>
+                        <div class="alert alert-info" role="alert"
+                             invisible="not expense_type_warning or state == 'disposed'">
+                            <field name="expense_type_warning" nolabel="1"/>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1><field name="name" placeholder="e.g. Delivery van"/></h1>
+                        </div>
+                        <group>
+                            <group string="Values">
+                                <field name="acquisition_value"/>
+                                <field name="salvage_value"/>
+                                <field name="already_depreciated"/>
+                                <field name="depreciated_value"/>
+                                <field name="remaining_value"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Depreciation">
+                                <field name="date_start"/>
+                                <field name="duration_months"/>
+                                <field name="periodicity"/>
+                                <field name="prorata"/>
+                                <field name="partner_id"/>
+                                <field name="original_move_id"/>
+                            </group>
+                        </group>
+                        <group string="Accounting">
+                            <group>
+                                <field name="journal_id"/>
+                                <field name="account_asset_id"/>
+                            </group>
+                            <group>
+                                <field name="account_depreciation_id"/>
+                                <field name="account_expense_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Depreciation board" name="board">
+                                <!-- Aucune écriture n'est posée automatiquement :
+                                     chaque échéance porte son propre bouton. -->
+                                <!--
+                                    `limit` à 200 : un bien amorti sur sept ans
+                                    compte 84 échéances et la pagination par
+                                    défaut s'arrête à 40. On ne voyait pas le
+                                    tableau d'un coup d'oeil, alors que c'est
+                                    précisément ce qu'on vient y chercher.
+                                -->
+                                <field name="line_ids" readonly="1">
+                                    <list decoration-muted="state == 'posted'" limit="200">
+                                        <field name="sequence" string="No."/>
+                                        <field name="date"/>
+                                        <field name="amount" sum="Total"/>
+                                        <field name="cumulative"/>
+                                        <field name="remaining"/>
+                                        <field name="move_id" optional="show"/>
+                                        <field name="currency_id" column_invisible="1"/>
+                                        <field name="state" widget="badge"
+                                               decoration-success="state == 'posted'"/>
+                                        <button name="action_post" type="object"
+                                                string="Post" class="btn-link"
+                                                icon="fa-check"
+                                                invisible="state == 'posted'"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_expodo_asset_search" model="ir.ui.view">
+            <field name="name">expodo.asset.search</field>
+            <field name="model">expodo.asset</field>
+            <field name="arch" type="xml">
+                <search string="Assets">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <filter name="running" string="Running"
+                            domain="[('state', '=', 'running')]"/>
+                    <filter name="draft" string="Draft"
+                            domain="[('state', '=', 'draft')]"/>
+                    <filter name="to_post" string="With instalments to post"
+                            domain="[('pending_count', '&gt;', 0)]"/>
+                    <separator/>
+                    <filter name="closed" string="Fully depreciated"
+                            domain="[('state', '=', 'closed')]"/>
+                    <group>
+                        <filter name="group_state" string="Status"
+                                context="{'group_by': 'state'}"/>
+                        <filter name="group_partner" string="Vendor"
+                                context="{'group_by': 'partner_id'}"/>
+                        <filter name="group_date" string="In service date"
+                                context="{'group_by': 'date_start'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_expodo_asset_line_list" model="ir.ui.view">
+            <field name="name">expodo.asset.line.list</field>
+            <field name="model">expodo.asset.line</field>
+            <field name="arch" type="xml">
+                <list string="Depreciation board" create="false"
+                      decoration-muted="state == 'posted'">
+                    <field name="asset_id"/>
+                    <field name="sequence" string="No."/>
+                    <field name="date"/>
+                    <field name="amount" sum="Total"/>
+                    <field name="move_id" optional="show"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'posted'"/>
+                    <button name="action_post" type="object" string="Post"
+                            class="btn-link" icon="fa-check"
+                            invisible="state == 'posted'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_asset_line_search" model="ir.ui.view">
+            <field name="name">expodo.asset.line.search</field>
+            <field name="model">expodo.asset.line</field>
+            <field name="arch" type="xml">
+                <search string="Instalments">
+                    <field name="asset_id"/>
+                    <filter name="to_post" string="To post"
+                            domain="[('state', '=', 'draft')]"/>
+                    <!-- `context_today()` suffit : le domaine compare une date
+                         à une date, et appeler `strftime` dans un domaine de vue
+                         le rend invalide. -->
+                    <filter name="due" string="Due"
+                            domain="[('state', '=', 'draft'),
+                                     ('date', '&lt;=', context_today())]"/>
+                    <group>
+                        <filter name="group_asset" string="Asset"
+                                context="{'group_by': 'asset_id'}"/>
+                        <filter name="group_date" string="Due date"
+                                context="{'group_by': 'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

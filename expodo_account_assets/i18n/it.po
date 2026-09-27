@@ -1,0 +1,1066 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* expodo_account_assets
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260324\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-18 13:29+0000\n"
+"PO-Revision-Date: 2026-09-18 13:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"%(account)s is a profit and loss account. Accumulated depreciation must be "
+"posted to a balance sheet account."
+msgstr ""
+"%(account)s è un conto economico. Il fondo ammortamento deve essere "
+"registrato su un conto patrimoniale."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"%(account)s: %(cards).2f recorded on asset cards, %(ledger).2f in the ledger"
+" (difference %(gap).2f)"
+msgstr ""
+"%(account)s: %(cards).2f sulle schede cespite, %(ledger).2f nel mastro "
+"(scostamento %(gap).2f)"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "%(asset)s — depreciation %(no)d/%(total)d"
+msgstr "%(asset)s — ammortamento %(no)d/%(total)d"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard/expodo_asset_disposal.py:0
+msgid "%(asset)s — disposal"
+msgstr "%(asset)s — dismissione"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"%(assets)s cannot be deleted: %(count)d depreciation entries have already "
+"been posted, and deleting the asset would leave them in the ledger with "
+"nothing to justify them. Dispose of the asset instead — the ledger then "
+"keeps a trace of what happened."
+msgstr ""
+"%(assets)s non può essere eliminato: %(count)d registrazioni di ammortamento"
+" sono già confermate, ed eliminare il bene le lascerebbe nel mastro senza "
+"nulla a giustificarle. Dismetti invece il cespite — così il mastro conserva "
+"traccia di quanto accaduto."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"%(count)d asset account(s) do not match:\n"
+"\n"
+"%(details)s"
+msgstr ""
+"%(count)d conto/i cespite non concordano:\n"
+"\n"
+"%(details)s"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid ""
+"%(count)d instalments posted, from %(first)s to %(last)s, totalling "
+"%(total)s."
+msgstr ""
+"%(count)d rate confermate, dal %(first)s al %(last)s, per un totale di "
+"%(total)s."
+
+#. module: expodo_account_assets
+#: model:ir.model.constraint,message:expodo_account_assets.constraint_expodo_asset_line_amount_positive
+msgid "A depreciation instalment must be strictly positive."
+msgstr "Una rata di ammortamento deve essere strettamente positiva."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid ""
+"A posted instalment cannot be deleted. Reverse its journal entry instead, so"
+" the ledger keeps a trace."
+msgstr ""
+"Una rata confermata non può essere eliminata. Storna invece la sua "
+"registrazione, così il mastro ne conserva traccia."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset_disposal__account_loss_id
+msgid ""
+"Account charged with the remaining net book value. An expense account, "
+"distinct from the ongoing depreciation charge (675 in the French chart)."
+msgstr ""
+"Conto addebitato del valore contabile netto residuo. Un conto di costo, "
+"distinto dall'ammortamento corrente (675 nel piano francese)."
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Accounting"
+msgstr "Contabilità"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__account_depreciation_id
+msgid ""
+"Accumulated depreciation, credited by each instalment. This is a balance "
+"sheet account, never a profit and loss one (28x in the French chart, 281x in"
+" the Spanish one)."
+msgstr ""
+"Fondo ammortamento, accreditato da ogni rata. È un conto patrimoniale, mai "
+"economico (28x nel piano francese, 281x in quello spagnolo)."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__acquisition_warning
+msgid "Acquisition Warning"
+msgstr "Avviso di acquisizione"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__original_move_id
+msgid "Acquisition entry"
+msgstr "Registrazione di acquisizione"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__acquisition_value
+msgid "Acquisition value"
+msgstr "Valore di acquisizione"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_needaction
+msgid "Action Needed"
+msgstr "Azione necessaria"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_ids
+msgid "Activities"
+msgstr "Attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Decorazione eccezione attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_state
+msgid "Activity State"
+msgstr "Stato attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Icona tipo di attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__already_depreciated
+msgid "Already depreciated"
+msgstr "Già ammortizzato"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "An asset with posted instalments cannot be set back to draft."
+msgstr "Un cespite con rate confermate non può tornare in bozza."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__asset_id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__asset_id
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_search
+msgid "Asset"
+msgstr "Cespite"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__account_asset_id
+msgid "Asset account"
+msgstr "Conto cespite"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "Asset consistency"
+msgstr "Coerenza dei cespiti"
+
+#. module: expodo_account_assets
+#: model:ir.model,name:expodo_account_assets.model_expodo_asset_disposal
+msgid "Asset disposal"
+msgstr "Dismissione del cespite"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard/expodo_asset_disposal.py:0
+msgid ""
+"Asset disposed of on %(date)s (%(reason)s). Net book value %(value)s charged"
+" to %(account)s. Entry %(move)s. %(cancelled)d remaining instalment(s) "
+"cancelled."
+msgstr ""
+"Cespite dismesso il %(date)s (%(reason)s). Valore contabile netto %(value)s "
+"imputato a %(account)s. Registrazione %(move)s. %(cancelled)d rata/e "
+"residua/e annullata/e."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "Asset fully depreciated."
+msgstr "Cespite completamente ammortizzato."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"Asset validated. %(count)d instalment(s) to be posted, each requiring "
+"confirmation."
+msgstr ""
+"Cespite convalidato. %(count)d rata/e da confermare, ciascuna richiede "
+"conferma."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+#: model:ir.actions.act_window,name:expodo_account_assets.action_expodo_asset
+#: model:ir.ui.menu,name:expodo_account_assets.menu_expodo_asset
+#: model:ir.ui.menu,name:expodo_account_assets.menu_expodo_assets_root
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_list
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Assets"
+msgstr "Cespiti"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_attachment_count
+msgid "Attachment Count"
+msgstr "Numero di allegati"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: expodo_account_assets
+#: model:ir.actions.server,name:expodo_account_assets.action_expodo_asset_consistency
+#: model:ir.ui.menu,name:expodo_account_assets.menu_expodo_asset_consistency
+msgid "Check consistency"
+msgstr "Verifica la coerenza"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__company_id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__company_id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Compute board"
+msgstr "Calcola il piano"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__create_uid
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__create_uid
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__create_date
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__create_date
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__cumulative
+msgid "Cumulative"
+msgstr "Cumulato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__currency_id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__currency_id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__depreciated_value
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__depreciated_value
+msgid "Depreciated"
+msgstr "Ammortizzato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__amount
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Depreciation"
+msgstr "Ammortamento"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__account_depreciation_id
+msgid "Depreciation account"
+msgstr "Conto ammortamento"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__already_depreciated
+msgid ""
+"Depreciation already recognised before this asset was recorded here. Used "
+"when migrating an existing asset: the amount is excluded from the board "
+"without changing the end date."
+msgstr ""
+"Ammortamento già rilevato prima della registrazione qui. Si usa nel riporto "
+"di un cespite esistente: l'importo è escluso dal piano senza spostare la "
+"data di fine."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__line_ids
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_list
+msgid "Depreciation board"
+msgstr "Piano di ammortamento"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "Depreciation board for “%(asset)s”: %(error)s"
+msgstr "Piano di ammortamento di «%(asset)s»: %(error)s"
+
+#. module: expodo_account_assets
+#: model:ir.model,name:expodo_account_assets.model_expodo_asset_line
+msgid "Depreciation board line"
+msgstr "Riga del piano di ammortamento"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__display_name
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__display_name
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__date
+msgid "Disposal date"
+msgstr "Data di dismissione"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard/expodo_asset_disposal.py:0
+msgid "Disposal entry"
+msgstr "Registrazione di dismissione"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Dispose"
+msgstr "Dismetti"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+#: model:ir.actions.act_window,name:expodo_account_assets.action_expodo_asset_disposal
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form
+msgid "Dispose of asset"
+msgstr "Dismettere il cespite"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__state__disposed
+msgid "Disposed"
+msgstr "Dismesso"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__state__draft
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Draft"
+msgstr "Bozza"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_search
+msgid "Due"
+msgstr "Scaduto"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__date
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_search
+msgid "Due date"
+msgstr "Data di scadenza"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__duration_months
+msgid "Duration (months)"
+msgstr "Durata (mesi)"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"Entry %(move)s debits only %(debit).2f on the asset account, less than the "
+"acquisition value %(value).2f of “%(asset)s”."
+msgstr ""
+"La registrazione %(move)s addebita solo %(debit).2f sul conto cespite, meno "
+"del valore di acquisizione %(value).2f di «%(asset)s»."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"Entry %(move)s has no line on the asset account %(account)s. It cannot be "
+"the acquisition entry of “%(asset)s”."
+msgstr ""
+"La registrazione %(move)s non ha righe sul conto cespite %(account)s. Non "
+"può essere la registrazione di acquisizione di «%(asset)s»."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "Every asset account matches the asset cards recorded against it."
+msgstr "Ogni conto cespite concorda con le schede registrate su di esso."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__expense_type_warning
+msgid "Expense Type Warning"
+msgstr "Avviso sul tipo di conto"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__account_expense_id
+msgid "Expense account"
+msgstr "Conto di costo"
+
+#. module: expodo_account_assets
+#: model:ir.model,name:expodo_account_assets.model_expodo_asset
+msgid "Fixed Asset"
+msgstr "Cespite"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_follower_ids
+msgid "Followers"
+msgstr "Follower"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Follower (partner)"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Icona Font Awesome, ad esempio fa-tasks"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__state__closed
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Fully depreciated"
+msgstr "Completamente ammortizzato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__has_message
+msgid "Has Message"
+msgstr "Ha un messaggio"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__id
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_exception_icon
+msgid "Icon"
+msgstr "Icona"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Icona che segnala un'attività di eccezione."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Se selezionato, nuovi messaggi richiedono la tua attenzione."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__message_has_error
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Se selezionato, alcuni messaggi hanno un errore di consegna."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__date_start
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "In service date"
+msgstr "Data di entrata in funzione"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid ""
+"Instalment %(no)d falls due on %(date)s, which is in the future. "
+"Depreciation is recognised as it is incurred, not in advance."
+msgstr ""
+"La rata %(no)d scade il %(date)s, nel futuro. L'ammortamento si rileva man "
+"mano che matura, non in anticipo."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid ""
+"Instalment %(no)d falls on %(date)s, which is covered by the %(lock)s "
+"(%(lock_date)s). Adjust the lock date or the asset's in-service date."
+msgstr ""
+"La rata %(no)d cade il %(date)s, coperto dalla %(lock)s (%(lock_date)s). "
+"Modifica la data di blocco o quella di entrata in funzione."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "Instalment %(no)d of “%(asset)s” is already posted."
+msgstr "La rata %(no)d di «%(asset)s» è già confermata."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "Instalment %(no)d posted: %(amount)s on %(date)s (%(move)s)."
+msgstr "Rata %(no)d confermata: %(amount)s il %(date)s (%(move)s)."
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_search
+msgid "Instalments"
+msgstr "Rate"
+
+#. module: expodo_account_assets
+#: model:ir.actions.act_window,name:expodo_account_assets.action_expodo_asset_line
+#: model:ir.ui.menu,name:expodo_account_assets.menu_expodo_asset_line
+msgid "Instalments to post"
+msgstr "Rate da confermare"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_is_follower
+msgid "Is Follower"
+msgstr "È follower"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__journal_id
+msgid "Journal"
+msgstr "Registro"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__move_id
+msgid "Journal entry"
+msgstr "Registrazione contabile"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__original_move_id
+msgid ""
+"Journal entry that brought this asset into the books. Optional, but without "
+"it nothing guarantees the asset actually exists in the ledger."
+msgstr ""
+"Registrazione che ha fatto entrare questo cespite in contabilità. "
+"Facoltativa, ma senza di essa nulla garantisce che il bene esista davvero "
+"nel mastro."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__write_uid
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__write_uid
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__write_date
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__write_date
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_has_error
+msgid "Message Delivery error"
+msgstr "Errore di consegna del messaggio"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_ids
+msgid "Messages"
+msgstr "Messaggi"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__periodicity__monthly
+msgid "Monthly"
+msgstr "Mensile"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_list
+msgid "Months"
+msgstr "Mesi"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Scadenza della mia attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__remaining_value
+msgid "Net book value"
+msgstr "Valore contabile netto"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__account_loss_id
+msgid "Net book value account"
+msgstr "Conto del valore contabile netto"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Scadenza della prossima attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_summary
+msgid "Next Activity Summary"
+msgstr "Riepilogo della prossima attività"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_type_id
+msgid "Next Activity Type"
+msgstr "Tipo della prossima attività"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"No acquisition entry is linked. Nothing guarantees this asset exists in the "
+"ledger: it could be depreciated while absent from the balance sheet."
+msgstr ""
+"Nessuna registrazione di acquisizione è collegata. Nulla garantisce che "
+"questo bene esista nel mastro: potrebbe essere ammortizzato pur essendo "
+"assente dal bilancio."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid ""
+"No instalment is due yet. Future instalments are posted when their due date "
+"is reached."
+msgstr ""
+"Nessuna rata è ancora scaduta. Le rate future si confermano al "
+"raggiungimento della loro data."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__sequence
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_list
+msgid "No."
+msgstr "N."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Numero di azioni"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_has_error_counter
+msgid "Number of errors"
+msgstr "Numero di errori"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Numero di messaggi che richiedono un'azione"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Numero di messaggi con errore di consegna"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "Only a draft asset can be validated."
+msgstr "Solo un cespite in bozza può essere convalidato."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard/expodo_asset_disposal.py:0
+msgid "Only a running or fully depreciated asset can be disposed of."
+msgstr ""
+"Solo un cespite in corso o completamente ammortizzato può essere dismesso."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__pending_count
+msgid "Pending Count"
+msgstr "Quote in sospeso"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__periodicity
+msgid "Periodicity"
+msgstr "Periodicità"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__salvage_value
+msgid "Portion of the value that is never depreciated."
+msgstr "Quota del valore che non viene mai ammortizzata."
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_list
+msgid "Post"
+msgstr "Conferma"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__post_due_first
+msgid "Post instalments due first"
+msgstr "Confermare prima le rate scadute"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset_disposal__post_due_first
+msgid ""
+"Post the instalments falling on or before the disposal date, so that "
+"depreciation is recognised up to the day the asset leaves the books."
+msgstr ""
+"Conferma le rate con scadenza pari o anteriore alla data di dismissione, "
+"affinché l'ammortamento sia rilevato fino al giorno in cui il bene esce dai "
+"libri."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset_line__state__posted
+msgid "Posted"
+msgstr "Confermato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__posted_count
+msgid "Posted Count"
+msgstr "Numero confermate"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__prorata
+msgid "Prorata temporis"
+msgstr "Prorata temporis"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__periodicity__quarterly
+msgid "Quarterly"
+msgstr "Trimestrale"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_disposal__reason
+msgid "Reason"
+msgstr "Motivo"
+
+#. module: expodo_account_assets
+#: model_terms:ir.actions.act_window,help:expodo_account_assets.action_expodo_asset
+msgid "Record your first asset"
+msgstr "Registra il tuo primo cespite"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__prorata
+msgid ""
+"Reduce the first instalment to the number of days actually elapsed. An asset"
+" put in service on the 15th is not depreciated for the whole month."
+msgstr ""
+"Riduce la prima rata ai giorni effettivamente trascorsi. Un bene entrato in "
+"funzione il 15 non si ammortizza per l'intero mese."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__remaining_value
+msgid "Remaining"
+msgstr "Residuo"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__remaining
+msgid "Remaining value"
+msgstr "Valore residuo"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard/expodo_asset_disposal.py:0
+msgid ""
+"Reminder: the sale proceeds are not recorded here. Issue the customer "
+"invoice as usual — the gain or loss on disposal will then appear in the "
+"profit and loss statement, as the difference between the proceeds and the "
+"net book value just charged."
+msgstr ""
+"Promemoria: il ricavo della vendita non si registra qui. Emetti la fattura "
+"al cliente come di consueto — la plusvalenza o minusvalenza da dismissione "
+"comparirà allora nel conto economico, come differenza tra il ricavo e il "
+"valore contabile netto appena imputato."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__activity_user_id
+msgid "Responsible User"
+msgstr "Utente responsabile"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__state__running
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Running"
+msgstr "In corso"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Errore di consegna SMS"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__salvage_value
+msgid "Salvage value"
+msgstr "Valore residuo"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset_disposal__reason__scrap
+msgid "Scrapped"
+msgstr "Rottamato"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Set to draft"
+msgstr "Riporta a bozza"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__acquisition_warning
+msgid "Set when the asset is not backed by a posted acquisition entry."
+msgstr ""
+"Attivo quando il cespite non è sostenuto da una registrazione di "
+"acquisizione confermata."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__expense_type_warning
+msgid "Set when the expense account is not typed as depreciation."
+msgstr "Attivo quando il conto di costo non è tipizzato come ammortamento."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset_disposal__reason__sale
+msgid "Sold"
+msgstr "Venduto"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__state
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset_line__state
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Status"
+msgstr "Stato"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Stato basato sulle attività\n"
+"In ritardo: la data di scadenza è già passata\n"
+"Oggi: l'attività scade oggi\n"
+"Pianificato: attività future."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "The acquisition value must be positive."
+msgstr "Il valore di acquisizione deve essere positivo."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"The amount already depreciated (%(done).2f) exceeds the depreciable base "
+"(%(base).2f)."
+msgstr ""
+"L'importo già ammortizzato (%(done).2f) supera la base ammortizzabile "
+"(%(base).2f)."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"The depreciation and expense accounts must be different: an instalment "
+"debits one and credits the other."
+msgstr ""
+"I conti ammortamento e costo devono essere diversi: una rata addebita l'uno "
+"e accredita l'altro."
+
+#. module: expodo_account_assets
+#: model_terms:ir.actions.act_window,help:expodo_account_assets.action_expodo_asset
+msgid ""
+"The depreciation board is computed from the acquisition\n"
+"                    value, the in-service date and the duration. Nothing is\n"
+"                    posted to the ledger until you confirm each instalment."
+msgstr ""
+"Il piano di ammortamento si calcola dal valore di acquisizione, dalla data "
+"di entrata in funzione e dalla durata. Nulla viene registrato nel mastro "
+"finché non confermi ogni rata."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "The duration must be at least one month."
+msgstr "La durata deve essere di almeno un mese."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"The expense account %(account)s is typed “%(type)s” rather than "
+"“Depreciation”. Depreciation will still be posted correctly, but the cash "
+"flow statement will report it inside the net result instead of adding it "
+"back separately."
+msgstr ""
+"Il conto di costo %(account)s è tipizzato «%(type)s» anziché «Ammortamento»."
+" Gli ammortamenti saranno registrati correttamente, ma il rendiconto "
+"finanziario li includerà nel risultato netto invece di riprenderli "
+"separatamente."
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form
+msgid ""
+"The sale proceeds are not recorded here. Issue the\n"
+"                        customer invoice as usual: the gain or loss on disposal\n"
+"                        will appear in the profit and loss statement, as the\n"
+"                        difference between the proceeds and the net book value\n"
+"                        charged by this entry."
+msgstr ""
+"Il ricavo della vendita non si registra qui. Emetti la fattura al cliente "
+"come di consueto: la plusvalenza o minusvalenza da dismissione comparirà nel"
+" conto economico, come differenza tra il ricavo e il valore contabile netto "
+"imputato da questa registrazione."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "The salvage value cannot be negative."
+msgstr "Il valore residuo non può essere negativo."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid "The salvage value must be lower than the acquisition value."
+msgstr "Il valore residuo deve essere inferiore al valore di acquisizione."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "This instalment has not been posted yet."
+msgstr "Questa rata non è ancora stata confermata."
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset_line__state__draft
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_search
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_list
+msgid "To post"
+msgstr "Da confermare"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_line_list
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_list
+msgid "Total"
+msgstr "Totale"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Tipo dell'attività di eccezione sul record."
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Validate"
+msgstr "Convalida"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "Values"
+msgstr "Valori"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__partner_id
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "Vendor"
+msgstr "Fornitore"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,field_description:expodo_account_assets.field_expodo_asset__website_message_ids
+msgid "Website Messages"
+msgstr "Messaggi del sito web"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields,help:expodo_account_assets.field_expodo_asset__website_message_ids
+msgid "Website communication history"
+msgstr "Cronologia delle comunicazioni del sito web"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_search
+msgid "With instalments to post"
+msgstr "Con rate da confermare"
+
+#. module: expodo_account_assets
+#: model:ir.model.fields.selection,name:expodo_account_assets.selection__expodo_asset__periodicity__yearly
+msgid "Yearly"
+msgstr "Annuale"
+
+#. module: expodo_account_assets
+#: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_form
+msgid "e.g. Delivery van"
+msgstr "es. Furgone per consegne"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "fiscal year lock date"
+msgstr "data di blocco dell'esercizio"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "hard lock date"
+msgstr "data di blocco definitivo"
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset.py:0
+msgid ""
+"“%(asset)s” already has %(count)d posted instalment(s). Recomputing the "
+"board would desynchronise it from the ledger. Dispose of the asset and "
+"record a new one instead."
+msgstr ""
+"«%(asset)s» ha già %(count)d rata/e confermata/e. Ricalcolare il piano lo "
+"disallineerebbe dal mastro. Dismetti il cespite e registrane uno nuovo."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/models/expodo_asset_line.py:0
+msgid "“%(asset)s” is not running: validate the asset first."
+msgstr "«%(asset)s» non è in corso: convalida prima il cespite."
+
+#. module: expodo_account_assets
+#: model_terms:ir.actions.act_window,help:expodo_account_assets.action_expodo_asset
+msgid "The depreciation board is computed from the acquisition value, the in-service date and the duration. Nothing is posted to the ledger until you confirm each instalment."
+msgstr "Il piano di ammortamento si calcola dal valore di acquisizione, dalla data di entrata in funzione e dalla durata. Nulla viene registrato finché non confermate ogni quota."
+
+#. module: expodo_account_assets
+#: model_terms:ir.actions.act_window,help:expodo_account_assets.action_expodo_asset_line
+msgid "Nothing is due"
+msgstr "Nessuna scadenza da registrare"
+
+#. module: expodo_account_assets
+#: model_terms:ir.actions.act_window,help:expodo_account_assets.action_expodo_asset_line
+msgid "An instalment appears here on its due date and leaves the list once posted. Posting stays a decision: an entry dated inside a period already closed would have to be undone by hand."
+msgstr "Una quota compare qui alla sua data ed esce dall'elenco una volta registrata. Registrare resta una decisione: una scrittura datata in un periodo già chiuso andrebbe annullata a mano."
+
+#. module: expodo_account_assets
+#. odoo-python
+#: code:addons/expodo_account_assets/wizard:0
+msgid "Choose the account that carries the remaining net book value. It is an expense account, separate from the ongoing depreciation charge."
+msgstr "Scegliete il conto che porta il valore contabile netto residuo. È un conto di costo, distinto dall'ammortamento corrente."

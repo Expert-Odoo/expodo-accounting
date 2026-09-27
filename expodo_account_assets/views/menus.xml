@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_expodo_asset" model="ir.actions.act_window">
+            <field name="name">Assets</field>
+            <field name="res_model">expodo.asset</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_running': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Record your first asset</p>
+                <p>The depreciation board is computed from the acquisition value, the in-service date and the duration. Nothing is posted to the ledger until you confirm each instalment.</p>
+            </field>
+        </record>
+
+        <record id="action_expodo_asset_line" model="ir.actions.act_window">
+            <field name="name">Instalments to post</field>
+            <field name="res_model">expodo.asset.line</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_due': 1}</field>
+                    <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Nothing is due</p>
+                <p>An instalment appears here on its due date and leaves the list once posted. Posting stays a decision: an entry dated inside a period already closed would have to be undone by hand.</p>
+            </field>
+        </record>
+
+                <!--
+            La racine suit les mêmes groupes que celle des états.
+
+            Elle ne déclarait que « lecture seule ». Or un gestionnaire
+            comptable ne porte pas ce groupe dans Odoo : sur une base
+            fraîchement installée, l'administrateur — celui qui évalue le
+            module avant de le déployer — ne voyait ni les immobilisations,
+            ni les échéances à comptabiliser, ni le contrôle de cohérence. Le
+            module paraissait ne rien faire.
+        -->
+        <menuitem id="menu_expodo_assets_root"
+                  name="Assets"
+                  parent="account.menu_finance"
+                  sequence="85"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_user,account.group_account_manager"/>
+
+        <menuitem id="menu_expodo_asset"
+                  name="Assets"
+                  parent="menu_expodo_assets_root"
+                  action="action_expodo_asset"
+                  sequence="10"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_user,account.group_account_manager"/>
+
+        <record id="action_expodo_asset_consistency" model="ir.actions.server">
+            <field name="name">Check consistency</field>
+            <field name="model_id" ref="model_expodo_asset"/>
+            <field name="state">code</field>
+            <field name="code">action = model.action_check_consistency()</field>
+        </record>
+
+        <menuitem id="menu_expodo_asset_consistency"
+                  name="Check consistency"
+                  parent="menu_expodo_assets_root"
+                  action="action_expodo_asset_consistency"
+                  sequence="30"
+                  groups="account.group_account_user,account.group_account_manager"/>
+
+        <menuitem id="menu_expodo_asset_line"
+                  name="Instalments to post"
+                  parent="menu_expodo_assets_root"
+                  action="action_expodo_asset_line"
+                  sequence="20"
+                  groups="account.group_account_user,account.group_account_manager"/>
+
+    </data>
+</odoo>

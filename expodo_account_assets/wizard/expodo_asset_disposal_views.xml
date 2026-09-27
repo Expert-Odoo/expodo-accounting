@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_asset_disposal_form" model="ir.ui.view">
+            <field name="name">expodo.asset.disposal.form</field>
+            <field name="model">expodo.asset.disposal</field>
+            <field name="arch" type="xml">
+                <form string="Dispose of asset">
+                    <group>
+                        <group>
+                            <field name="asset_id" readonly="1"/>
+                            <field name="date"/>
+                            <field name="reason"/>
+                            <field name="post_due_first"/>
+                        </group>
+                        <group>
+                            <field name="depreciated_value"/>
+                            <field name="remaining_value"/>
+                            <field name="account_loss_id" required="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert"
+                         invisible="reason != 'sale'">
+                        The sale proceeds are not recorded here. Issue the
+                        customer invoice as usual: the gain or loss on disposal
+                        will appear in the profit and loss statement, as the
+                        difference between the proceeds and the net book value
+                        charged by this entry.
+                    </div>
+                    <footer>
+                        <button name="action_confirm" type="object"
+                                string="Dispose" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_asset_disposal" model="ir.actions.act_window">
+            <field name="name">Dispose of asset</field>
+            <field name="res_model">expodo.asset.disposal</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="model_expodo_asset"/>
+            <field name="binding_view_types">form</field>
+        </record>
+
+    </data>
+</odoo>

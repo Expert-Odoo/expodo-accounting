@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_reconcile_wizard_form" model="ir.ui.view">
+            <field name="name">expodo.reconcile.wizard.form</field>
+            <field name="model">expodo.reconcile.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Reconcile">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="account_id"/>
+                                <field name="partner_id"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="total_debit"/>
+                                <field name="total_credit"/>
+                                <field name="difference"/>
+                            </group>
+                        </group>
+
+                        <group invisible="difference == 0">
+                            <field name="write_off"/>
+                            <field name="write_off_account_id" invisible="not write_off"
+                                   required="write_off"/>
+                            <field name="write_off_journal_id" invisible="not write_off"
+                                   required="write_off"/>
+                            <field name="write_off_label" invisible="not write_off"/>
+                        </group>
+
+                        <div class="alert alert-info" role="alert"
+                             invisible="difference == 0 or write_off">
+                            The items do not net to zero. They will be partially
+                            reconciled; the remaining balance stays open. Tick the
+                            box above to write the difference off instead.
+                        </div>
+
+                        <field name="line_ids" readonly="1">
+                            <list>
+                                <field name="date"/>
+                                <field name="move_id"/>
+                                <field name="partner_id"/>
+                                <field name="name"/>
+                                <field name="debit"/>
+                                <field name="credit"/>
+                            </list>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button name="action_reconcile" type="object" string="Reconcile"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_reconcile_wizard" model="ir.actions.act_window">
+            <field name="name">Reconcile</field>
+            <field name="res_model">expodo.reconcile.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="account.model_account_move_line"/>
+            <field name="binding_view_types">list</field>
+        </record>
+
+        <record id="view_expodo_auto_reconcile_form" model="ir.ui.view">
+            <field name="name">expodo.auto.reconcile.wizard.form</field>
+            <field name="model">expodo.auto.reconcile.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Automatic reconciliation">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="date_to"/>
+                            </group>
+                            <group>
+                                <field name="account_ids" widget="many2many_tags"/>
+                                <field name="partner_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-info" role="alert" invisible="message">
+                            Only groups whose balance is exactly zero, on the same
+                            account and the same partner, are reconciled. Anything
+                            approximate is left for you: a wrong reconciliation has
+                            to be undone item by item, and hides a genuinely unpaid
+                            receivable in the meantime.
+                        </div>
+
+                        <div class="alert alert-success" role="alert" invisible="not message">
+                            <field name="message" nolabel="1"/>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_auto_reconcile" type="object"
+                                string="Reconcile" class="btn-primary"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_auto_reconcile" model="ir.actions.act_window">
+            <field name="name">Automatic Reconciliation</field>
+            <field name="res_model">expodo.auto.reconcile.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!--
+            Le menu déclare ses groupes.
+
+            Sans déclaration, il s'affichait pour tout utilisateur voyant le
+            menu Comptabilité, alors que l'assistant n'est ouvert qu'au
+            comptable et au gestionnaire : le gestionnaire comptable
+            lui-même cliquait dessus et recevait une erreur de droits.
+        -->
+        <menuitem id="menu_expodo_auto_reconcile"
+                  name="Automatic Reconciliation"
+                  parent="account.menu_finance_entries"
+                  action="action_expodo_auto_reconcile"
+                  sequence="92"
+                  groups="account.group_account_user,account.group_account_manager"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,164 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_revaluation
+#: model:ir.actions.act_window,name:expodo_account_revaluation.action_expodo_revaluation_wizard
+msgid "Currency Revaluation"
+msgstr "Herwaardering vreemde valuta"
+
+#. module: expodo_account_revaluation
+#: model:ir.model,name:expodo_account_revaluation.model_expodo_revaluation_engine
+msgid "Currency revaluation engine"
+msgstr "Motor voor valutaherwaardering"
+
+#. module: expodo_account_revaluation
+#: model:ir.model,name:expodo_account_revaluation.model_expodo_revaluation_wizard
+msgid "Revalue foreign currency balances"
+msgstr "Saldi in vreemde valuta herwaarderen"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__date_to
+msgid "Closing date"
+msgstr "Afsluitdatum"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__move_id
+msgid "Revaluation entry"
+msgstr "Herwaarderingsboeking"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__preview
+msgid "Detail"
+msgstr "Detail"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__reversal_move_id
+msgid "Reversal"
+msgstr "Tegenboeking"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__reverse_next_day
+msgid "Reverse at the opening of the next period"
+msgstr "Tegenboeken bij aanvang van de volgende periode"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__total_gain
+msgid "Unrealised gains"
+msgstr "Ongerealiseerde winsten"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__total_loss
+msgid "Unrealised losses"
+msgstr "Ongerealiseerde verliezen"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__warning
+msgid "Before you post"
+msgstr "Vóór het boeken"
+
+#. module: expodo_account_revaluation
+#: model:ir.ui.menu,name:expodo_account_revaluation.menu_expodo_revaluation
+msgid "Currency Revaluation"
+msgstr "Herwaardering vreemde valuta"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Detail"
+msgstr "Detail"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Preview"
+msgstr "Voorbeeld"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Revalue"
+msgstr "Herwaarderen"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Currency revaluation"
+msgstr "Herwaardering vreemde valuta"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models/revaluation_engine.py:0
+msgid "Revaluation %(currency)s at %(date)s"
+msgstr "Herwaardering %(currency)s per %(date)s"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models/revaluation_engine.py:0
+msgid "draft entry"
+msgstr "concept-boeking"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/wizard/revaluation_wizard.py:0
+msgid "No open foreign currency balance at this date."
+msgstr "Op deze datum zijn er geen openstaande valutasaldi."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/wizard/revaluation_wizard.py:0
+msgid "Reversal of %(ref)s"
+msgstr "Tegenboeking van %(ref)s"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "A revaluation already exists at this date (%(names)s). Posting a second one would count the difference twice."
+msgstr "Op deze datum bestaat al een herwaardering (%(names)s). Een tweede boeken zou het verschil dubbel tellen."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "A revaluation already exists at this date. Posting a second one would count the difference twice."
+msgstr "Op deze datum bestaat al een herwaardering. Een tweede boeken zou het verschil dubbel tellen."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No account is available for unrealised exchange differences. Set the exchange gain and loss accounts on the company, or create 476/477 accounts in the French chart."
+msgstr "Er is geen rekening beschikbaar voor ongerealiseerde omrekeningsverschillen. Stel de rekeningen voor koerswinst en -verlies in op het bedrijf, of maak de rekeningen 476/477 aan in het Franse schema."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No open foreign currency balance at %(date)s: there is nothing to revalue."
+msgstr "Geen openstaand valutasaldo op %(date)s: er valt niets te herwaarderen."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No recent exchange rate for %(currencies)s. The conversion falls back on the last known rate, which looks correct and is stale."
+msgstr "Geen recente wisselkoers voor %(currencies)s. De omrekening valt terug op de laatst bekende koers, die juist lijkt maar verouderd is."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "The revaluation entry is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "De herwaarderingsboeking is %(gap).2f uit balans. Er is niets geboekt."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "Unrealised losses of %(amount).2f. Under French GAAP these call for a provision for risks (1515), which this module does not create: the amount depends on hedging and on the overall position, which cannot be derived mechanically. Unrealised gains are not taken to profit."
+msgstr "Ongerealiseerde verliezen van %(amount).2f. Naar Frans jaarrekeningenrecht vragen die om een voorziening voor risico's (1515), die deze module niet aanmaakt: het bedrag hangt af van hedging en van de totale positie en volgt niet mechanisch. Ongerealiseerde winsten worden niet in het resultaat genomen."
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__journal_id
+msgid "Journal"
+msgstr "Dagboek"

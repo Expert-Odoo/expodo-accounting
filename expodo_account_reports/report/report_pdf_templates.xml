@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Document PDF **autonome** : styles en ligne, aucune ressource
+            externe.
+
+            Passer par `web.html_container` fait référencer les feuilles de
+            style d'Odoo par URL. wkhtmltopdf tente alors de les récupérer
+            depuis le container et échoue — « Exit with code 1 due to network
+            error: ProtocolUnknownError ». Le défaut ne se voit pas en shell,
+            où la résolution d'URL diffère : il n'apparaît qu'en requête HTTP
+            réelle, c'est-à-dire chez l'utilisateur.
+        -->
+
+        <template id="report_pdf_document">
+            <!--
+                Le sens de lecture suit la langue du rendu. Sans cet attribut
+                la page restait en lecture gauche-droite même en arabe : le
+                texte s'affichait correctement — les ligatures contextuelles
+                sont bien appliquées — mais l'ordre des colonnes restait
+                occidental, ce qui rend un état comptable arabe illisible
+                pour son destinataire.
+            -->
+            <html t-att-dir="sens_lecture">
+                <head>
+                    <meta charset="utf-8"/>
+                    <style>
+                        /*
+                            Marges latérales de 8 mm.
+
+                            Elles ne peuvent pas être posées par
+                            `specific_paperformat_args` : Odoo n'y lit que
+                            `margin-top`, `margin-bottom`, `header-spacing`
+                            et `dpi`, les marges gauche et droite venant du
+                            format de papier — qu'on ne fournit pas.
+
+                            Sans elles, le texte allait de 0 à 592 points sur
+                            une page de 595 : une imprimante n'imprimant pas
+                            dans les cinq derniers millimètres, la colonne du
+                            solde était coupée. À l'écran le PDF paraissait
+                            pourtant correct.
+                        */
+                        body { font-family: DejaVu Sans, Arial, sans-serif;
+                               font-size: 10px; color: #222;
+                               margin: 0 8mm; }
+                        h1   { font-size: 16px; margin: 0 0 4px; }
+                        .meta   { font-size: 9px; color: #666; margin-bottom: 14px; }
+                        table   { width: 100%; border-collapse: collapse; }
+                        /*
+                            Pas de largeur fixe sur les colonnes de montants.
+                            Essayée pour réduire le nombre de pages, elle n'a
+                            rien changé — c'est le nombre de lignes qui
+                            commande — et elle a fait déborder les montants en
+                            dollars : « $ 506,803.18 » dépasse 88 px et, avec
+                            `white-space: nowrap`, empiète sur la colonne
+                            voisine. En euros il passait de justesse, donc le
+                            défaut ne s'est vu que sur une base américaine.
+                        */
+                        th      { background: #f2f2f2; border-bottom: 1px solid #999;
+                                  padding: 5px 6px; font-size: 10px; }
+                        /*
+                            Hauteur de ligne et alignement posés
+                            explicitement.
+
+                            Sans eux, la hauteur d'une ligne dépendait des
+                            métriques des glyphes qu'elle contient. Une ligne
+                            sur quatre-vingt-dix se retrouvait plus haute que
+                            ses voisines, son libellé descendu de trois points
+                            sous son propre montant : un tableau qui ondule
+                            sur un document que le client transmet à son
+                            expert-comptable.
+                        */
+                        td      { padding: 4px 6px; border-bottom: 1px solid #eee;
+                                  line-height: 14px; vertical-align: top; }
+                        /*
+                            Les montants se collent au bord opposé au sens de
+                            lecture : à droite en écriture latine, à gauche en
+                            écriture arabe ou hébraïque.
+                        */
+                        .num    { text-align: right; white-space: nowrap; }
+                        [dir="rtl"] .num { text-align: left; }
+                        .total  { font-weight: bold; border-top: 1px solid #333;
+                                  background: #fafafa; }
+                        .grp    { font-weight: normal; color: #888; font-size: 8px; }
+                                .note { font-size: 8px; color: #555555; font-style: italic;
+                    margin-top: 2px; padding-left: 6px; }
+</style>
+                </head>
+                <body>
+                    <h1 t-esc="header['report_name']"/>
+                    <div class="meta">
+                        <div t-esc="header['company_name']"/>
+                        <div t-esc="header['period']"/>
+                        <div t-esc="' - '.join(header['filters'])"/>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th t-att-style="'text-align:%s;' % ('right' if sens_lecture == 'rtl' else 'left')"><t t-esc="labels['label']"/></th>
+                                <t t-foreach="column_groups" t-as="group">
+                                    <t t-foreach="columns" t-as="column">
+                                        <th class="num">
+                                            <t t-esc="column['name']"/>
+                                            <div t-if="len(column_groups) &gt; 1"
+                                                 class="grp" t-esc="group['label']"/>
+                                        </th>
+                                    </t>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines" t-as="line"
+                                t-att-class="'total' if not line.get('level') else ''">
+                                <td t-att-style="'padding-left:%dpx;' % (6 + (line.get('level') or 0) * 12)">
+                                    <span t-esc="line['name']"/>
+                                    <!--
+                                        Les annotations s'impriment sous le
+                                        libellé qu'elles commentent. Elles
+                                        étaient attachées aux lignes et
+                                        n'apparaissaient nulle part : le module
+                                        permettait d'écrire des notes que
+                                        personne ne pouvait lire.
+                                    -->
+                                    <div t-if="line.get('annotations')" class="note">
+                                        <div t-foreach="line['annotations']" t-as="note"
+                                             t-esc="note"/>
+                                    </div>
+                                </td>
+                                <t t-foreach="column_groups" t-as="group">
+                                    <t t-foreach="line['columns']" t-as="cell">
+                                        <td class="num" t-esc="cell['values'].get(group['key'], '')"/>
+                                    </t>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </body>
+            </html>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Rapports fondés sur le groupement dynamique.
+
+            Contrairement au Bilan et au Compte de résultat, qui agrègent par
+            préfixe de compte avec le moteur `account_codes`, ces rapports
+            partent d'une ligne unique développée par `groupby`. Le nombre de
+            sous-lignes n'est pas connu à l'avance : il dépend des écritures.
+
+            Chaque ligne groupée coûte une requête par portée de date, quel
+            que soit le nombre de groupes obtenus (CDC T-07b).
+        -->
+
+        <!-- ==================== BALANCE GÉNÉRALE ==================== -->
+        <record id="report_balance_fr" model="account.report">
+            <field name="name">Trial Balance</field>
+                    <field name="name@fr">Balance générale</field>
+            <field name="name@es">Balance de sumas y saldos</field>
+            <field name="name@de">Summen- und Saldenliste</field>
+            <field name="name@nl">Proefbalans</field>
+            <field name="name@it">Bilancio di verifica</field>
+            <field name="name@pt_BR">Balancete</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="search_bar" eval="True"/>
+            <!--
+                Ouverture sur le mois en cours, comme l'édition de référence.
+
+                Sur l'exercice entier, l'état détaille chaque écriture de
+                l'année : la première ouverture d'une base réelle rendait des
+                centaines de milliers de lignes, quand le comptable qui
+                l'ouvre travaille sur le mois qu'il est en train de saisir.
+            -->
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_balance_initial" model="account.report.column">
+                    <field name="name">Opening balance</field>
+                    <field name="name@fr">Solde initial</field>
+                    <field name="name@es">Saldo inicial</field>
+                    <field name="name@de">Anfangssaldo</field>
+                    <field name="name@nl">Beginsaldo</field>
+                    <field name="name@it">Saldo iniziale</field>
+                    <field name="name@pt_BR">Saldo inicial</field>
+                    <field name="expression_label">initial</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="5"/>
+                </record>
+                <record id="col_balance_debit" model="account.report.column">
+                    <field name="name">Debit</field>
+                    <field name="name@fr">Débit</field>
+                    <field name="name@es">Debe</field>
+                    <field name="name@de">Soll</field>
+                    <field name="name@nl">Debet</field>
+                    <field name="name@it">Dare</field>
+                    <field name="name@pt_BR">Débito</field>
+                    <field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_balance_credit" model="account.report.column">
+                    <field name="name">Credit</field>
+                    <field name="name@fr">Crédit</field>
+                    <field name="name@es">Haber</field>
+                    <field name="name@de">Haben</field>
+                    <field name="name@nl">Credit</field>
+                    <field name="name@it">Avere</field>
+                    <field name="name@pt_BR">Crédito</field>
+                    <field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_balance_solde" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_balance_fr" model="account.report.line">
+                    <field name="name">Accounts</field>
+                    <field name="name@fr">Comptes</field>
+                    <field name="name@es">Cuentas</field>
+                    <field name="name@de">Konten</field>
+                    <field name="name@nl">Rekeningen</field>
+                    <field name="name@it">Conti</field>
+                    <field name="name@pt_BR">Contas</field>
+                    <field name="code">BAL_COMPTES</field>
+                    <field name="groupby">account_id</field>
+                    <field name="foldable" eval="False"/>
+                    <field name="expression_ids">
+                        <record id="expr_balance_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum</field>
+                            <!--
+                                Solde arrêté à la veille du premier jour de la
+                                période. Une balance générale sans solde initial
+                                ne permet pas de vérifier que la période s'ouvre
+                                sur la clôture de la précédente — c'est-à-dire
+                                le premier contrôle qu'on lui demande.
+                            -->
+                            <field name="date_scope">to_beginning_of_period</field>
+                        </record>
+                        <record id="expr_balance_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_debit</field>
+                        </record>
+                        <record id="expr_balance_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_credit</field>
+                        </record>
+                        <record id="expr_balance_solde" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum</field>
+                            <!--
+                                Le solde d'une balance générale est le solde
+                                **final**, pas le mouvement de la période.
+
+                                Sur une portée stricte, un compte ouvert à
+                                60 000 et crédité de 8 000 affichait −8 000 au
+                                lieu de 52 000. L'erreur reste invisible tant
+                                que la période part du début des écritures —
+                                c'est-à-dire pendant tout le premier exercice.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <!-- ====================== GRAND LIVRE ====================== -->
+        <record id="report_grand_livre_fr" model="account.report">
+            <field name="name">General Ledger</field>
+                    <field name="name@fr">Grand livre</field>
+            <field name="name@es">Libro mayor</field>
+            <field name="name@de">Hauptbuch</field>
+            <field name="name@nl">Grootboek</field>
+            <field name="name@it">Libro mastro</field>
+            <field name="name@pt_BR">Livro razão</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="search_bar" eval="True"/>
+            <!--
+                Ouverture sur le mois en cours, comme l'édition de référence.
+
+                Sur l'exercice entier, l'état détaille chaque écriture de
+                l'année : la première ouverture d'une base réelle rendait des
+                centaines de milliers de lignes, quand le comptable qui
+                l'ouvre travaille sur le mois qu'il est en train de saisir.
+            -->
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_gl_date" model="account.report.column">
+                    <field name="name">Date</field>
+                    <field name="name@fr">Date</field>
+                    <field name="name@es">Fecha</field>
+                    <field name="name@de">Datum</field>
+                    <field name="name@nl">Datum</field>
+                    <field name="name@it">Data</field>
+                    <field name="name@pt_BR">Data</field>
+                    <field name="expression_label">line_date</field>
+                    <field name="figure_type">date</field>
+                    <field name="sequence" eval="2"/>
+                </record>
+                <record id="col_gl_partner" model="account.report.column">
+                    <field name="name">Partner</field>
+                    <field name="name@fr">Tiers</field>
+                    <field name="name@es">Empresa</field>
+                    <field name="name@de">Partner</field>
+                    <field name="name@nl">Relatie</field>
+                    <field name="name@it">Partner</field>
+                    <field name="name@pt_BR">Parceiro</field>
+                    <field name="expression_label">line_partner</field>
+                    <field name="figure_type">string</field>
+                    <field name="sequence" eval="4"/>
+                </record>
+                <record id="col_gl_debit" model="account.report.column">
+                    <field name="name">Debit</field>
+                    <field name="name@fr">Débit</field>
+                    <field name="name@es">Debe</field>
+                    <field name="name@de">Soll</field>
+                    <field name="name@nl">Debet</field>
+                    <field name="name@it">Dare</field>
+                    <field name="name@pt_BR">Débito</field>
+                    <field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_gl_credit" model="account.report.column">
+                    <field name="name">Credit</field>
+                    <field name="name@fr">Crédit</field>
+                    <field name="name@es">Haber</field>
+                    <field name="name@de">Haben</field>
+                    <field name="name@nl">Credit</field>
+                    <field name="name@it">Avere</field>
+                    <field name="name@pt_BR">Crédito</field>
+                    <field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_gl_solde" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_gl_fr" model="account.report.line">
+                    <field name="name">Accounts</field>
+                    <field name="name@fr">Comptes</field>
+                    <field name="name@es">Cuentas</field>
+                    <field name="name@de">Konten</field>
+                    <field name="name@nl">Rekeningen</field>
+                    <field name="name@it">Conti</field>
+                    <field name="name@pt_BR">Contas</field>
+                    <field name="code">GL_COMPTES</field>
+                    <!-- Deux niveaux : compte, puis écriture. Le second n'est
+                         calculé qu'au dépliage du premier. -->
+                    <field name="groupby">account_id,id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_gl_date" model="account.report.expression">
+                            <field name="label">line_date</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">line_date</field>
+                        </record>
+                        <record id="expr_gl_partner" model="account.report.expression">
+                            <field name="label">line_partner</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">line_partner</field>
+                        </record>
+                        <record id="expr_gl_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_debit</field>
+                        </record>
+                        <record id="expr_gl_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_credit</field>
+                        </record>
+                        <record id="expr_gl_solde" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <!-- ================= GRAND LIVRE AUXILIAIRE ================= -->
+        <record id="report_auxiliaire_fr" model="account.report">
+            <field name="name">Partner Ledger</field>
+                    <field name="name@fr">Grand livre auxiliaire</field>
+            <field name="name@es">Libro mayor auxiliar</field>
+            <field name="name@de">Personenkonten</field>
+            <field name="name@nl">Subadministratie</field>
+            <field name="name@it">Mastrini partitari</field>
+            <field name="name@pt_BR">Razão auxiliar</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="search_bar" eval="True"/>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="col_aux_debit" model="account.report.column">
+                    <field name="name">Debit</field>
+                    <field name="name@fr">Débit</field>
+                    <field name="name@es">Debe</field>
+                    <field name="name@de">Soll</field>
+                    <field name="name@nl">Debet</field>
+                    <field name="name@it">Dare</field>
+                    <field name="name@pt_BR">Débito</field>
+                    <field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_aux_credit" model="account.report.column">
+                    <field name="name">Credit</field>
+                    <field name="name@fr">Crédit</field>
+                    <field name="name@es">Haber</field>
+                    <field name="name@de">Haben</field>
+                    <field name="name@nl">Credit</field>
+                    <field name="name@it">Avere</field>
+                    <field name="name@pt_BR">Crédito</field>
+                    <field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_aux_solde" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_aux_fr" model="account.report.line">
+                    <field name="name">Partners</field>
+                    <field name="name@fr">Partenaires</field>
+                    <field name="name@es">Empresas</field>
+                    <field name="name@de">Partner</field>
+                    <field name="name@nl">Relaties</field>
+                    <field name="name@it">Partner</field>
+                    <field name="name@pt_BR">Parceiros</field>
+                    <field name="code">AUX_PARTENAIRES</field>
+                    <field name="groupby">partner_id,id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_aux_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
+                            <field name="subformula">sum_debit</field>
+                        </record>
+                        <record id="expr_aux_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
+                            <field name="subformula">sum_credit</field>
+                        </record>
+                        <record id="expr_aux_solde" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
+                            <field name="subformula">sum</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <!-- ================== JOURNAUX ET AUDIT ================== -->
+        <record id="report_journaux_fr" model="account.report">
+            <field name="name">Journals</field>
+                    <field name="name@fr">Journaux</field>
+            <field name="name@es">Diarios</field>
+            <field name="name@de">Journale</field>
+            <field name="name@nl">Dagboeken</field>
+            <field name="name@it">Registri</field>
+            <field name="name@pt_BR">Diários</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_jrn_debit" model="account.report.column">
+                    <field name="name">Debit</field>
+                    <field name="name@fr">Débit</field>
+                    <field name="name@es">Debe</field>
+                    <field name="name@de">Soll</field>
+                    <field name="name@nl">Debet</field>
+                    <field name="name@it">Dare</field>
+                    <field name="name@pt_BR">Débito</field>
+                    <field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_jrn_credit" model="account.report.column">
+                    <field name="name">Credit</field>
+                    <field name="name@fr">Crédit</field>
+                    <field name="name@es">Haber</field>
+                    <field name="name@de">Haben</field>
+                    <field name="name@nl">Credit</field>
+                    <field name="name@it">Avere</field>
+                    <field name="name@pt_BR">Crédito</field>
+                    <field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_jrn_nb" model="account.report.column">
+                    <field name="name">Entries</field>
+                    <field name="name@fr">Pièces</field>
+                    <field name="name@es">Líneas</field>
+                    <field name="name@de">Zeilen</field>
+                    <field name="name@nl">Regels</field>
+                    <field name="name@it">Righe</field>
+                    <field name="name@pt_BR">Linhas</field>
+                    <field name="expression_label">nb</field>
+                    <field name="figure_type">integer</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_jrn_fr" model="account.report.line">
+                    <field name="name">Journals</field>
+                    <field name="name@fr">Journaux</field>
+                    <field name="name@es">Diarios</field>
+                    <field name="name@de">Journale</field>
+                    <field name="name@nl">Dagboeken</field>
+                    <field name="name@it">Registri</field>
+                    <field name="name@pt_BR">Diários</field>
+                    <field name="code">JRN_JOURNAUX</field>
+                    <field name="groupby">journal_id,move_id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_jrn_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_debit</field>
+                        </record>
+                        <record id="expr_jrn_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_credit</field>
+                        </record>
+                        <record id="expr_jrn_nb" model="account.report.expression">
+                            <field name="label">nb</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <!--
+                                Pièces et non lignes d'écriture.
+
+                                Sur un journal de quinze écritures à deux
+                                lignes, le comptage par ligne affichait trente.
+                                Le lecteur y voit un double enregistrement, et
+                                la seule façon de le détromper est de comparer
+                                au grand livre — ce que personne ne fait devant
+                                un chiffre qui a l'air normal.
+                            -->
+                            <field name="subformula">count_moves</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <!-- ================== ÉCRITURES OUVERTES ================== -->
+        <record id="report_open_items_fr" model="account.report">
+            <field name="name">Open Items</field>
+                    <field name="name@fr">Écritures ouvertes</field>
+            <field name="name@es">Partidas abiertas</field>
+            <field name="name@de">Offene Posten</field>
+            <field name="name@nl">Openstaande posten</field>
+            <field name="name@it">Partite aperte</field>
+            <field name="name@pt_BR">Partidas em aberto</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                L'état montre ce qui reste ouvert à une date : ses expressions
+                lisent depuis l'origine, une pièce de l'exercice précédent
+                encore impayée doit y figurer. La date d'ouverture n'entrait
+                donc dans aucun calcul, mais restait affichée et modifiable.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="search_bar" eval="True"/>
+            <field name="default_opening_date_filter">today</field>
+            <field name="column_ids">
+                <record id="col_open_solde" model="account.report.column">
+                    <field name="name">Amount Due</field>
+                    <field name="name@fr">Restant dû</field>
+                    <field name="name@es">Importe pendiente</field>
+                    <field name="name@de">Offener Betrag</field>
+                    <field name="name@nl">Openstaand bedrag</field>
+                    <field name="name@it">Importo dovuto</field>
+                    <field name="name@pt_BR">Valor devido</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_open_nb" model="account.report.column">
+                    <field name="name">Documents</field>
+                    <field name="name@fr">Pièces</field>
+                    <field name="name@es">Documentos</field>
+                    <field name="name@de">Belege</field>
+                    <field name="name@nl">Documenten</field>
+                    <field name="name@it">Documenti</field>
+                    <field name="name@pt_BR">Documentos</field>
+                    <field name="expression_label">nb</field>
+                    <field name="figure_type">integer</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_open_fr" model="account.report.line">
+                    <field name="name">Partners</field>
+                    <field name="name@fr">Partenaires</field>
+                    <field name="name@es">Empresas</field>
+                    <field name="name@de">Partner</field>
+                    <field name="name@nl">Relaties</field>
+                    <field name="name@it">Partner</field>
+                    <field name="name@pt_BR">Parceiros</field>
+                    <field name="code">OPEN_PARTENAIRES</field>
+                    <field name="groupby">partner_id,id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_open_solde" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">sum</field>
+                                                    <!--
+                                Lecture depuis l'origine.
+
+                                Une écriture non lettrée en 2024 reste ouverte
+                                en 2026. La restreindre à la période affichée
+                                faisait disparaître les plus anciennes — c'est-
+                                à-dire précisément celles qu'il faut traiter en
+                                premier.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+</record>
+                        <record id="expr_open_nb" model="account.report.expression">
+                            <field name="label">nb</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">count_moves</field>
+                                                    <!--
+                                Lecture depuis l'origine.
+
+                                Une écriture non lettrée en 2024 reste ouverte
+                                en 2026. La restreindre à la période affichée
+                                faisait disparaître les plus anciennes — c'est-
+                                à-dire précisément celles qu'il faut traiter en
+                                premier.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+</record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

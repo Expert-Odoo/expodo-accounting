@@ -1,0 +1,79 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_annotation
+#: model:ir.actions.act_window,name:expodo_account_annotation.action_expodo_report_annotation
+msgid "Report Annotations"
+msgstr "Annotations d'états"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.actions.act_window,help:expodo_account_annotation.action_expodo_report_annotation
+msgid "Explain a figure"
+msgstr "Expliquer un chiffre"
+
+#. module: expodo_account_annotation
+#: model:ir.model,name:expodo_account_annotation.model_expodo_report_annotation
+msgid "Report line annotation"
+msgstr "Annotation de ligne d'état"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__report_line_id
+msgid "Report line"
+msgstr "Ligne d'état"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__text
+msgid "Annotation"
+msgstr "Annotation"
+
+#. module: expodo_account_annotation
+#: model:ir.ui.menu,name:expodo_account_annotation.menu_expodo_report_annotation
+msgid "Report Annotations"
+msgstr "Annotations d'états"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_form
+msgid "Why the figure is what it is…"
+msgstr "Pourquoi ce chiffre est ce qu'il est…"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_form
+msgid "Annotation"
+msgstr "Annotation"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_list
+msgid "Annotations"
+msgstr "Annotations"
+
+#. module: expodo_account_annotation
+#. odoo-python
+#: code:addons/expodo_account_annotation/models/annotation.py:0
+msgid "The annotation period ends before it starts."
+msgstr "La période de l'annotation se termine avant de commencer."
+
+#. module: expodo_account_annotation
+#: model_terms:ir.actions.act_window,help:expodo_account_annotation.action_expodo_report_annotation
+msgid "A statement answers “how much” and never “why”. Write the why here, for whoever reads the statement next — who will not be you."
+msgstr "Un état répond à « combien », jamais à « pourquoi ». Écrivez ici le pourquoi, pour celui qui lira l'état après vous, et qui ne sera pas vous."
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__company_id
+msgid "Company"
+msgstr "Société"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__date_from
+msgid "From"
+msgstr "Du"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__report_id
+msgid "Parent Report"
+msgstr "État parent"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__date_to
+msgid "To"
+msgstr "au"

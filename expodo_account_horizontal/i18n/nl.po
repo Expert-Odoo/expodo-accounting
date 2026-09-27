@@ -1,0 +1,108 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_horizontal
+#: model:ir.actions.act_window,name:expodo_account_horizontal.action_expodo_hgroup
+msgid "Horizontal Groups"
+msgstr "Horizontale groepen"
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.actions.act_window,help:expodo_account_horizontal.action_expodo_hgroup
+msgid "Split the columns"
+msgstr "De kolommen opsplitsen"
+
+#. module: expodo_account_horizontal
+#: model:ir.model,name:expodo_account_horizontal.model_expodo_report_horizontal_group
+msgid "Horizontal group"
+msgstr "Horizontale groep"
+
+#. module: expodo_account_horizontal
+#: model:ir.model,name:expodo_account_horizontal.model_expodo_report_horizontal_group_rule
+msgid "Horizontal group column"
+msgstr "Kolom van een horizontale groep"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group__rule_ids
+msgid "Columns"
+msgstr "Kolommen"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group_rule__field_name
+msgid "Field"
+msgstr "Veld"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group_rule__name
+msgid "Column label"
+msgstr "Kolomlabel"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,help:expodo_account_horizontal.field_expodo_report_horizontal_group_rule__name
+msgid "Heading shown above this column."
+msgstr "Kop die boven deze kolom wordt getoond."
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group_rule__value_ids_text
+msgid "Values"
+msgstr "Waarden"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields.selection,name:expodo_account_horizontal.selection__expodo_report_horizontal_group_rule__field_name__analytic_distribution
+msgid "Analytic"
+msgstr "Analytisch"
+
+#. module: expodo_account_horizontal
+#: model:ir.ui.menu,name:expodo_account_horizontal.menu_expodo_hgroup
+msgid "Horizontal Groups"
+msgstr "Horizontale groepen"
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.ui.view,arch_db:expodo_account_horizontal.view_expodo_hgroup_form
+msgid "e.g. By establishment"
+msgstr "bv. Per vestiging"
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.ui.view,arch_db:expodo_account_horizontal.view_expodo_hgroup_form
+msgid "Columns"
+msgstr "Kolommen"
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.ui.view,arch_db:expodo_account_horizontal.view_expodo_hgroup_form
+msgid "Horizontal group"
+msgstr "Horizontale groep"
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.ui.view,arch_db:expodo_account_horizontal.view_expodo_hgroup_list
+msgid "Horizontal groups"
+msgstr "Horizontale groepen"
+
+#. module: expodo_account_horizontal
+#. odoo-python
+#: code:addons/expodo_account_horizontal/models/horizontal_group.py:0
+msgid ""
+"“%(name)s” has no column. A horizontal group with no rule would simply hide "
+"the report."
+msgstr ""
+"‘%(name)s’ heeft geen kolom. Een groep zonder regel zou het rapport "
+"verbergen."
+
+#. module: expodo_account_horizontal
+#: model_terms:ir.actions.act_window,help:expodo_account_horizontal.action_expodo_hgroup
+msgid "A statement reads time left to right. A horizontal group adds a second dimension — by establishment, by activity, by journal — and answers a question the statement alone cannot ask: where does this total come from?"
+msgstr "Een overzicht leest de tijd van links naar rechts. Een horizontale groep voegt een tweede dimensie toe — per vestiging, per activiteit, per dagboek — en beantwoordt een vraag die het overzicht alleen niet kan stellen: waar komt dit totaal vandaan?"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group__active
+msgid "Active"
+msgstr "Actief"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: expodo_account_horizontal
+#: model:ir.model.fields,field_description:expodo_account_horizontal.field_expodo_report_horizontal_group__name
+msgid "Name"
+msgstr "Naam"

@@ -1,0 +1,85 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_fiscal_year
+#: model:ir.actions.act_window,name:expodo_account_fiscal_year.action_expodo_fiscal_year
+msgid "Fiscal Years"
+msgstr "Esercizi fiscali"
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.actions.act_window,help:expodo_account_fiscal_year.action_expodo_fiscal_year
+msgid "Declare an irregular fiscal year"
+msgstr "Dichiarare un esercizio irregolare"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model,name:expodo_account_fiscal_year.model_expodo_fiscal_year
+msgid "Fiscal year"
+msgstr "Esercizio fiscale"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model.fields,field_description:expodo_account_fiscal_year.field_expodo_fiscal_year__date_from
+msgid "Start date"
+msgstr "Data di inizio"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model.fields,field_description:expodo_account_fiscal_year.field_expodo_fiscal_year__date_to
+msgid "End date"
+msgstr "Data di fine"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model.fields,field_description:expodo_account_fiscal_year.field_expodo_fiscal_year__duration_months
+msgid "Duration (months)"
+msgstr "Durata (mesi)"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.ui.menu,name:expodo_account_fiscal_year.menu_expodo_fiscal_year
+msgid "Fiscal Years"
+msgstr "Esercizi fiscali"
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.ui.view,arch_db:expodo_account_fiscal_year.view_expodo_fiscal_year_form
+msgid "e.g. First year 2025-2026"
+msgstr "es. Primo esercizio 2025-2026"
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.ui.view,arch_db:expodo_account_fiscal_year.view_expodo_fiscal_year_form
+msgid "Fiscal Year"
+msgstr "Esercizio fiscale"
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.ui.view,arch_db:expodo_account_fiscal_year.view_expodo_fiscal_year_list
+msgid "Fiscal Years"
+msgstr "Esercizi fiscali"
+
+#. module: expodo_account_fiscal_year
+#. odoo-python
+#: code:addons/expodo_account_fiscal_year/models/fiscal_year.py:0
+msgid "“%(name)s” ends before it starts."
+msgstr "«%(name)s» termina prima di iniziare."
+
+#. module: expodo_account_fiscal_year
+#. odoo-python
+#: code:addons/expodo_account_fiscal_year/models:0
+msgid "“%(name)s” overlaps “%(other)s” (%(start)s – %(end)s). Fiscal years must follow one another without overlapping."
+msgstr "«%(name)s» si sovrappone a «%(other)s» (%(start)s – %(end)s). Gli esercizi devono susseguirsi senza sovrapporsi."
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.actions.act_window,help:expodo_account_fiscal_year.action_expodo_fiscal_year
+msgid "Odoo derives fiscal years from a repeating pattern: same closing day, twelve months each. That cannot express a first year running fifteen months, or a transition year after a change of closing date."
+msgstr "Odoo deduce gli esercizi da uno schema che si ripete: stesso giorno di chiusura, dodici mesi ciascuno. Questo non consente di esprimere un primo esercizio di quindici mesi, né un esercizio di transizione dopo un cambio di data di chiusura."
+
+#. module: expodo_account_fiscal_year
+#: model_terms:ir.actions.act_window,help:expodo_account_fiscal_year.action_expodo_fiscal_year
+msgid "Years declared here take precedence. Everything that reads a fiscal year follows — default report periods, year-end closing, the FEC."
+msgstr "Gli esercizi dichiarati qui prevalgono. Tutto ciò che legge un esercizio li segue: periodi predefiniti dei prospetti, chiusura annuale, FEC."
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model.fields,field_description:expodo_account_fiscal_year.field_expodo_fiscal_year__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_fiscal_year
+#: model:ir.model.fields,field_description:expodo_account_fiscal_year.field_expodo_fiscal_year__name
+msgid "Name"
+msgstr "Nome"

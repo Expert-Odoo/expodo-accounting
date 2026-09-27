@@ -1,0 +1,176 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_deferred
+#: model:ir.actions.act_window,name:expodo_account_deferred.action_expodo_deferral_wizard
+msgid "Deferred Expenses and Revenues"
+msgstr "Ratei e risconti"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_engine
+msgid "Deferred expense and revenue engine"
+msgstr "Motore di ratei e risconti"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_wizard
+msgid "Post deferred expenses and revenues"
+msgstr "Registrare ratei e risconti"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_amount
+msgid "Deferred portion"
+msgstr "Quota differita"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Covers to"
+msgstr "Copre fino al"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Last day of the covered period, included."
+msgstr "Ultimo giorno del periodo coperto, incluso."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_start_date
+msgid "Covers from"
+msgstr "Copre dal"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid "Closing date"
+msgstr "Data di chiusura"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid ""
+"Everything covering a period after this date is carried to the balance "
+"sheet."
+msgstr ""
+"Tutto ciò che copre un periodo successivo passa allo stato patrimoniale."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__line_count
+msgid "Lines concerned"
+msgstr "Righe interessate"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__move_id
+msgid "Deferral entry"
+msgstr "Scrittura di risconto"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__preview
+msgid "Detail"
+msgstr "Dettaglio"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__total_deferred
+msgid "Total deferred"
+msgstr "Totale differito"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__warning
+msgid "Before you post"
+msgstr "Prima di registrare"
+
+#. module: expodo_account_deferred
+#: model:ir.ui.menu,name:expodo_account_deferred.menu_expodo_deferral
+msgid "Deferred Expenses and Revenues"
+msgstr "Ratei e risconti"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Detail"
+msgstr "Dettaglio"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Preview"
+msgstr "Anteprima"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Create the entry"
+msgstr "Creare la scrittura"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Deferred expenses and revenues"
+msgstr "Ratei e risconti"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/account_move_line.py:0
+msgid "The covered period of “%(line)s” ends before it starts."
+msgstr "Il periodo di «%(line)s» termina prima di iniziare."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "Deferred %(start)s – %(end)s"
+msgstr "Risconto dal %(start)s al %(end)s"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "draft entry"
+msgstr "scrittura in bozza"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/wizard/deferral_wizard.py:0
+msgid "Nothing to defer at this date."
+msgstr "Nulla da riscontare a questa data."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "%(count)s lines carry a start date but no end date. They cannot be spread and stay entirely in this year's result."
+msgstr "%(count)s righe hanno una data di inizio ma non di fine. Non possono essere ripartite e restano interamente nel risultato dell'esercizio."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date (%(names)s). Posting a second one would defer the same amounts twice."
+msgstr "A questa data esiste già una scrittura di risconto (%(names)s). Confermarne una seconda ripartirebbe due volte gli stessi importi."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date. Posting a second one would defer the same amounts twice. Reverse the existing entry first."
+msgstr "A questa data esiste già una scrittura di risconto. Confermarne una seconda ripartirebbe due volte gli stessi importi. Storna prima la scrittura esistente."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No balance sheet account is available to carry the deferred portion of %(line)s. Create an account typed “%(type)s”, or 486/487 in the French chart."
+msgstr "Nessun conto patrimoniale può accogliere la quota riscontata di %(line)s. Crea un conto di tipo «%(type)s», oppure 486/487 nel piano francese."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No line covers a period after %(date)s: there is nothing to defer."
+msgstr "Nessuna riga copre un periodo successivo al %(date)s: non c'è nulla da riscontare."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "The deferral entry is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "La scrittura di risconto è sbilanciata di %(gap).2f. Non è stato confermato nulla."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__journal_id
+msgid "Journal"
+msgstr "Registro"

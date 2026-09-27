@@ -1,0 +1,246 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_followup
+#: model:ir.actions.act_window,name:expodo_account_followup.action_expodo_followup
+msgid "Customer Follow-up"
+msgstr "Aanmaningen"
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup
+msgid "Nobody to chase"
+msgstr "Niemand aan te manen"
+
+#. module: expodo_account_followup
+#: model:ir.actions.act_window,name:expodo_account_followup.action_expodo_followup_level
+msgid "Follow-up Levels"
+msgstr "Aanmaningsniveaus"
+
+#. module: expodo_account_followup
+#: model:ir.model,name:expodo_account_followup.model_expodo_followup_level
+msgid "Follow-up level"
+msgstr "Aanmaningsniveau"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__delay_days
+msgid "Days overdue"
+msgstr "Dagen te laat"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__print_letter
+msgid "Print a letter"
+msgstr "Een brief afdrukken"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,help:expodo_account_followup.field_expodo_followup_level__print_letter
+msgid ""
+"For levels where a trace on paper matters — a formal notice usually does."
+msgstr ""
+"Voor niveaus waar een papieren spoor telt — zoals de ingebrekestelling."
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__send_email
+msgid "Send an email"
+msgstr "Een e-mail sturen"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__subject
+msgid "Email subject"
+msgstr "Onderwerp van de e-mail"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_amount_due
+msgid "Overdue"
+msgstr "Vervallen"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_days_overdue
+msgid "Days overdue"
+msgstr "Dagen te laat"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_last_date
+msgid "Last chased on"
+msgstr "Laatst aangemaand op"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_level_id
+msgid "Level reached"
+msgstr "Bereikt niveau"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_note
+msgid "Follow-up note"
+msgstr "Aanmaningsnotitie"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_oldest_due
+msgid "Oldest due date"
+msgstr "Oudste vervaldatum"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_amount_due
+msgid "Overdue"
+msgstr "Vervallen"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_days_overdue
+msgid "Days overdue"
+msgstr "Dagen te laat"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_last_date
+msgid "Last chased on"
+msgstr "Laatst aangemaand op"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_level_id
+msgid "Level reached"
+msgstr "Bereikt niveau"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_note
+msgid "Follow-up note"
+msgstr "Aanmaningsnotitie"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_oldest_due
+msgid "Oldest due date"
+msgstr "Oudste vervaldatum"
+
+#. module: expodo_account_followup
+#: model:ir.ui.menu,name:expodo_account_followup.menu_expodo_followup
+msgid "Customer Follow-up"
+msgstr "Aanmaningen"
+
+#. module: expodo_account_followup
+#: model:ir.ui.menu,name:expodo_account_followup.menu_expodo_followup_level
+msgid "Follow-up Levels"
+msgstr "Aanmaningsniveaus"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "e.g. First reminder"
+msgstr "bv. Eerste herinnering"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "Wording of the reminder…"
+msgstr "Tekst van de aanmaning…"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "Follow-up level"
+msgstr "Aanmaningsniveau"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_list
+msgid "Follow-up levels"
+msgstr "Aanmaningsniveaus"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Overdue"
+msgstr "Vervallen"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Open the overdue items"
+msgstr "De vervallen posten openen"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Send the reminders"
+msgstr "De aanmaningen versturen"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Customers to chase"
+msgstr "Aan te manen klanten"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Overdue"
+msgstr "Vervallen"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Never chased"
+msgstr "Nooit aangemaand"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Customers to chase"
+msgstr "Aan te manen klanten"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/followup_level.py:0
+msgid "Outstanding balance"
+msgstr "Openstaand saldo"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Overdue items — %(partner)s"
+msgstr "Vervallen posten — %(partner)s"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Reminder: %(amount)s is outstanding."
+msgstr "Herinnering: %(amount)s staat nog open."
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Outstanding balance"
+msgstr "Openstaand saldo"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models:0
+msgid "%(sent)s reminders sent out of %(total)s selected. Customers with no level reached, no email address, or a level that does not send email were skipped."
+msgstr "%(sent)s herinneringen verzonden van %(total)s geselecteerde. Klanten zonder bereikt niveau, zonder e-mailadres of met een niveau dat geen e-mail verstuurt zijn overgeslagen."
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models:0
+msgid "“%(other)s” already triggers at %(days)s days. Two levels at the same delay would make the sequence arbitrary."
+msgstr "'%(other)s' start al na %(days)s dagen. Twee niveaus met dezelfde termijn zouden de volgorde willekeurig maken."
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup
+msgid "No customer has an overdue unpaid item. Levels are set under Configuration; they trigger on how late the oldest unpaid instalment is."
+msgstr "Geen enkele klant heeft een vervallen openstaande post. De niveaus stelt u in onder Configuratie; ze treden in werking naargelang de achterstand van de oudste openstaande post."
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup_level
+msgid "Set the first level"
+msgstr "Stel het eerste niveau in"
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup_level
+msgid "A level is a delay and a message. It is reached according to how late the oldest unpaid item is, so two levels sharing the same delay would compete for the same customer."
+msgstr "Een niveau is een termijn en een bericht. Het wordt bereikt naargelang de achterstand van de oudste openstaande post; twee niveaus met dezelfde termijn zouden om dezelfde klant strijden."
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__active
+msgid "Active"
+msgstr "Actief"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__body
+msgid "Message"
+msgstr "Bericht"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__name
+msgid "Name"
+msgstr "Naam"

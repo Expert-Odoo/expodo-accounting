@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_expodo_tax_unit_list" model="ir.ui.view">
+            <field name="name">expodo.tax.unit.list</field>
+            <field name="model">expodo.tax.unit</field>
+            <field name="arch" type="xml">
+                <list string="Tax units">
+                    <field name="name"/>
+                    <field name="country_id"/>
+                    <field name="vat"/>
+                    <field name="main_company_id"/>
+                    <field name="company_ids" widget="many2many_tags"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_tax_unit_form" model="ir.ui.view">
+            <field name="name">expodo.tax.unit.form</field>
+            <field name="model">expodo.tax.unit</field>
+            <field name="arch" type="xml">
+                <form string="Tax unit">
+                    <header>
+                        <button name="action_open_reports" type="object"
+                                string="Reports for this scope" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="e.g. VAT group Dupont"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="country_id"/>
+                                <field name="vat"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="main_company_id"/>
+                                <field name="company_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert">
+                            Eligibility for the scheme, and whether intra-group
+                            operations fall outside VAT, are matters of national
+                            law. This module names the scope; it does not decide
+                            who may join it, nor eliminate internal operations.
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_tax_unit" model="ir.actions.act_window">
+            <field name="name">Tax Units</field>
+            <field name="res_model">expodo.tax.unit</field>
+            <field name="view_mode">list,form</field>
+                    <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">File for several companies at once</p>
+                <p>A tax unit gathers the companies that file under a single tax number. The return is then read across all of them, with one of them carrying the filing.</p>
+            </field>
+        </record>
+
+        <menuitem id="menu_expodo_tax_unit"
+                  name="Tax Units"
+                  parent="account.account_account_menu"
+                  action="action_expodo_tax_unit"
+                  sequence="86"/>
+    </data>
+</odoo>

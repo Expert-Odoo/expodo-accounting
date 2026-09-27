@@ -1,0 +1,209 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_reconcile
+#: model:ir.actions.act_window,name:expodo_account_reconcile.action_expodo_auto_reconcile
+msgid "Automatic Reconciliation"
+msgstr "Riconciliazione automatica"
+
+#. module: expodo_account_reconcile
+#: model:ir.actions.act_window,name:expodo_account_reconcile.action_expodo_reconcile_wizard
+msgid "Reconcile"
+msgstr "Riconciliare"
+
+#. module: expodo_account_reconcile
+#: model:ir.model,name:expodo_account_reconcile.model_expodo_auto_reconcile_wizard
+msgid "Reconcile journal items automatically"
+msgstr "Riconciliare automaticamente le righe"
+
+#. module: expodo_account_reconcile
+#: model:ir.model,name:expodo_account_reconcile.model_expodo_reconcile_wizard
+msgid "Reconcile selected journal items"
+msgstr "Riconciliare le righe selezionate"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,help:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__account_ids
+msgid "Leave empty to cover every reconcilable account."
+msgstr "Lasciare vuoto per includere tutti i conti riconciliabili."
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__date_to
+msgid "Up to"
+msgstr "Fino al"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__group_count
+msgid "Groups matched"
+msgstr "Gruppi abbinati"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,help:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__partner_ids
+msgid "Leave empty to cover every partner."
+msgstr "Lasciare vuoto per includere tutti i partner."
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__reconciled_count
+msgid "Items reconciled"
+msgstr "Righe riconciliate"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__difference
+msgid "Difference"
+msgstr "Differenza"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__line_ids
+msgid "Journal items"
+msgstr "Righe di registrazione"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__total_credit
+msgid "Total credit"
+msgstr "Totale avere"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__total_debit
+msgid "Total debit"
+msgstr "Totale dare"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__write_off
+msgid "Write off the difference"
+msgstr "Stornare la differenza"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__write_off_account_id
+msgid "Write-off account"
+msgstr "Conto di storno"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__write_off_journal_id
+msgid "Write-off journal"
+msgstr "Registro di storno"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__write_off_label
+msgid "Write-off label"
+msgstr "Descrizione dello storno"
+
+#. module: expodo_account_reconcile
+#: model:ir.ui.menu,name:expodo_account_reconcile.menu_expodo_auto_reconcile
+msgid "Automatic Reconciliation"
+msgstr "Riconciliazione automatica"
+
+#. module: expodo_account_reconcile
+#: model_terms:ir.ui.view,arch_db:expodo_account_reconcile.view_expodo_auto_reconcile_form
+msgid "Reconcile"
+msgstr "Riconciliare"
+
+#. module: expodo_account_reconcile
+#: model_terms:ir.ui.view,arch_db:expodo_account_reconcile.view_expodo_auto_reconcile_form
+msgid "Automatic reconciliation"
+msgstr "Riconciliazione automatica"
+
+#. module: expodo_account_reconcile
+#: model_terms:ir.ui.view,arch_db:expodo_account_reconcile.view_expodo_reconcile_wizard_form
+msgid "Reconcile"
+msgstr "Riconciliare"
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/wizard/reconcile_wizard.py:0
+msgid "Reconciliation difference"
+msgstr "Differenza di riconciliazione"
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/wizard/reconcile_wizard.py:0
+msgid "Every selected item is already fully reconciled."
+msgstr "Tutte le righe selezionate sono già riconciliate."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/wizard/reconcile_wizard.py:0
+msgid "Writing off the difference needs both an account and a journal."
+msgstr "Lo storno richiede sia un conto sia un registro."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/wizard/reconcile_wizard.py:0
+msgid "There is no difference to write off."
+msgstr "Non c'è alcuna differenza da stornare."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/wizard/reconcile_wizard.py:0
+msgid "Reconciliation difference"
+msgstr "Differenza di riconciliazione"
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "%(lines)s items reconciled across %(groups)s partner balances. Items left unreconciled either do not net to zero or have no counterpart on the same account and partner."
+msgstr "%(lines)s movimenti riconciliati su %(groups)s saldi di partner. I movimenti non riconciliati non si compensano a zero oppure non hanno contropartita sullo stesso conto e partner."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "Account %(code)s is not marked as reconcilable. Tick “Allow Reconciliation” on the account if items on it are meant to be matched."
+msgstr "Il conto %(code)s non è contrassegnato come riconciliabile. Spunta «Consenti riconciliazione» sul conto se i suoi movimenti devono essere abbinati."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "Only posted journal items can be reconciled. Post the draft entries first."
+msgstr "Solo i movimenti confermati possono essere riconciliati. Conferma prima le registrazioni in bozza."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "Select at least two journal items: reconciling means matching them against each other."
+msgstr "Seleziona almeno due movimenti: riconciliare significa abbinarli tra loro."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "The selected items belong to several companies. Reconcile them company by company."
+msgstr "I movimenti selezionati appartengono a più società. Riconciliali società per società."
+
+#. module: expodo_account_reconcile
+#. odoo-python
+#: code:addons/expodo_account_reconcile/models:0
+msgid "The selected items sit on several accounts (%(accounts)s). Reconciliation matches items within one account."
+msgstr "I movimenti selezionati sono su più conti (%(accounts)s). La riconciliazione abbina movimenti all'interno di uno stesso conto."
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__account_id
+msgid "Account"
+msgstr "Conto"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__account_ids
+msgid "Accounts"
+msgstr "Conti"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_reconcile_wizard__partner_id
+msgid "Partner"
+msgstr "Partner"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__partner_ids
+msgid "Partners"
+msgstr "Partner"
+
+#. module: expodo_account_reconcile
+#: model:ir.model.fields,field_description:expodo_account_reconcile.field_expodo_auto_reconcile_wizard__message
+msgid "Result"
+msgstr "Risultato"

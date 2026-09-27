@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Balances âgées et livres auxiliaires de trésorerie.
+
+            Les tranches d'ancienneté utilisent la sous-formule `aged(min, max)`,
+            extension Expodo : Community ne fournit aucun mécanisme de tranche,
+            et un domaine XML statique ne peut pas porter des bornes calculées
+            depuis la date de clôture demandée. Les six tranches sont évaluées
+            dans la même requête, par un CASE sur la date d'échéance.
+        -->
+
+        <record id="report_aged_receivable_fr" model="account.report">
+            <field name="name">Aged Receivable</field>
+                    <field name="name@fr">Balance âgée clients</field>
+            <field name="name@es">Antigüedad de saldos de clientes</field>
+            <field name="name@de">Offene Posten Debitoren</field>
+            <field name="name@nl">Ouderdomsanalyse debiteuren</field>
+            <field name="name@it">Scadenzario clienti</field>
+            <field name="name@pt_BR">Contas a receber por idade</field>
+            <!--
+                L'anciennete se compte depuis aujourd'hui, jamais depuis la
+                fin d'une periode close. Sans cette declaration le rapport
+                retombait sur l'exercice en cours : ouvert en septembre, il
+                classait les creances au 31 decembre, si bien que tout
+                paraissait non echu. La correction vivait dans la base de
+                developpement et non dans le module, et le test passait au
+                vert sur cette valeur posee a la main.
+            -->
+            <field name="default_opening_date_filter">today</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                L'ancienneté se compte depuis la date de clôture : une facture
+                de l'exercice précédent encore due doit apparaître dans la
+                tranche la plus ancienne. Les expressions lisent donc depuis
+                l'origine et la date d'ouverture n'entre dans aucun calcul.
+                Affichée, elle laissait croire qu'on pouvait borner la balance
+                âgée à une période.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="search_bar" eval="True"/>
+            <field name="column_ids">
+                <record id="col_agedr_0" model="account.report.column">
+                    <field name="name">Not Due</field>
+                    <field name="name@fr">Non échu</field>
+                    <field name="name@es">No vencido</field>
+                    <field name="name@de">Nicht fällig</field>
+                    <field name="name@nl">Niet vervallen</field>
+                    <field name="name@it">Non scaduto</field>
+                    <field name="name@pt_BR">A vencer</field>
+                    <field name="expression_label">t0</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_agedr_1" model="account.report.column">
+                    <field name="name">1-30</field>
+                    <field name="name@fr">1 à 30 j</field>
+                    <field name="name@es">1-30 d</field>
+                    <field name="name@de">1-30 T</field>
+                    <field name="name@nl">1-30 d</field>
+                    <field name="name@it">1-30 gg</field>
+                    <field name="name@pt_BR">1-30 d</field>
+                    <field name="expression_label">t1</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_agedr_2" model="account.report.column">
+                    <field name="name">31-60</field>
+                    <field name="name@fr">31 à 60 j</field>
+                    <field name="name@es">31-60 d</field>
+                    <field name="name@de">31-60 T</field>
+                    <field name="name@nl">31-60 d</field>
+                    <field name="name@it">31-60 gg</field>
+                    <field name="name@pt_BR">31-60 d</field>
+                    <field name="expression_label">t2</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+                <record id="col_agedr_3" model="account.report.column">
+                    <field name="name">61-90</field>
+                    <field name="name@fr">61 à 90 j</field>
+                    <field name="name@es">61-90 d</field>
+                    <field name="name@de">61-90 T</field>
+                    <field name="name@nl">61-90 d</field>
+                    <field name="name@it">61-90 gg</field>
+                    <field name="name@pt_BR">61-90 d</field>
+                    <field name="expression_label">t3</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="40"/>
+                </record>
+                <record id="col_agedr_4" model="account.report.column">
+                    <field name="name">91-120</field>
+                    <field name="name@fr">91 à 120 j</field>
+                    <field name="name@es">91-120 d</field>
+                    <field name="name@de">91-120 T</field>
+                    <field name="name@nl">91-120 d</field>
+                    <field name="name@it">91-120 gg</field>
+                    <field name="name@pt_BR">91-120 d</field>
+                    <field name="expression_label">t4</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="50"/>
+                </record>
+                <record id="col_agedr_5" model="account.report.column">
+                    <field name="name">Older</field>
+                    <field name="name@fr">Plus de 120 j</field>
+                    <field name="name@es">Más de 120 d</field>
+                    <field name="name@de">Älter als 120 T</field>
+                    <field name="name@nl">Ouder dan 120 d</field>
+                    <field name="name@it">Oltre 120 gg</field>
+                    <field name="name@pt_BR">Mais de 120 d</field>
+                    <field name="expression_label">t5</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="60"/>
+                </record>
+                <record id="col_agedr_tot" model="account.report.column">
+                    <field name="name">Total</field>
+                    <field name="name@fr">Total</field>
+                    <field name="name@es">Total</field>
+                    <field name="name@de">Gesamt</field>
+                    <field name="name@nl">Totaal</field>
+                    <field name="name@it">Totale</field>
+                    <field name="name@pt_BR">Total</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="70"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_agedr_fr" model="account.report.line">
+                    <field name="name">Customers</field>
+                    <field name="name@fr">Clients</field>
+                    <field name="name@es">Clientes</field>
+                    <field name="name@de">Kunden</field>
+                    <field name="name@nl">Klanten</field>
+                    <field name="name@it">Clienti</field>
+                    <field name="name@pt_BR">Clientes</field>
+                    <field name="code">AGEDR</field>
+                    <field name="groupby">partner_id,id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_agedr_t0" model="account.report.expression">
+                            <field name="label">t0</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(-99999,0)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_t1" model="account.report.expression">
+                            <field name="label">t1</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(1,30)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_t2" model="account.report.expression">
+                            <field name="label">t2</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(31,60)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_t3" model="account.report.expression">
+                            <field name="label">t3</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(61,90)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_t4" model="account.report.expression">
+                            <field name="label">t4</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(91,120)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_t5" model="account.report.expression">
+                            <field name="label">t5</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(121,*)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedr_tot" model="account.report.expression">
+                            <field name="label">balance</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">sum</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <record id="report_aged_payable_fr" model="account.report">
+            <field name="name">Aged Payable</field>
+                    <field name="name@fr">Balance âgée fournisseurs</field>
+            <field name="name@es">Antigüedad de saldos de proveedores</field>
+            <field name="name@de">Offene Posten Kreditoren</field>
+            <field name="name@nl">Ouderdomsanalyse crediteuren</field>
+            <field name="name@it">Scadenzario fornitori</field>
+            <field name="name@pt_BR">Contas a pagar por idade</field>
+            <!--
+                L'anciennete se compte depuis aujourd'hui, jamais depuis la
+                fin d'une periode close. Sans cette declaration le rapport
+                retombait sur l'exercice en cours : ouvert en septembre, il
+                classait les creances au 31 decembre, si bien que tout
+                paraissait non echu. La correction vivait dans la base de
+                developpement et non dans le module, et le test passait au
+                vert sur cette valeur posee a la main.
+            -->
+            <field name="default_opening_date_filter">today</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                L'ancienneté se compte depuis la date de clôture : une facture
+                de l'exercice précédent encore due doit apparaître dans la
+                tranche la plus ancienne. Les expressions lisent donc depuis
+                l'origine et la date d'ouverture n'entre dans aucun calcul.
+                Affichée, elle laissait croire qu'on pouvait borner la balance
+                âgée à une période.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="search_bar" eval="True"/>
+            <field name="column_ids">
+                <record id="col_agedp_0" model="account.report.column">
+                    <field name="name">Not Due</field>
+                    <field name="name@fr">Non échu</field>
+                    <field name="name@es">No vencido</field>
+                    <field name="name@de">Nicht fällig</field>
+                    <field name="name@nl">Niet vervallen</field>
+                    <field name="name@it">Non scaduto</field>
+                    <field name="name@pt_BR">A vencer</field><field name="expression_label">t0</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="10"/>
+                </record>
+                <record id="col_agedp_1" model="account.report.column">
+                    <field name="name">1-30</field>
+                    <field name="name@fr">1 à 30 j</field>
+                    <field name="name@es">1-30 d</field>
+                    <field name="name@de">1-30 T</field>
+                    <field name="name@nl">1-30 d</field>
+                    <field name="name@it">1-30 gg</field>
+                    <field name="name@pt_BR">1-30 d</field><field name="expression_label">t1</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="20"/>
+                </record>
+                <record id="col_agedp_2" model="account.report.column">
+                    <field name="name">31-60</field>
+                    <field name="name@fr">31 à 60 j</field>
+                    <field name="name@es">31-60 d</field>
+                    <field name="name@de">31-60 T</field>
+                    <field name="name@nl">31-60 d</field>
+                    <field name="name@it">31-60 gg</field>
+                    <field name="name@pt_BR">31-60 d</field><field name="expression_label">t2</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="30"/>
+                </record>
+                <record id="col_agedp_3" model="account.report.column">
+                    <field name="name">61-90</field>
+                    <field name="name@fr">61 à 90 j</field>
+                    <field name="name@es">61-90 d</field>
+                    <field name="name@de">61-90 T</field>
+                    <field name="name@nl">61-90 d</field>
+                    <field name="name@it">61-90 gg</field>
+                    <field name="name@pt_BR">61-90 d</field><field name="expression_label">t3</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="40"/>
+                </record>
+                <record id="col_agedp_4" model="account.report.column">
+                    <field name="name">91-120</field>
+                    <field name="name@fr">91 à 120 j</field>
+                    <field name="name@es">91-120 d</field>
+                    <field name="name@de">91-120 T</field>
+                    <field name="name@nl">91-120 d</field>
+                    <field name="name@it">91-120 gg</field>
+                    <field name="name@pt_BR">91-120 d</field><field name="expression_label">t4</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="50"/>
+                </record>
+                <record id="col_agedp_5" model="account.report.column">
+                    <field name="name">Older</field>
+                    <field name="name@fr">Plus de 120 j</field>
+                    <field name="name@es">Más de 120 d</field>
+                    <field name="name@de">Älter als 120 T</field>
+                    <field name="name@nl">Ouder dan 120 d</field>
+                    <field name="name@it">Oltre 120 gg</field>
+                    <field name="name@pt_BR">Mais de 120 d</field><field name="expression_label">t5</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="60"/>
+                </record>
+                <record id="col_agedp_tot" model="account.report.column">
+                    <field name="name">Total</field>
+                    <field name="name@fr">Total</field>
+                    <field name="name@es">Total</field>
+                    <field name="name@de">Gesamt</field>
+                    <field name="name@nl">Totaal</field>
+                    <field name="name@it">Totale</field>
+                    <field name="name@pt_BR">Total</field><field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="70"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_agedp_fr" model="account.report.line">
+                    <field name="name">Suppliers</field>
+                    <field name="name@fr">Fournisseurs</field>
+                    <field name="name@es">Proveedores</field>
+                    <field name="name@de">Lieferanten</field>
+                    <field name="name@nl">Leveranciers</field>
+                    <field name="name@it">Fornitori</field>
+                    <field name="name@pt_BR">Fornecedores</field>
+                    <field name="code">AGEDP</field>
+                    <field name="groupby">partner_id,id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_agedp_t0" model="account.report.expression">
+                            <field name="label">t0</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(-99999,0)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_t1" model="account.report.expression">
+                            <field name="label">t1</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(1,30)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_t2" model="account.report.expression">
+                            <field name="label">t2</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(31,60)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_t3" model="account.report.expression">
+                            <field name="label">t3</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(61,90)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_t4" model="account.report.expression">
+                            <field name="label">t4</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(91,120)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_t5" model="account.report.expression">
+                            <field name="label">t5</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(121,*)</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="expr_agedp_tot" model="account.report.expression">
+                            <field name="label">balance</field><field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">sum</field>
+                        
+                            <!--
+                                Lecture depuis l'origine.
+
+                                Une créance ouverte l'an dernier reste due
+                                aujourd'hui. Restreindre à la période affichée
+                                revenait à ne montrer que les pièces émises
+                                pendant cette période — et le filtre par défaut
+                                étant le mois précédent, l'état paraissait vide
+                                alors que des impayés anciens dormaient dans la
+                                base. C'est exactement ce que la balance âgée
+                                existe pour faire remonter.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <!-- Livres de caisse, de banque et journal : même structure, filtrée
+             sur le type de journal. -->
+        <record id="report_livre_banque_fr" model="account.report">
+            <field name="name">Bank Book</field>
+                    <field name="name@fr">Livre de banque</field>
+            <field name="name@es">Libro de bancos</field>
+            <field name="name@de">Bankbuch</field>
+            <field name="name@nl">Bankboek</field>
+            <field name="name@it">Libro banca</field>
+            <field name="name@pt_BR">Livro caixa bancário</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_lb_debit" model="account.report.column">
+                    <field name="name">In</field>
+                    <field name="name@fr">Entrées</field>
+                    <field name="name@es">Entradas</field>
+                    <field name="name@de">Eingänge</field>
+                    <field name="name@nl">Inkomend</field>
+                    <field name="name@it">Entrate</field>
+                    <field name="name@pt_BR">Entradas</field><field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="10"/>
+                </record>
+                <record id="col_lb_credit" model="account.report.column">
+                    <field name="name">Out</field>
+                    <field name="name@fr">Sorties</field>
+                    <field name="name@es">Salidas</field>
+                    <field name="name@de">Ausgänge</field>
+                    <field name="name@nl">Uitgaand</field>
+                    <field name="name@it">Uscite</field>
+                    <field name="name@pt_BR">Saídas</field><field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="20"/>
+                </record>
+                <record id="col_lb_solde" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field><field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_lb_fr" model="account.report.line">
+                    <field name="name">Bank Journals</field>
+                    <field name="name@fr">Journaux de banque</field>
+                    <field name="name@es">Diarios de banco</field>
+                    <field name="name@de">Bankjournale</field>
+                    <field name="name@nl">Bankdagboeken</field>
+                    <field name="name@it">Registri banca</field>
+                    <field name="name@pt_BR">Diários de banco</field>
+                    <field name="code">LB_BANQUE</field>
+                    <field name="groupby">journal_id,id</field>
+                    <field name="foldable" eval="True"/>
+                                        <!--
+                        Seules les lignes du compte de banque.
+
+                        Le domaine ne retenait que le journal, donc les deux
+                        côtés de chaque écriture : le règlement d'un
+                        fournisseur comptait une fois en entrée pour la
+                        contrepartie et une fois en sortie pour la banque. Les
+                        deux colonnes portaient le même total et le solde
+                        valait invariablement zéro, sur toutes les périodes.
+                    -->
+<field name="expression_ids">
+                        <record id="expr_lb_debit" model="account.report.expression">
+                            <field name="label">debit</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum_debit</field>
+                            <!--
+                                Mouvements de la période affichée.
+
+                                Ces deux colonnes portent les entrées et les
+                                sorties du mois consulté. Lues depuis
+                                l'origine, elles cumulaient tout l'historique :
+                                changer les dates ne déplaçait aucun chiffre et
+                                un livre ouvert sur janvier affichait les
+                                encaissements de toutes les années.
+                            -->
+                            <field name="date_scope">strict_range</field>
+                        </record>
+                        <record id="expr_lb_credit" model="account.report.expression">
+                            <field name="label">credit</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum_credit</field>
+                            <!--
+                                Mouvements de la période affichée.
+
+                                Ces deux colonnes portent les entrées et les
+                                sorties du mois consulté. Lues depuis
+                                l'origine, elles cumulaient tout l'historique :
+                                changer les dates ne déplaçait aucun chiffre et
+                                un livre ouvert sur janvier affichait les
+                                encaissements de toutes les années.
+                            -->
+                            <field name="date_scope">strict_range</field>
+                        </record>
+                        <record id="expr_lb_solde" model="account.report.expression">
+                            <field name="label">balance</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum</field>
+                            <!--
+                                Solde arrêté à la date de clôture.
+
+                                Contrairement aux deux colonnes de mouvements,
+                                le solde cumule depuis l'origine : un livre de
+                                banque se lit contre un relevé, qui porte lui
+                                aussi le solde du compte et non celui du mois.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+        <record id="report_livre_caisse_fr" model="account.report">
+            <field name="name">Cash Book</field>
+                    <field name="name@fr">Livre de caisse</field>
+            <field name="name@es">Libro de caja</field>
+            <field name="name@de">Kassenbuch</field>
+            <field name="name@nl">Kasboek</field>
+            <field name="name@it">Libro cassa</field>
+            <field name="name@pt_BR">Livro caixa</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_lc_debit" model="account.report.column">
+                    <field name="name">In</field>
+                    <field name="name@fr">Entrées</field>
+                    <field name="name@es">Entradas</field>
+                    <field name="name@de">Eingänge</field>
+                    <field name="name@nl">Inkomend</field>
+                    <field name="name@it">Entrate</field>
+                    <field name="name@pt_BR">Entradas</field><field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="10"/>
+                </record>
+                <record id="col_lc_credit" model="account.report.column">
+                    <field name="name">Out</field>
+                    <field name="name@fr">Sorties</field>
+                    <field name="name@es">Salidas</field>
+                    <field name="name@de">Ausgänge</field>
+                    <field name="name@nl">Uitgaand</field>
+                    <field name="name@it">Uscite</field>
+                    <field name="name@pt_BR">Saídas</field><field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="20"/>
+                </record>
+                <record id="col_lc_solde" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field><field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field><field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_lc_fr" model="account.report.line">
+                    <field name="name">Cash Journals</field>
+                    <field name="name@fr">Journaux de caisse</field>
+                    <field name="name@es">Diarios de caja</field>
+                    <field name="name@de">Kassenjournale</field>
+                    <field name="name@nl">Kasdagboeken</field>
+                    <field name="name@it">Registri cassa</field>
+                    <field name="name@pt_BR">Diários de caixa</field>
+                    <field name="code">LC_CAISSE</field>
+                    <field name="groupby">journal_id,id</field>
+                    <field name="foldable" eval="True"/>
+                                        <!--
+                        Seules les lignes du compte de caisse.
+
+                        Le domaine ne retenait que le journal, donc les deux
+                        côtés de chaque écriture : le règlement d'un
+                        fournisseur comptait une fois en entrée pour la
+                        contrepartie et une fois en sortie pour la banque. Les
+                        deux colonnes portaient le même total et le solde
+                        valait invariablement zéro, sur toutes les périodes.
+                    -->
+<field name="expression_ids">
+                        <record id="expr_lc_debit" model="account.report.expression">
+                            <field name="label">debit</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum_debit</field>
+                            <!--
+                                Mouvements de la période affichée.
+
+                                Ces deux colonnes portent les entrées et les
+                                sorties du mois consulté. Lues depuis
+                                l'origine, elles cumulaient tout l'historique :
+                                changer les dates ne déplaçait aucun chiffre et
+                                un livre ouvert sur janvier affichait les
+                                encaissements de toutes les années.
+                            -->
+                            <field name="date_scope">strict_range</field>
+                        </record>
+                        <record id="expr_lc_credit" model="account.report.expression">
+                            <field name="label">credit</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum_credit</field>
+                            <!--
+                                Mouvements de la période affichée.
+
+                                Ces deux colonnes portent les entrées et les
+                                sorties du mois consulté. Lues depuis
+                                l'origine, elles cumulaient tout l'historique :
+                                changer les dates ne déplaçait aucun chiffre et
+                                un livre ouvert sur janvier affichait les
+                                encaissements de toutes les années.
+                            -->
+                            <field name="date_scope">strict_range</field>
+                        </record>
+                        <record id="expr_lc_solde" model="account.report.expression">
+                            <field name="label">balance</field><field name="engine">domain</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum</field>
+                            <!--
+                                Solde arrêté à la date de clôture.
+
+                                Contrairement aux deux colonnes de mouvements,
+                                le solde cumule depuis l'origine : un livre de
+                                banque se lit contre un relevé, qui porte lui
+                                aussi le solde du compte et non celui du mois.
+                            -->
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

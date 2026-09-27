@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_revaluation_wizard_form" model="ir.ui.view">
+            <field name="name">expodo.revaluation.wizard.form</field>
+            <field name="model">expodo.revaluation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Currency revaluation">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="date_to"/>
+                                <field name="journal_id"/>
+                                <field name="reverse_next_day"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group invisible="not preview">
+                                <field name="total_gain"/>
+                                <field name="total_loss"/>
+                                <field name="move_id" readonly="1" invisible="not move_id"/>
+                                <field name="reversal_move_id" readonly="1"
+                                       invisible="not reversal_move_id"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-warning" role="alert" invisible="not warning">
+                            <field name="warning" nolabel="1"/>
+                        </div>
+
+                        <group invisible="not preview" string="Detail">
+                            <field name="preview" nolabel="1" readonly="1"/>
+                        </group>
+
+                        <div class="alert alert-info" role="alert" invisible="preview">
+                            Open receivables and payables held in another currency
+                            are converted at the closing rate. The difference goes
+                            to exchange difference accounts — 476 and 477 in the
+                            French chart — and is reversed the next day.
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_preview" type="object" string="Preview"
+                                class="btn-secondary" invisible="move_id"/>
+                        <button name="action_revalue" type="object" string="Revalue"
+                                class="btn-primary" invisible="move_id"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_revaluation_wizard" model="ir.actions.act_window">
+            <field name="name">Currency Revaluation</field>
+            <field name="res_model">expodo.revaluation.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_expodo_revaluation"
+                  name="Currency Revaluation"
+                  parent="account.menu_finance_entries"
+                  action="action_expodo_revaluation_wizard"
+                  sequence="96"
+                  groups="account.group_account_manager"/>
+
+    </data>
+</odoo>

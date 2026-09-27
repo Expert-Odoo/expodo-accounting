@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Relevé de compte client.
+
+            À ne pas confondre avec le grand livre auxiliaire, qui lui
+            ressemble et ne sert pas au même usage.
+
+            Le grand livre auxiliaire est un **document interne** : il montre
+            tous les mouvements d'un tiers, lettrés compris, pour comprendre
+            l'historique d'un compte.
+
+            Le relevé est un **document que l'on envoie au client**. Il ne
+            montre que ce qui reste dû, réparti par ancienneté, avec un total.
+            Sa fonction est de faire payer, pas d'expliquer.
+
+            Cette différence d'usage commande deux choix :
+
+            **Les écritures lettrées sont exclues.** Envoyer à un client une
+            facture qu'il a déjà réglée est le meilleur moyen de faire
+            contester tout le relevé, y compris ses lignes justes.
+
+            **Les tranches d'ancienneté sont celles de la relance** — non
+            échu, puis trente, soixante, quatre-vingt-dix jours et au-delà.
+            Elles disent au client dans quel ordre payer et à partir de quand
+            la situation devient anormale.
+
+            Universel : aucune dépendance de localisation, le regroupement se
+            fait par type de compte.
+        -->
+
+        <record id="report_customer_statement" model="account.report">
+            <field name="name">Customer Statement</field>
+            <field name="name@fr">Relevé de compte client</field>
+            <field name="name@es">Extracto de cuenta de cliente</field>
+            <field name="name@de">Kontoauszug Kunde</field>
+            <field name="name@nl">Klantoverzicht</field>
+            <field name="name@it">Estratto conto cliente</field>
+            <field name="name@pt_BR">Extrato de conta do cliente</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                Le relevé montre ce que le client doit encore : ses
+                expressions lisent depuis l'origine et ignorent la date
+                d'ouverture. L'afficher laissait croire qu'on pouvait borner
+                le relevé à une période, alors que les pièces antérieures y
+                figuraient quand même.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_hide_0_lines">optional</field>
+            <field name="default_opening_date_filter">today</field>
+            <field name="column_ids">
+                <record id="report_customer_statement_col_total" model="account.report.column">
+                    <field name="name">Total due</field>
+                    <field name="name@fr">Total dû</field>
+                    <field name="name@es">Total adeudado</field>
+                    <field name="name@de">Gesamtbetrag offen</field>
+                    <field name="name@nl">Totaal openstaand</field>
+                    <field name="name@it">Totale dovuto</field>
+                    <field name="name@pt_BR">Total devido</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_customer_statement_col_current" model="account.report.column">
+                    <field name="name">Not due</field>
+                    <field name="name@fr">Non échu</field>
+                    <field name="name@es">No vencido</field>
+                    <field name="name@de">Nicht fällig</field>
+                    <field name="name@nl">Niet vervallen</field>
+                    <field name="name@it">Non scaduto</field>
+                    <field name="name@pt_BR">A vencer</field>
+                    <field name="expression_label">current</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_customer_statement_col_30" model="account.report.column">
+                    <field name="name">1 – 30 days</field>
+                    <field name="name@fr">1 à 30 jours</field>
+                    <field name="name@es">1 – 30 días</field>
+                    <field name="name@de">1 – 30 Tage</field>
+                    <field name="name@nl">1 – 30 dagen</field>
+                    <field name="name@it">1 – 30 giorni</field>
+                    <field name="name@pt_BR">1 – 30 dias</field>
+                    <field name="expression_label">age_30</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_customer_statement_col_60" model="account.report.column">
+                    <field name="name">31 – 60 days</field>
+                    <field name="name@fr">31 à 60 jours</field>
+                    <field name="name@es">31 – 60 días</field>
+                    <field name="name@de">31 – 60 Tage</field>
+                    <field name="name@nl">31 – 60 dagen</field>
+                    <field name="name@it">31 – 60 giorni</field>
+                    <field name="name@pt_BR">31 – 60 dias</field>
+                    <field name="expression_label">age_60</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_customer_statement_col_90" model="account.report.column">
+                    <field name="name">Over 60 days</field>
+                    <field name="name@fr">Plus de 60 jours</field>
+                    <field name="name@es">Más de 60 días</field>
+                    <field name="name@de">Über 60 Tage</field>
+                    <field name="name@nl">Meer dan 60 dagen</field>
+                    <field name="name@it">Oltre 60 giorni</field>
+                    <field name="name@pt_BR">Mais de 60 dias</field>
+                    <field name="expression_label">age_90</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="customer_statement_partners" model="account.report.line">
+                    <field name="name">Customers</field>
+                    <field name="name@fr">Clients</field>
+                    <field name="name@es">Clientes</field>
+                    <field name="name@de">Kunden</field>
+                    <field name="name@nl">Klanten</field>
+                    <field name="name@it">Clienti</field>
+                    <field name="name@pt_BR">Clientes</field>
+                    <field name="code">STATEMENT_CUSTOMERS</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Deux niveaux : le client, puis ses pièces. Le premier
+                        donne le montant à réclamer, le second le détail que le
+                        client demandera dès qu'il contestera.
+                    -->
+                    <field name="groupby">partner_id,id</field>
+                    <field name="expression_ids">
+                        <record id="customer_statement_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <!--
+                                Créances non lettrées uniquement.
+
+                                `full_reconcile_id = False` écarte ce qui est
+                                soldé. Envoyer au client une facture qu'il a
+                                déjà réglée fait contester tout le relevé, y
+                                compris ses lignes justes.
+                            -->
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="customer_statement_current" model="account.report.expression">
+                            <field name="label">current</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <!-- Échéance dans le futur : rien n'est encore dû. -->
+                            <field name="subformula">aged(-99999, 0)</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="customer_statement_age_30" model="account.report.expression">
+                            <field name="label">age_30</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(1, 30)</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="customer_statement_age_60" model="account.report.expression">
+                            <field name="label">age_60</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="subformula">aged(31, 60)</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                        <record id="customer_statement_age_90" model="account.report.expression">
+                            <field name="label">age_90</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <!-- Dernière tranche ouverte : au-delà de soixante
+                                 jours, la distinction entre quatre-vingt-dix et
+                                 cent-vingt n'intéresse plus personne. -->
+                            <field name="subformula">aged(61, 99999)</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

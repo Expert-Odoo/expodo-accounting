@@ -1,0 +1,175 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_deferred
+#: model:ir.actions.act_window,name:expodo_account_deferred.action_expodo_deferral_wizard
+msgid "Deferred Expenses and Revenues"
+msgstr "Gastos e ingresos anticipados"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_engine
+msgid "Deferred expense and revenue engine"
+msgstr "Motor de gastos e ingresos anticipados"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_wizard
+msgid "Post deferred expenses and revenues"
+msgstr "Contabilizar los gastos e ingresos anticipados"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_amount
+msgid "Deferred portion"
+msgstr "Parte diferida"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Covers to"
+msgstr "Cubre hasta"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Last day of the covered period, included."
+msgstr "Último día del período cubierto, incluido."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_start_date
+msgid "Covers from"
+msgstr "Cubre desde"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid "Closing date"
+msgstr "Fecha de cierre"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid ""
+"Everything covering a period after this date is carried to the balance "
+"sheet."
+msgstr "Todo lo que cubre un período posterior pasa al balance."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__line_count
+msgid "Lines concerned"
+msgstr "Líneas afectadas"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__move_id
+msgid "Deferral entry"
+msgstr "Asiento de periodificación"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__preview
+msgid "Detail"
+msgstr "Detalle"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__total_deferred
+msgid "Total deferred"
+msgstr "Total diferido"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__warning
+msgid "Before you post"
+msgstr "Antes de contabilizar"
+
+#. module: expodo_account_deferred
+#: model:ir.ui.menu,name:expodo_account_deferred.menu_expodo_deferral
+msgid "Deferred Expenses and Revenues"
+msgstr "Gastos e ingresos anticipados"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Detail"
+msgstr "Detalle"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Preview"
+msgstr "Vista previa"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Create the entry"
+msgstr "Crear el asiento"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Deferred expenses and revenues"
+msgstr "Gastos e ingresos anticipados"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/account_move_line.py:0
+msgid "The covered period of “%(line)s” ends before it starts."
+msgstr "El período cubierto de «%(line)s» termina antes de empezar."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "Deferred %(start)s – %(end)s"
+msgstr "Periodificado del %(start)s al %(end)s"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "draft entry"
+msgstr "asiento en borrador"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/wizard/deferral_wizard.py:0
+msgid "Nothing to defer at this date."
+msgstr "Nada que periodificar en esta fecha."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "%(count)s lines carry a start date but no end date. They cannot be spread and stay entirely in this year's result."
+msgstr "%(count)s líneas tienen fecha de inicio pero no de fin. No pueden periodificarse y permanecen íntegramente en el resultado del ejercicio."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date (%(names)s). Posting a second one would defer the same amounts twice."
+msgstr "Ya existe un asiento de periodificación en esta fecha (%(names)s). Contabilizar un segundo periodificaría dos veces los mismos importes."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date. Posting a second one would defer the same amounts twice. Reverse the existing entry first."
+msgstr "Ya existe un asiento de periodificación en esta fecha. Contabilizar un segundo periodificaría dos veces los mismos importes. Revierta antes el asiento existente."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No balance sheet account is available to carry the deferred portion of %(line)s. Create an account typed “%(type)s”, or 486/487 in the French chart."
+msgstr "No hay ninguna cuenta de balance para llevar la parte periodificada de %(line)s. Cree una cuenta tipificada «%(type)s», o 486/487 en el plan francés."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No line covers a period after %(date)s: there is nothing to defer."
+msgstr "Ninguna línea cubre un periodo posterior al %(date)s: no hay nada que periodificar."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "The deferral entry is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "El asiento de periodificación está descuadrado en %(gap).2f. No se ha contabilizado nada."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__journal_id
+msgid "Journal"
+msgstr "Diario"

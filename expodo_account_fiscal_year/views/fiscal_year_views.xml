@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_fiscal_year_list" model="ir.ui.view">
+            <field name="name">expodo.fiscal.year.list</field>
+            <field name="model">expodo.fiscal.year</field>
+            <field name="arch" type="xml">
+                <list string="Fiscal Years" editable="bottom">
+                    <field name="name"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="duration_months"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_fiscal_year_form" model="ir.ui.view">
+            <field name="name">expodo.fiscal.year.form</field>
+            <field name="model">expodo.fiscal.year</field>
+            <field name="arch" type="xml">
+                <form string="Fiscal Year">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" placeholder="e.g. First year 2025-2026"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="duration_months"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert">
+                            Declare a year here only when it does not follow the
+                            company's regular pattern — a first year, a transition
+                            after a change of closing date, a final year. Regular
+                            years need no record.
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_fiscal_year" model="ir.actions.act_window">
+            <field name="name">Fiscal Years</field>
+            <field name="res_model">expodo.fiscal.year</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Declare an irregular fiscal year</p>
+                <p>Odoo derives fiscal years from a repeating pattern: same closing day, twelve months each. That cannot express a first year running fifteen months, or a transition year after a change of closing date.</p>
+                <p>Years declared here take precedence. Everything that reads a fiscal year follows — default report periods, year-end closing, the FEC.</p>
+            </field>
+        </record>
+
+        <menuitem id="menu_expodo_fiscal_year"
+                  name="Fiscal Years"
+                  parent="account.account_account_menu"
+                  action="action_expodo_fiscal_year"
+                  sequence="80"/>
+
+    </data>
+</odoo>

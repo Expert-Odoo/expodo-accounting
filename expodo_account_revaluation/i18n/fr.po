@@ -1,0 +1,164 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_revaluation
+#: model:ir.actions.act_window,name:expodo_account_revaluation.action_expodo_revaluation_wizard
+msgid "Currency Revaluation"
+msgstr "Écarts de conversion"
+
+#. module: expodo_account_revaluation
+#: model:ir.model,name:expodo_account_revaluation.model_expodo_revaluation_engine
+msgid "Currency revaluation engine"
+msgstr "Moteur des écarts de conversion"
+
+#. module: expodo_account_revaluation
+#: model:ir.model,name:expodo_account_revaluation.model_expodo_revaluation_wizard
+msgid "Revalue foreign currency balances"
+msgstr "Réévaluer les soldes en devises"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__date_to
+msgid "Closing date"
+msgstr "Date de clôture"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__move_id
+msgid "Revaluation entry"
+msgstr "Écriture de conversion"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__preview
+msgid "Detail"
+msgstr "Détail"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__reversal_move_id
+msgid "Reversal"
+msgstr "Contre-passation"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__reverse_next_day
+msgid "Reverse at the opening of the next period"
+msgstr "Contre-passer à l'ouverture de la période suivante"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__total_gain
+msgid "Unrealised gains"
+msgstr "Gains latents"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__total_loss
+msgid "Unrealised losses"
+msgstr "Pertes latentes"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__warning
+msgid "Before you post"
+msgstr "Avant de comptabiliser"
+
+#. module: expodo_account_revaluation
+#: model:ir.ui.menu,name:expodo_account_revaluation.menu_expodo_revaluation
+msgid "Currency Revaluation"
+msgstr "Écarts de conversion"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Detail"
+msgstr "Détail"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Preview"
+msgstr "Aperçu"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Revalue"
+msgstr "Réévaluer"
+
+#. module: expodo_account_revaluation
+#: model_terms:ir.ui.view,arch_db:expodo_account_revaluation.view_expodo_revaluation_wizard_form
+msgid "Currency revaluation"
+msgstr "Écarts de conversion"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models/revaluation_engine.py:0
+msgid "Revaluation %(currency)s at %(date)s"
+msgstr "Réévaluation %(currency)s au %(date)s"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models/revaluation_engine.py:0
+msgid "draft entry"
+msgstr "écriture en brouillon"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/wizard/revaluation_wizard.py:0
+msgid "No open foreign currency balance at this date."
+msgstr "Aucun solde en devise ouvert à cette date."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/wizard/revaluation_wizard.py:0
+msgid "Reversal of %(ref)s"
+msgstr "Contre-passation de %(ref)s"
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "A revaluation already exists at this date (%(names)s). Posting a second one would count the difference twice."
+msgstr "Une réévaluation existe déjà à cette date (%(names)s). En comptabiliser une seconde compterait l'écart deux fois."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "A revaluation already exists at this date. Posting a second one would count the difference twice."
+msgstr "Une réévaluation existe déjà à cette date. En comptabiliser une seconde compterait l'écart deux fois."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No account is available for unrealised exchange differences. Set the exchange gain and loss accounts on the company, or create 476/477 accounts in the French chart."
+msgstr "Aucun compte n'est disponible pour les écarts de conversion latents. Renseignez les comptes de gain et de perte de change sur la société, ou créez les comptes 476/477 dans le plan français."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No open foreign currency balance at %(date)s: there is nothing to revalue."
+msgstr "Aucun solde en devise ouvert au %(date)s : il n'y a rien à réévaluer."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "No recent exchange rate for %(currencies)s. The conversion falls back on the last known rate, which looks correct and is stale."
+msgstr "Aucun taux de change récent pour %(currencies)s. La conversion retombe sur le dernier taux connu, qui a l'air juste et ne l'est plus."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "The revaluation entry is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "L'écriture de réévaluation est déséquilibrée de %(gap).2f. Rien n'a été comptabilisé."
+
+#. module: expodo_account_revaluation
+#. odoo-python
+#: code:addons/expodo_account_revaluation/models:0
+msgid "Unrealised losses of %(amount).2f. Under French GAAP these call for a provision for risks (1515), which this module does not create: the amount depends on hedging and on the overall position, which cannot be derived mechanically. Unrealised gains are not taken to profit."
+msgstr "Pertes latentes de %(amount).2f. En plan comptable français, elles appellent une provision pour risques (1515), que ce module ne crée pas : le montant dépend des couvertures et de la position globale, qui ne se déduisent pas mécaniquement. Les gains latents ne sont pas portés au résultat."
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__company_id
+msgid "Company"
+msgstr "Société"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__currency_id
+msgid "Currency"
+msgstr "Devise"
+
+#. module: expodo_account_revaluation
+#: model:ir.model.fields,field_description:expodo_account_revaluation.field_expodo_revaluation_wizard__journal_id
+msgid "Journal"
+msgstr "Journal"

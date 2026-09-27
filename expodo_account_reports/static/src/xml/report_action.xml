@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="expodo_account_reports.ReportAction">
+        <div class="o_expodo_report h-100 d-flex flex-column">
+
+            <div class="o_expodo_report_controls d-flex flex-wrap align-items-center gap-3 p-3 border-bottom">
+                <!--
+                    Sélecteur de présentation : n'apparaît que lorsque l'état
+                    en compte plusieurs, ce qui évite une liste à un seul choix
+                    sur la grande majorité des rapports. Il remplace alors le
+                    titre, qu'il répéterait mot pour mot.
+                -->
+                <t t-if="state.report.variants and state.report.variants.length &gt; 1">
+                    <select class="form-select form-select-sm w-auto me-auto fw-bold"
+                            t-att-title="labels.variant"
+                            t-on-change="onVariantChange">
+                        <t t-foreach="state.report.variants" t-as="variant" t-key="variant.id">
+                            <option t-att-value="variant.id"
+                                    t-att-selected="variant.id === state.report.id"
+                                    t-esc="variant.name"/>
+                        </t>
+                    </select>
+                </t>
+                <h5 t-else="" class="mb-0 me-auto" t-esc="state.report.name"/>
+
+                <!--
+                    Un état arrêté à une date n'affiche que sa clôture. Lui
+                    présenter une date de début laissait croire à un filtre :
+                    le bilan ignore cette borne, si bien qu'on pouvait la
+                    déplacer d'un exercice sans qu'aucun chiffre ne bouge.
+
+                    Le commentaire se tient hors de l'alternative : un noeud
+                    glissé entre `t-if` et `t-else` fait perdre la seconde
+                    branche à la compilation, sans erreur — la barre s'affiche
+                    alors sans aucune date.
+                -->
+                <div class="d-flex align-items-center gap-1">
+                    <t t-if="state.report.filter_date_range">
+                        <span class="text-muted small text-nowrap" t-esc="labels.from"/>
+                        <input type="date" class="form-control form-control-sm"
+                               t-att-value="state.options.date and state.options.date.date_from"
+                               t-on-change="(ev) => this.onDateChange('date_from', ev)"/>
+                        <span class="text-muted small text-nowrap" t-esc="labels.to"/>
+                    </t>
+                    <span t-else="" class="text-muted small text-nowrap" t-esc="labels.asOf"/>
+                    <input type="date" class="form-control form-control-sm"
+                           t-att-value="state.options.date and state.options.date.date_to"
+                           t-on-change="(ev) => this.onDateChange('date_to', ev)"/>
+                </div>
+
+                <select class="form-select form-select-sm w-auto" t-on-change="onComparisonChange">
+                    <option value="no_comparison" t-esc="labels.noComparison"
+                            t-att-selected="!state.options.comparison or state.options.comparison.filter === 'no_comparison'"/>
+                    <option value="previous_period" t-esc="labels.previousPeriod"
+                            t-att-selected="state.options.comparison and state.options.comparison.filter === 'previous_period'"/>
+                    <option value="same_last_year" t-esc="labels.previousYear"
+                            t-att-selected="state.options.comparison and state.options.comparison.filter === 'same_last_year'"/>
+                </select>
+
+                <!--
+                    Filtre de journal : proposé seulement quand l'état le
+                    déclare et que la société en porte plusieurs, sinon la
+                    liste n'offrirait aucun choix.
+                -->
+                <select t-if="state.report.filter_journals and state.report.journals and state.report.journals.length &gt; 1"
+                        class="form-select form-select-sm w-auto"
+                        t-on-change="onJournalChange">
+                    <option value="" t-esc="labels.allJournals"/>
+                    <t t-foreach="state.report.journals" t-as="journal" t-key="journal.id">
+                        <option t-att-value="journal.id"
+                                t-att-selected="state.options.journal_ids and state.options.journal_ids.includes(journal.id)"
+                                t-esc="journal.code ? journal.code + ' — ' + journal.name : journal.name"/>
+                    </t>
+                </select>
+
+                <t t-if="state.report.filter_show_draft">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox"
+                               t-att-checked="state.options.all_entries"
+                               t-on-change="onToggleDraft"/>
+                        <label class="form-check-label small" t-esc="labels.includeDrafts"/>
+                    </div>
+                </t>
+
+                <button t-if="state.report.filter_unfold_all"
+                        class="btn btn-sm btn-secondary"
+                        t-on-click="onUnfoldAll" t-esc="labels.unfoldAll"/>
+
+                <t t-if="state.report.search_bar">
+                    <input type="search" class="form-control form-control-sm w-auto"
+                           t-att-placeholder="labels.search"
+                           t-att-value="state.search" t-on-input="onSearchInput"/>
+                </t>
+
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-secondary" t-on-click="() => this.onExport('pdf')">PDF</button>
+                    <button class="btn btn-secondary" t-on-click="() => this.onExport('xlsx')">XLSX</button>
+                </div>
+            </div>
+
+            <div class="flex-grow-1 overflow-auto">
+                <t t-if="state.loading">
+                    <div class="d-flex justify-content-center p-5 text-muted">
+                        <span t-esc="labels.computing"/>
+                    </div>
+                </t>
+                <t t-else="">
+                    <table class="table table-sm table-hover o_expodo_report_table mb-0">
+                        <thead class="sticky-top bg-white">
+                            <!--
+                                En comparaison, l'intitulé de période était
+                                répété sous chacune des colonnes du groupe :
+                                six colonnes portaient six fois « Du 01/01 au
+                                31/12 », l'en-tête devenait illisible et le
+                                tableau débordait. Il occupe désormais une
+                                ligne à lui, une cellule fusionnée par groupe.
+                            -->
+                            <tr t-if="state.columnGroups.length &gt; 1">
+                                <th class="border-0"/>
+                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
+                                    <th class="text-center text-muted fw-normal small border-bottom"
+                                        t-att-colspan="state.columns.length"
+                                        t-esc="group.label"/>
+                                </t>
+                            </tr>
+                            <tr>
+                                <th class="text-start" t-esc="labels.label"/>
+                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
+                                    <t t-foreach="state.columns" t-as="column" t-key="column.label">
+                                        <th class="text-end text-nowrap" t-esc="column.name"/>
+                                    </t>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--
+                                Un rapport que la localisation du pays n'a pas
+                                rempli : sans ce message, l'utilisateur voyait
+                                un tableau vide sans savoir s'il manquait des
+                                écritures ou le rapport lui-même.
+                            -->
+                            <tr t-if="state.notice">
+                                <td class="text-muted fst-italic p-3"
+                                    t-att-colspan="1 + state.columns.length * state.columnGroups.length"
+                                    t-esc="state.notice"/>
+                            </tr>
+                            <tr t-foreach="visibleLines" t-as="line" t-key="line.id"
+                                t-att-class="line.level === 0 ? 'fw-bold o_expodo_level_0' : ''">
+                                <td t-att-style="indentStyle(line)">
+                                    <span t-if="line.unfoldable" class="o_expodo_caret me-1 user-select-none"
+                                          t-on-click="() => this.onToggleLine(line)"
+                                          t-esc="line.unfolded ? '-' : '+'"/>
+                                    <span t-att-class="line.unfoldable ? 'o_expodo_clickable' : ''"
+                                          t-on-click="() => this.onToggleLine(line)" t-esc="line.name"/>
+                                </td>
+                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
+                                    <t t-foreach="line.columns" t-as="column" t-key="column.label">
+                                        <td class="text-end text-nowrap"
+                                            t-att-class="column.auditable ? 'o_expodo_auditable' : ''"
+                                            t-on-click="() => this.onCellClick(line, column)"
+                                            t-esc="column.values[group.key]"/>
+                                    </t>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

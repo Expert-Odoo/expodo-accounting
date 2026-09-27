@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Livre-journal centralisé.
+
+            Le rapport « Journaux » présente les écritures par journal auxiliaire,
+            ce qui est la forme d'usage. Le livre-journal au sens légal est
+            différent : il est **chronologique**, toutes pièces confondues, tous
+            journaux mêlés. C'est l'un des livres obligatoires, et sa forme est
+            ce qui est vérifié en cas de contrôle.
+
+            Deux niveaux : la date, puis chaque écriture de cette date. Le
+            groupement par date est ordonné naturellement par le tri des clés,
+            les dates étant au format ISO.
+        -->
+
+        <record id="report_day_book" model="account.report">
+            <field name="name">Day Book</field>
+            <field name="name@fr">Livre-journal</field>
+            <field name="name@es">Libro diario</field>
+            <field name="name@de">Grundbuch</field>
+            <field name="name@nl">Dagboek</field>
+            <field name="name@it">Libro giornale</field>
+            <field name="name@pt_BR">Livro diário</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="search_bar" eval="True"/>
+            <field name="default_opening_date_filter">this_month</field>
+            <field name="column_ids">
+                <record id="col_db_debit" model="account.report.column">
+                    <field name="name">Debit</field>
+                    <field name="name@fr">Débit</field>
+                    <field name="name@es">Debe</field>
+                    <field name="name@de">Soll</field>
+                    <field name="name@nl">Debet</field>
+                    <field name="name@it">Dare</field>
+                    <field name="name@pt_BR">Débito</field>
+                    <field name="expression_label">debit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="10"/>
+                </record>
+                <record id="col_db_credit" model="account.report.column">
+                    <field name="name">Credit</field>
+                    <field name="name@fr">Crédit</field>
+                    <field name="name@es">Haber</field>
+                    <field name="name@de">Haben</field>
+                    <field name="name@nl">Credit</field>
+                    <field name="name@it">Avere</field>
+                    <field name="name@pt_BR">Crédito</field>
+                    <field name="expression_label">credit</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="20"/>
+                </record>
+                <record id="col_db_count" model="account.report.column">
+                    <field name="name">Lines</field>
+                    <field name="name@fr">Lignes</field>
+                    <field name="name@es">Líneas</field>
+                    <field name="name@de">Zeilen</field>
+                    <field name="name@nl">Regels</field>
+                    <field name="name@it">Righe</field>
+                    <field name="name@pt_BR">Linhas</field>
+                    <field name="expression_label">nb</field>
+                    <field name="figure_type">integer</field>
+                    <field name="sequence" eval="30"/>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="line_day_book" model="account.report.line">
+                    <field name="name">Entries by date</field>
+                    <field name="name@fr">Écritures par date</field>
+                    <field name="name@es">Asientos por fecha</field>
+                    <field name="name@de">Buchungen nach Datum</field>
+                    <field name="name@nl">Boekingen op datum</field>
+                    <field name="name@it">Registrazioni per data</field>
+                    <field name="name@pt_BR">Lançamentos por data</field>
+                    <field name="code">DAYBOOK</field>
+                    <!-- La date d'abord : c'est ce qui fait le caractère
+                         chronologique exigé du livre-journal. -->
+                    <field name="groupby">date,move_id</field>
+                    <field name="foldable" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_db_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_debit</field>
+                        </record>
+                        <record id="expr_db_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum_credit</field>
+                        </record>
+                        <record id="expr_db_count" model="account.report.expression">
+                            <field name="label">nb</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">count_rows</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

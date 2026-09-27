@@ -1,0 +1,402 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* expodo_account_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Expodo <support@expodo.fr>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_aged_pay
+#: model:ir.actions.client,name:expodo_account_reports.action_aged_pay
+msgid "Aged Payable"
+msgstr "Balance âgée fournisseurs"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_aged_recv
+#: model:ir.actions.client,name:expodo_account_reports.action_aged_recv
+msgid "Aged Receivable"
+msgstr "Balance âgée clients"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_livre_banque
+#: model:ir.actions.client,name:expodo_account_reports.action_livre_banque
+msgid "Bank Book"
+msgstr "Livre de banque"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_livre_caisse
+#: model:ir.actions.client,name:expodo_account_reports.action_livre_caisse
+msgid "Cash Book"
+msgstr "Livre de caisse"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_expodo_reports_root
+msgid "Expodo Reports"
+msgstr "Rapports Expodo"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_grand_livre
+#: model:ir.actions.client,name:expodo_account_reports.action_grand_livre
+msgid "General Ledger"
+msgstr "Grand livre"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_journaux
+#: model:ir.actions.client,name:expodo_account_reports.action_journaux
+msgid "Journals"
+msgstr "Journaux"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_open_items
+#: model:ir.actions.client,name:expodo_account_reports.action_open_items
+msgid "Open Items"
+msgstr "Écritures ouvertes"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_auxiliaire
+#: model:ir.actions.client,name:expodo_account_reports.action_auxiliaire
+msgid "Partner Ledger"
+msgstr "Grand livre auxiliaire"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_tax_report
+#: model:ir.actions.client,name:expodo_account_reports.action_tax_report
+msgid "Tax Return"
+msgstr "Déclaration de taxes"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_balance
+#: model:ir.actions.client,name:expodo_account_reports.action_balance
+msgid "Trial Balance"
+msgstr "Balance générale"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Computing..."
+msgstr "Calcul en cours..."
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "From"
+msgstr "Du"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Include drafts"
+msgstr "Inclure les brouillons"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#. odoo-python
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Label"
+msgstr "Libellé"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Presentation"
+msgstr "Présentation"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "No comparison"
+msgstr "Aucune comparaison"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Previous fiscal year"
+msgstr "Exercice précédent"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Previous period"
+msgstr "Période précédente"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Search..."
+msgstr "Rechercher..."
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "The start date is later than the end date."
+msgstr "La date de début est postérieure à la date de fin."
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "to"
+msgstr "au"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Accounting reports require an accounting access right."
+msgstr "L'accès aux rapports comptables requiert un droit d'accès à la comptabilité."
+
+#. module: expodo_account_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "All entries, including drafts"
+msgstr "Toutes les écritures, brouillons compris"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Compared: as of %(date)s"
+msgstr "Comparé : au %(date)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Compared: from %(from)s to %(to)s"
+msgstr "Comparé : du %(from)s au %(to)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "From %(from)s to %(to)s"
+msgstr "Du %(from)s au %(to)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Group-by not allowed on line %(line)s: %(field)s"
+msgstr "Groupement non autorisé sur la ligne « %(line)s » : %(field)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Grouped line %(line)s must carry at least one `domain`, `account_codes` or `tax_tags` engine expression."
+msgstr "La ligne groupée « %(line)s » doit porter au moins une expression de moteur `domain`, `account_codes` ou `tax_tags`."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Invalid date: %(value)s"
+msgstr "Date invalide : %(value)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Invalid domain on expression %(label)s of line %(line)s: %(formula)s"
+msgstr "Domaine invalide sur l'expression « %(label)s » de la ligne « %(line)s » : %(formula)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Invalid domain on line %(line)s: %(formula)s"
+msgstr "Domaine invalide sur la ligne « %(line)s » : %(formula)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Journal items — %(line)s"
+msgstr "Écritures — %(line)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Journals: %(names)s"
+msgstr "Journaux : %(names)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "No tax return is available for %(country)s. Install the accounting localisation of your country."
+msgstr "Aucune déclaration de taxes n'est disponible pour %(country)s. Installez la localisation comptable de votre pays."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Not set"
+msgstr "Non renseigné"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Partners: %(names)s"
+msgstr "Partenaires : %(names)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#. odoo-javascript
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Posted entries only"
+msgstr "Écritures comptabilisées uniquement"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Report %(report)s: %(error)s"
+msgstr "Rapport « %(report)s » : %(error)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Tag reference not found or of wrong type: %(ref)s"
+msgstr "Référence de tag introuvable ou de mauvais type : %(ref)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "The xlsxwriter library is required for XLSX export."
+msgstr "La bibliothèque xlsxwriter est requise pour l'export XLSX."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unknown comparison mode: %(mode)s"
+msgstr "Mode de comparaison inconnu : %(mode)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unknown domain subformula: %(sub)s"
+msgstr "Sous-formule de domaine inconnue : %(sub)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unknown group aggregate: %(sub)s"
+msgstr "Agrégat de groupement inconnu : %(sub)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unknown period: %(period)s"
+msgstr "Période inconnue : %(period)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unsupported date scope: %(scope)s"
+msgstr "Portée de date non gérée : %(scope)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unsupported export format: %(fmt)s"
+msgstr "Format d'export non supporté : %(fmt)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report.py:0
+msgid "Unsupported expression engine: %(engine)s"
+msgstr "Moteur d'expression non supporté : %(engine)s"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_balance_sheet
+#: model:ir.actions.client,name:expodo_account_reports.action_balance_sheet
+msgid "Balance Sheet"
+msgstr "Bilan"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_profit_loss
+#: model:ir.actions.client,name:expodo_account_reports.action_profit_loss
+msgid "Profit and Loss"
+msgstr "Compte de résultat"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_cash_flow
+#: model:ir.actions.client,name:expodo_account_reports.action_cash_flow
+msgid "Cash Flow Statement"
+msgstr "Tableau de flux de trésorerie"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_day_book
+#: model:ir.actions.client,name:expodo_account_reports.action_day_book
+msgid "Day Book"
+msgstr "Livre-journal"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_ui.py:0
+msgid "As of %(date)s"
+msgstr "Au %(date)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_ui.py:0
+msgid "Export truncated at %(count)d rows. Narrow the period, filter by journal, or use the Excel export, which holds far more."
+msgstr "Export tronqué à %(count)d lignes. Restreignez la période, filtrez par journal, ou utilisez l'export Excel, qui en accepte bien davantage."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_ui.py:0
+msgid "The universal report %(xmlid)s is missing."
+msgstr "Le rapport universel %(xmlid)s est introuvable."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_ui.py:0
+msgid "This report has no lines defined for %(country)s. The localisation for this country does not provide them; the report will stay empty until it does."
+msgstr "Ce rapport n'a aucune ligne définie pour %(country)s. La localisation de ce pays n'en fournit pas ; il restera vide tant qu'elle n'en fournira pas."
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_ui.py:0
+msgid "Unknown report kind: %(kind)s"
+msgstr "Type de rapport inconnu : %(kind)s"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models:0
+msgid "Notes"
+msgstr "Notes"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "All journals"
+msgstr "Tous les journaux"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Unfold all"
+msgstr "Tout déplier"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "As of"
+msgstr "Au"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_executive_summary
+#: model:ir.actions.client,name:expodo_account_reports.action_executive_summary
+msgid "Executive Summary"
+msgstr "Résumé général"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_customer_statement
+#: model:ir.actions.client,name:expodo_account_reports.action_customer_statement
+msgid "Customer Statement"
+msgstr "Relevé de compte client"
+
+#. module: expodo_account_reports
+#: model:ir.ui.menu,name:expodo_account_reports.menu_ec_sales_list
+#: model:ir.actions.client,name:expodo_account_reports.action_ec_sales_list
+msgid "EC Sales List"
+msgstr "Relevé intracommunautaire"

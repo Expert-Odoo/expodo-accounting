@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Soldes intermédiaires de gestion (SIG).
+
+            Le compte de résultat dit combien l'entreprise a gagné. Les SIG
+            disent *où* elle l'a gagné, en décomposant la formation du
+            résultat en huit soldes normalisés par le plan comptable général.
+
+            C'est l'état que lit un expert-comptable avant tous les autres, et
+            celui dont les banques et les centres de gestion tirent leurs
+            ratios. Son absence est immédiatement remarquée.
+
+            L'enchaînement est imposé et ne se choisit pas :
+
+                Marge commerciale         activité de négoce seule
+                Production de l'exercice  activité de transformation
+                Valeur ajoutée            richesse créée par l'entreprise
+                Excédent brut             avant politique d'amortissement
+                Résultat d'exploitation
+                Résultat courant          exploitation + financier
+                Résultat exceptionnel
+                Résultat net
+
+            Deux pièges du PCG, qui expliquent les regroupements ci-dessous.
+
+            **Le compte 60 se scinde.** Le 607 (achats de marchandises) et le
+            6037 (variation des stocks de marchandises) appartiennent à la
+            marge commerciale ; tout le reste de la classe 60 appartient aux
+            consommations en provenance des tiers. Les regrouper ferait
+            disparaître la marge commerciale d'une entreprise qui achète aussi
+            des matières — c'est-à-dire de presque toutes.
+
+            **Le compte 709 vient en diminution des ventes.** Les rabais,
+            remises et ristournes accordés sont un compte de la classe 70 dont
+            le solde est débiteur. La convention signée d'Odoo les soustrait
+            donc naturellement, sans traitement particulier.
+
+            AVERTISSEMENT. Cette ventilation est construite d'après le plan
+            comptable général. Elle n'a pas été relue par un professionnel du
+            chiffre. La ligne de contrôle en fin d'état vérifie que le résultat
+            obtenu par la cascade égale celui calculé globalement — c'est une
+            cohérence interne, non une attestation de conformité.
+        -->
+
+        <record id="report_sig_fr" model="account.report">
+            <field name="name">Intermediate Management Balances</field>
+            <field name="name@fr">Soldes intermédiaires de gestion</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="root_report_id" ref="report_profit_loss"/>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_period_comparison" eval="True"/>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="report_sig_fr_col" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ==================== MARGE COMMERCIALE ==================== -->
+                <record id="sig_fr_ventes_marchandises" model="account.report.line">
+                    <field name="sequence" eval="10"/>
+                    <field name="name">Sales of goods</field>
+                    <field name="name@fr">Ventes de marchandises</field>
+                    <field name="code">SIG_VENTES_MARCH</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 707 ventes de marchandises, 7097 RRR accordés sur ces
+                         ventes (solde débiteur, donc soustractif). -->
+                    <field name="account_codes_formula">-707 - 7097</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_cout_achat_marchandises" model="account.report.line">
+                    <field name="sequence" eval="20"/>
+                    <field name="name">Cost of goods sold</field>
+                    <field name="name@fr">Coût d'achat des marchandises vendues</field>
+                    <field name="code">SIG_COUT_MARCH</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 607 achats de marchandises, 6037 leur variation de
+                         stock, 6097 RRR obtenus (créditeur, soustractif). -->
+                    <field name="account_codes_formula">607 + 6037 + 6097</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_marge_commerciale" model="account.report.line">
+                    <field name="sequence" eval="30"/>
+                    <field name="name">TRADING MARGIN</field>
+                    <field name="name@fr">MARGE COMMERCIALE</field>
+                    <field name="code">SIG_MARGE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_VENTES_MARCH.balance - SIG_COUT_MARCH.balance</field>
+                </record>
+
+                <!-- ================== PRODUCTION DE L'EXERCICE ================== -->
+                <record id="sig_fr_production_vendue" model="account.report.line">
+                    <field name="sequence" eval="40"/>
+                    <field name="name">Goods and services sold</field>
+                    <field name="name@fr">Production vendue</field>
+                    <field name="code">SIG_PROD_VENDUE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 701 à 706 : biens fabriqués, travaux et prestations.
+                         708 produits annexes. Le 707 est exclu : il relève de
+                         la marge commerciale. -->
+                    <field name="account_codes_formula">-701 - 702 - 703 - 704 - 705 - 706 - 708 - 7091 - 7092 - 7093 - 7094 - 7095 - 7096 - 7098</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_production_stockee" model="account.report.line">
+                    <field name="sequence" eval="50"/>
+                    <field name="name">Change in inventories of finished goods</field>
+                    <field name="name@fr">Production stockée</field>
+                    <field name="code">SIG_PROD_STOCKEE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-71</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_production_immobilisee" model="account.report.line">
+                    <field name="sequence" eval="60"/>
+                    <field name="name">Own work capitalised</field>
+                    <field name="name@fr">Production immobilisée</field>
+                    <field name="code">SIG_PROD_IMMO</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-72</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_production" model="account.report.line">
+                    <field name="sequence" eval="70"/>
+                    <field name="name">PRODUCTION FOR THE PERIOD</field>
+                    <field name="name@fr">PRODUCTION DE L'EXERCICE</field>
+                    <field name="code">SIG_PRODUCTION</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_PROD_VENDUE.balance + SIG_PROD_STOCKEE.balance + SIG_PROD_IMMO.balance</field>
+                </record>
+
+                <!-- ====================== VALEUR AJOUTÉE ====================== -->
+                <record id="sig_fr_consommations" model="account.report.line">
+                    <field name="sequence" eval="80"/>
+                    <field name="name">Purchases and external charges</field>
+                    <field name="name@fr">Consommations en provenance des tiers</field>
+                    <field name="code">SIG_CONSOMMATIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!--
+                        Toute la classe 60 sauf 607 et 6037, déjà portés à la
+                        marge commerciale, plus les services extérieurs.
+
+                        Cette soustraction est le point délicat de l'état :
+                        oublier d'exclure le 607 le compterait deux fois et
+                        écraserait la valeur ajoutée du montant des achats de
+                        marchandises.
+                    -->
+                    <field name="account_codes_formula">60 - 607 - 6037 - 6097 + 61 + 62</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_valeur_ajoutee" model="account.report.line">
+                    <field name="sequence" eval="90"/>
+                    <field name="name">VALUE ADDED</field>
+                    <field name="name@fr">VALEUR AJOUTÉE</field>
+                    <field name="code">SIG_VALEUR_AJOUTEE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_MARGE.balance + SIG_PRODUCTION.balance - SIG_CONSOMMATIONS.balance</field>
+                </record>
+
+                <!-- ================ EXCÉDENT BRUT D'EXPLOITATION ================ -->
+                <record id="sig_fr_subventions" model="account.report.line">
+                    <field name="sequence" eval="100"/>
+                    <field name="name">Operating grants</field>
+                    <field name="name@fr">Subventions d'exploitation</field>
+                    <field name="code">SIG_SUBVENTIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-74 + 747</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_impots_taxes" model="account.report.line">
+                    <field name="sequence" eval="110"/>
+                    <field name="name">Taxes other than income tax</field>
+                    <field name="name@fr">Impôts, taxes et versements assimilés</field>
+                    <field name="code">SIG_IMPOTS_TAXES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">63</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_personnel" model="account.report.line">
+                    <field name="sequence" eval="120"/>
+                    <field name="name">Staff costs</field>
+                    <field name="name@fr">Charges de personnel</field>
+                    <field name="code">SIG_PERSONNEL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">64 - 649</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_ebe" model="account.report.line">
+                    <field name="sequence" eval="130"/>
+                    <field name="name">GROSS OPERATING SURPLUS</field>
+                    <field name="name@fr">EXCÉDENT BRUT D'EXPLOITATION</field>
+                    <field name="code">SIG_EBE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <!-- Le solde le plus suivi de l'état : il mesure la
+                         performance d'exploitation avant toute décision
+                         d'amortissement, de financement ou de fiscalité. -->
+                    <field name="aggregation_formula">SIG_VALEUR_AJOUTEE.balance + SIG_SUBVENTIONS.balance - SIG_IMPOTS_TAXES.balance - SIG_PERSONNEL.balance</field>
+                </record>
+
+                <!-- ================== RÉSULTAT D'EXPLOITATION ================== -->
+                <record id="sig_fr_autres_produits" model="account.report.line">
+                    <field name="sequence" eval="140"/>
+                    <field name="name">Other operating income and transfers</field>
+                    <field name="name@fr">Autres produits et transferts de charges</field>
+                    <field name="code">SIG_AUTRES_PRODUITS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-75 + 755 + 757 - 781</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_dotations" model="account.report.line">
+                    <field name="sequence" eval="150"/>
+                    <field name="name">Depreciation and provisions</field>
+                    <field name="name@fr">Dotations aux amortissements et provisions</field>
+                    <field name="code">SIG_DOTATIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">681</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_autres_charges" model="account.report.line">
+                    <field name="sequence" eval="160"/>
+                    <field name="name">Other operating expenses</field>
+                    <field name="name@fr">Autres charges de gestion courante</field>
+                    <field name="code">SIG_AUTRES_CHARGES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">65 - 655 - 657</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_quote_part_subventions" model="account.report.line">
+                    <field name="sequence" eval="170"/>
+                    <field name="name">Investment grants released</field>
+                    <field name="name@fr">Quote-part de subventions d'investissement virée au résultat</field>
+                    <field name="code">SIG_QP_SUBVENTIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!--
+                        Ce compte n'est pas une subvention d'exploitation.
+                        Le porter avec elles gonflait la valeur ajoutée et
+                        l'excédent brut du montant repris chaque année — un
+                        écart régulier, donc crédible, et d'autant plus
+                        difficile à repérer.
+                    -->
+                    <field name="account_codes_formula">-747</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_produits_cessions" model="account.report.line">
+                    <field name="sequence" eval="180"/>
+                    <field name="name">Proceeds from disposals</field>
+                    <field name="name@fr">Produits des cessions d'immobilisations</field>
+                    <field name="code">SIG_PRODUITS_CESSIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-757</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_vnc_cessions" model="account.report.line">
+                    <field name="sequence" eval="190"/>
+                    <field name="name">Carrying amount of assets disposed of</field>
+                    <field name="name@fr">Valeur comptable des immobilisations cédées</field>
+                    <field name="code">SIG_VNC_CESSIONS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">657</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_resultat_exploitation" model="account.report.line">
+                    <field name="sequence" eval="200"/>
+                    <field name="name">OPERATING PROFIT</field>
+                    <field name="name@fr">RÉSULTAT D'EXPLOITATION</field>
+                    <field name="code">SIG_RESULTAT_EXPL</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_EBE.balance + SIG_AUTRES_PRODUITS.balance + SIG_QP_SUBVENTIONS.balance + SIG_PRODUITS_CESSIONS.balance - SIG_DOTATIONS.balance - SIG_AUTRES_CHARGES.balance - SIG_VNC_CESSIONS.balance</field>
+                </record>
+
+                <!-- ==================== RÉSULTAT COURANT ==================== -->
+                <record id="sig_fr_produits_financiers" model="account.report.line">
+                    <field name="sequence" eval="210"/>
+                    <field name="name">Financial income</field>
+                    <field name="name@fr">Produits financiers</field>
+                    <field name="code">SIG_PROD_FIN</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-76 - 786 - 755</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_charges_financieres" model="account.report.line">
+                    <field name="sequence" eval="220"/>
+                    <field name="name">Financial expenses</field>
+                    <field name="name@fr">Charges financières</field>
+                    <field name="code">SIG_CHARGES_FIN</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">66 + 686 + 655</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_resultat_courant" model="account.report.line">
+                    <field name="sequence" eval="230"/>
+                    <field name="name">PROFIT BEFORE EXCEPTIONAL ITEMS AND TAX</field>
+                    <field name="name@fr">RÉSULTAT COURANT AVANT IMPÔTS</field>
+                    <field name="code">SIG_RESULTAT_COURANT</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_RESULTAT_EXPL.balance + SIG_PROD_FIN.balance - SIG_CHARGES_FIN.balance</field>
+                </record>
+
+                <!-- ================== RÉSULTAT EXCEPTIONNEL ================== -->
+                <record id="sig_fr_produits_exceptionnels" model="account.report.line">
+                    <field name="sequence" eval="240"/>
+                    <field name="name">Exceptional income</field>
+                    <field name="name@fr">Produits exceptionnels</field>
+                    <field name="code">SIG_PROD_EXCEP</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-77 - 787 - 797</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_charges_exceptionnelles" model="account.report.line">
+                    <field name="sequence" eval="250"/>
+                    <field name="name">Exceptional expenses</field>
+                    <field name="name@fr">Charges exceptionnelles</field>
+                    <field name="code">SIG_CHARGES_EXCEP</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">67 + 687</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_resultat_exceptionnel" model="account.report.line">
+                    <field name="sequence" eval="260"/>
+                    <field name="name">EXCEPTIONAL RESULT</field>
+                    <field name="name@fr">RÉSULTAT EXCEPTIONNEL</field>
+                    <field name="code">SIG_RESULTAT_EXCEP</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">SIG_PROD_EXCEP.balance - SIG_CHARGES_EXCEP.balance</field>
+                </record>
+
+                <!-- ====================== RÉSULTAT NET ====================== -->
+                <record id="sig_fr_participation" model="account.report.line">
+                    <field name="sequence" eval="270"/>
+                    <field name="name">Employee profit-sharing</field>
+                    <field name="name@fr">Participation des salariés</field>
+                    <field name="code">SIG_PARTICIPATION</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">691</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_impot_benefices" model="account.report.line">
+                    <field name="sequence" eval="280"/>
+                    <field name="name">Corporate income tax</field>
+                    <field name="name@fr">Impôts sur les bénéfices</field>
+                    <field name="code">SIG_IMPOT_BENEFICES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">695 + 696 + 6981 - 6989 - 699</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="sig_fr_resultat_net" model="account.report.line">
+                    <field name="sequence" eval="290"/>
+                    <field name="name">NET RESULT</field>
+                    <field name="name@fr">RÉSULTAT NET</field>
+                    <field name="code">SIG_RESULTAT_NET</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">SIG_RESULTAT_COURANT.balance + SIG_RESULTAT_EXCEP.balance - SIG_PARTICIPATION.balance - SIG_IMPOT_BENEFICES.balance</field>
+                </record>
+
+                <!-- ======================== CONTRÔLE ======================== -->
+                <record id="sig_fr_controle" model="account.report.line">
+                    <field name="sequence" eval="300"/>
+                    <field name="name">Gap with global result (must be zero)</field>
+                    <field name="name@fr">Écart avec le résultat global (doit être nul)</field>
+                    <field name="code">SIG_CONTROLE</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Une cascade de huit soldes offre huit occasions
+                        d'oublier un compte. L'oubli ne produit ni erreur ni
+                        déséquilibre : simplement un résultat net faux, qui
+                        paraît plausible.
+
+                        Cette ligne compare le résultat de la cascade à celui
+                        obtenu directement sur les classes 6 et 7. Tout écart
+                        signale un compte du plan qui n'a été repris nulle
+                        part.
+                    -->
+                    <field name="aggregation_formula">SIG_RESULTAT_NET.balance - SIG_RESULTAT_GLOBAL.balance</field>
+                </record>
+
+                <record id="sig_fr_resultat_global" model="account.report.line">
+                    <field name="sequence" eval="310"/>
+                    <field name="name">Result computed globally</field>
+                    <field name="name@fr">Résultat calculé globalement</field>
+                    <field name="code">SIG_RESULTAT_GLOBAL</field>
+                    <field name="hierarchy_level" eval="3"/>
+                    <field name="account_codes_formula">-6 - 7</field>
+                    <field name="groupby">account_id</field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

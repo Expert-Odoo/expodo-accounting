@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Compte de résultat au format du plan comptable général français.
+
+            Convention de signe : en base, un produit porte un solde créditeur
+            donc négatif, une charge un solde débiteur donc positif. Les
+            produits sont ici négés pour s'afficher positivement, les charges
+            restent telles quelles. Le résultat est la différence.
+
+            Point de raccordement : RES_NET doit être strictement égal à la
+            ligne « Résultat de l'exercice » du Bilan, qui l'obtient par une
+            formule différente (-6-7-12). Deux chemins de calcul distincts
+            pour une même grandeur : c'est le contrôle croisé du CDC §8.4.
+        -->
+
+        <record id="report_resultat_fr" model="account.report">
+            <field name="name">Profit and Loss</field>
+                    <field name="name@fr">Compte de résultat</field>
+            <field name="country_id" ref="base.fr"/>
+            <!-- Rattaché à l'état universel : c'est ce lien qui permet
+                 de le résoudre automatiquement pour une société française. -->
+            <field name="root_report_id" ref="report_profit_loss"/>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_unfold_all" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="report_resultat_fr_col" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ===================== EXPLOITATION ===================== -->
+                <record id="res_fr_prod_expl" model="account.report.line">
+                    <field name="sequence" eval="10"/>
+                    <field name="name">Operating income</field>
+                    <field name="name@fr">Produits d'exploitation</field>
+                    <field name="code">RES_PROD_EXPL</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <record id="res_fr_ventes" model="account.report.line">
+                            <field name="sequence" eval="20"/>
+                            <field name="name">Sales of goods and services</field>
+                    <field name="name@fr">Ventes de marchandises et production vendue</field>
+                            <field name="code">RES_VENTES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-70</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_prod_stockee" model="account.report.line">
+                            <field name="sequence" eval="30"/>
+                            <field name="name">Capitalised and inventoried production</field>
+                    <field name="name@fr">Production stockée et immobilisée</field>
+                            <field name="code">RES_PROD_STOCKEE</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-71 - 72</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_subventions" model="account.report.line">
+                            <field name="sequence" eval="40"/>
+                            <field name="name">Operating grants</field>
+                    <field name="name@fr">Subventions d'exploitation</field>
+                            <field name="code">RES_SUBVENTIONS</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-74 + 747</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_autres_prod" model="account.report.line">
+                            <field name="sequence" eval="50"/>
+                            <field name="name">Other income and reversals</field>
+                    <field name="name@fr">Autres produits et reprises</field>
+                            <field name="code">RES_AUTRES_PROD</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-75 + 755 + 757 - 781 - 791</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="res_fr_charges_expl" model="account.report.line">
+                    <field name="sequence" eval="60"/>
+                    <field name="name">Operating expenses</field>
+                    <field name="name@fr">Charges d'exploitation</field>
+                    <field name="code">RES_CHARGES_EXPL</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <record id="res_fr_achats" model="account.report.line">
+                            <field name="sequence" eval="70"/>
+                            <field name="name">Purchases and inventory change</field>
+                    <field name="name@fr">Achats et variation de stocks</field>
+                            <field name="code">RES_ACHATS</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">60</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_externes" model="account.report.line">
+                            <field name="sequence" eval="80"/>
+                            <field name="name">Other external expenses</field>
+                    <field name="name@fr">Autres achats et charges externes</field>
+                            <field name="code">RES_EXTERNES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">61 + 62</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_impots" model="account.report.line">
+                            <field name="sequence" eval="90"/>
+                            <field name="name">Taxes other than income tax</field>
+                    <field name="name@fr">Impôts, taxes et versements assimilés</field>
+                            <field name="code">RES_IMPOTS</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">63</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_personnel" model="account.report.line">
+                            <field name="sequence" eval="100"/>
+                            <field name="name">Payroll expenses</field>
+                    <field name="name@fr">Charges de personnel</field>
+                            <field name="code">RES_PERSONNEL</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">64</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_autres_charges" model="account.report.line">
+                            <field name="sequence" eval="110"/>
+                            <field name="name">Other operating expenses</field>
+                    <field name="name@fr">Autres charges de gestion courante</field>
+                            <field name="code">RES_AUTRES_CHARGES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">65 - 655 - 657</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_amort" model="account.report.line">
+                            <field name="sequence" eval="120"/>
+                            <field name="name">Depreciation and provisions</field>
+                    <field name="name@fr">Dotations aux amortissements et provisions</field>
+                            <field name="code">RES_AMORT</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">681</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="res_fr_expl" model="account.report.line">
+                    <field name="sequence" eval="130"/>
+                    <field name="name">OPERATING RESULT</field>
+                    <field name="name@fr">RÉSULTAT D'EXPLOITATION</field>
+                    <field name="code">RES_EXPL</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">RES_PROD_EXPL.balance - RES_CHARGES_EXPL.balance</field>
+                </record>
+
+                <!-- ======================= FINANCIER ======================= -->
+                <record id="res_fr_fin" model="account.report.line">
+                    <field name="sequence" eval="140"/>
+                    <field name="name">FINANCIAL RESULT</field>
+                    <field name="name@fr">RÉSULTAT FINANCIER</field>
+                    <field name="code">RES_FIN</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">RES_PROD_FIN.balance - RES_CHARGES_FIN.balance</field>
+                    <field name="children_ids">
+                        <record id="res_fr_prod_fin" model="account.report.line">
+                            <field name="sequence" eval="150"/>
+                            <field name="name">Financial income</field>
+                    <field name="name@fr">Produits financiers</field>
+                            <field name="code">RES_PROD_FIN</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-76 - 786 - 796</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_charges_fin" model="account.report.line">
+                            <field name="sequence" eval="160"/>
+                            <field name="name">Financial expenses</field>
+                    <field name="name@fr">Charges financières</field>
+                            <field name="code">RES_CHARGES_FIN</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">66 + 686</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ================= OPÉRATIONS FAITES EN COMMUN ================= -->
+                <record id="res_fr_quotes_parts" model="account.report.line">
+                    <field name="sequence" eval="170"/>
+                    <field name="name">SHARE OF JOINT OPERATIONS</field>
+                    <field name="name@fr">QUOTES-PARTS SUR OPÉRATIONS FAITES EN COMMUN</field>
+                    <field name="code">RES_QUOTES_PARTS</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <!--
+                        Bloc distinct entre l'exploitation et le financier,
+                        comme le veut la présentation du plan comptable.
+
+                        Ces montants étaient noyés dans les autres produits et
+                        charges d'exploitation, ce qui gonflait le résultat
+                        d'exploitation d'une somme qui n'en relève pas : une
+                        quote-part de résultat d'une société en participation
+                        n'est pas produite par l'exploitation de l'entreprise.
+                    -->
+                    <field name="aggregation_formula">RES_QP_BENEFICE.balance - RES_QP_PERTE.balance</field>
+                    <field name="children_ids">
+                        <record id="res_fr_qp_benefice" model="account.report.line">
+                            <field name="sequence" eval="180"/>
+                            <field name="name">Profit attributed or loss transferred</field>
+                            <field name="name@fr">Bénéfice attribué ou perte transférée</field>
+                            <field name="code">RES_QP_BENEFICE</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-755</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_qp_perte" model="account.report.line">
+                            <field name="sequence" eval="190"/>
+                            <field name="name">Loss borne or profit transferred</field>
+                            <field name="name@fr">Perte supportée ou bénéfice transféré</field>
+                            <field name="code">RES_QP_PERTE</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">655</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ================== RÉSULTAT COURANT AVANT IMPÔTS ================== -->
+                <record id="res_fr_courant" model="account.report.line">
+                    <field name="sequence" eval="200"/>
+                    <field name="name">PROFIT BEFORE EXCEPTIONAL ITEMS AND TAX</field>
+                    <field name="name@fr">RÉSULTAT COURANT AVANT IMPÔTS</field>
+                    <field name="code">RES_COURANT</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Ligne normalisée du plan comptable, qu'un lecteur
+                        d'états financiers cherche avant le résultat net : elle
+                        isole ce que l'entreprise gagne par son activité
+                        habituelle, hors événements non récurrents.
+
+                        Son absence obligeait le lecteur à additionner
+                        lui-même trois soldes, et deux lecteurs n'incluaient
+                        pas forcément les mêmes.
+                    -->
+                    <field name="aggregation_formula">RES_EXPL.balance + RES_QUOTES_PARTS.balance + RES_FIN.balance</field>
+                </record>
+
+                <!-- ====================== EXCEPTIONNEL ====================== -->
+                <record id="res_fr_exc" model="account.report.line">
+                    <field name="sequence" eval="210"/>
+                    <field name="name">EXCEPTIONAL RESULT</field>
+                    <field name="name@fr">RÉSULTAT EXCEPTIONNEL</field>
+                    <field name="code">RES_EXC</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">RES_PROD_EXC.balance - RES_CHARGES_EXC.balance</field>
+                    <field name="children_ids">
+                        <record id="res_fr_prod_exc" model="account.report.line">
+                            <field name="sequence" eval="220"/>
+                            <field name="name">Exceptional income</field>
+                    <field name="name@fr">Produits exceptionnels</field>
+                            <field name="code">RES_PROD_EXC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-77 - 787 - 797 - 747 - 757</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="res_fr_charges_exc" model="account.report.line">
+                            <field name="sequence" eval="230"/>
+                            <field name="name">Exceptional expenses</field>
+                    <field name="name@fr">Charges exceptionnelles</field>
+                            <field name="code">RES_CHARGES_EXC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">67 + 687 + 657</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ========================= IMPÔTS ========================= -->
+                <record id="res_fr_is" model="account.report.line">
+                    <field name="sequence" eval="240"/>
+                    <field name="name">Profit sharing and income tax</field>
+                    <field name="name@fr">Participation et impôts sur les bénéfices</field>
+                    <field name="code">RES_IS</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="account_codes_formula">69</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <!-- ========================= RÉSULTAT ========================= -->
+                <record id="res_fr_net" model="account.report.line">
+                    <field name="sequence" eval="250"/>
+                    <field name="name">NET RESULT FOR THE PERIOD</field>
+                    <field name="name@fr">RÉSULTAT NET DE L'EXERCICE</field>
+                    <field name="code">RES_NET</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">RES_COURANT.balance + RES_EXC.balance - RES_IS.balance</field>
+                </record>
+
+                <!--
+                    Contrôle interne : recalcul du résultat par la voie globale,
+                    indépendamment du détail par rubrique. L'écart doit être nul.
+                    Un écart non nul signale une classe de comptes oubliée dans
+                    le détail ci-dessus — le piège classique d'un compte de
+                    résultat écrit à la main.
+                -->
+                <record id="res_fr_controle" model="account.report.line">
+                    <field name="sequence" eval="260"/>
+                    <field name="name">Recomposition gap (must be zero)</field>
+                    <field name="name@fr">Écart de recomposition (doit être nul)</field>
+                    <field name="code">RES_ECART</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">RES_NET.balance - RES_GLOBAL.balance</field>
+                    <field name="children_ids">
+                        <record id="res_fr_global" model="account.report.line">
+                            <field name="sequence" eval="270"/>
+                            <field name="name">Result from global expense and revenue balance</field>
+                    <field name="name@fr">Résultat par solde global des classes 6 et 7</field>
+                            <field name="code">RES_GLOBAL</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-6 - 7</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

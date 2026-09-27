@@ -1,0 +1,101 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_tax_unit
+#: model:ir.actions.act_window,name:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "Tax Units"
+msgstr "Unità fiscali"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model,name:expodo_account_tax_unit.model_expodo_tax_unit
+msgid "Tax unit"
+msgstr "Unità fiscale"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,help:expodo_account_tax_unit.field_expodo_tax_unit__company_ids
+msgid "Companies whose operations are declared together."
+msgstr "Società le cui operazioni sono dichiarate insieme."
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__main_company_id
+msgid "Representative"
+msgstr "Rappresentante"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__vat
+msgid "VAT number"
+msgstr "Partita IVA"
+
+#. module: expodo_account_tax_unit
+#: model:ir.ui.menu,name:expodo_account_tax_unit.menu_expodo_tax_unit
+msgid "Tax Units"
+msgstr "Unità fiscali"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "Reports for this scope"
+msgstr "Prospetti su questo perimetro"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "e.g. VAT group Dupont"
+msgstr "es. Gruppo IVA Dupont"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "Tax unit"
+msgstr "Unità fiscale"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_list
+msgid "Tax units"
+msgstr "Unità fiscali"
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models/tax_unit.py:0
+msgid "Reports for %(name)s"
+msgstr "Prospetti di %(name)s"
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models:0
+msgid "%(company)s already belongs to the unit “%(other)s” for %(country)s. Declaring the same operations twice would make both returns look complete."
+msgstr "%(company)s appartiene già all'unità «%(other)s» per %(country)s. Dichiarare due volte le stesse operazioni farebbe sembrare complete entrambe le dichiarazioni."
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models:0
+msgid "The representative of “%(name)s” must be one of the companies in the unit."
+msgstr "Il rappresentante di «%(name)s» deve essere una delle società dell'unità."
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.actions.act_window,help:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "File for several companies at once"
+msgstr "Dichiarare per più società insieme"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.actions.act_window,help:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "A tax unit gathers the companies that file under a single tax number. The return is then read across all of them, with one of them carrying the filing."
+msgstr "Un'unità fiscale riunisce le società che dichiarano con un unico numero fiscale. La dichiarazione si legge allora sull'insieme, con una di esse che porta la presentazione."
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__active
+msgid "Active"
+msgstr "Attivo"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__company_ids
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__country_id
+msgid "Country"
+msgstr "Paese"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__name
+msgid "Name"
+msgstr "Nome"

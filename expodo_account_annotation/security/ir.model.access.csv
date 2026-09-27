@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expodo_report_annotation_readonly,expodo.report.annotation.readonly,model_expodo_report_annotation,account.group_account_readonly,1,0,0,0
+access_expodo_report_annotation_basic,expodo.report.annotation.basic,model_expodo_report_annotation,account.group_account_basic,1,0,0,0
+access_expodo_report_annotation_user,expodo.report.annotation.user,model_expodo_report_annotation,account.group_account_user,1,1,1,0
+access_expodo_report_annotation_manager,expodo.report.annotation.manager,model_expodo_report_annotation,account.group_account_manager,1,1,1,1

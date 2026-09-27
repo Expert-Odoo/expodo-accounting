@@ -1,0 +1,101 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_tax_unit
+#: model:ir.actions.act_window,name:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "Tax Units"
+msgstr "Fiscale eenheden"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model,name:expodo_account_tax_unit.model_expodo_tax_unit
+msgid "Tax unit"
+msgstr "Fiscale eenheid"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,help:expodo_account_tax_unit.field_expodo_tax_unit__company_ids
+msgid "Companies whose operations are declared together."
+msgstr "Bedrijven waarvan de handelingen samen worden aangegeven."
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__main_company_id
+msgid "Representative"
+msgstr "Vertegenwoordiger"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__vat
+msgid "VAT number"
+msgstr "Btw-nummer"
+
+#. module: expodo_account_tax_unit
+#: model:ir.ui.menu,name:expodo_account_tax_unit.menu_expodo_tax_unit
+msgid "Tax Units"
+msgstr "Fiscale eenheden"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "Reports for this scope"
+msgstr "Rapporten voor deze kring"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "e.g. VAT group Dupont"
+msgstr "bv. Btw-eenheid Dupont"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_form
+msgid "Tax unit"
+msgstr "Fiscale eenheid"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.ui.view,arch_db:expodo_account_tax_unit.view_expodo_tax_unit_list
+msgid "Tax units"
+msgstr "Fiscale eenheden"
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models/tax_unit.py:0
+msgid "Reports for %(name)s"
+msgstr "Rapporten van %(name)s"
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models:0
+msgid "%(company)s already belongs to the unit “%(other)s” for %(country)s. Declaring the same operations twice would make both returns look complete."
+msgstr "%(company)s behoort voor %(country)s al tot de eenheid '%(other)s'. Dezelfde handelingen tweemaal aangeven zou beide aangiften volledig doen lijken."
+
+#. module: expodo_account_tax_unit
+#. odoo-python
+#: code:addons/expodo_account_tax_unit/models:0
+msgid "The representative of “%(name)s” must be one of the companies in the unit."
+msgstr "De vertegenwoordiger van '%(name)s' moet een van de bedrijven in de eenheid zijn."
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.actions.act_window,help:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "File for several companies at once"
+msgstr "Voor meerdere vennootschappen tegelijk aangeven"
+
+#. module: expodo_account_tax_unit
+#: model_terms:ir.actions.act_window,help:expodo_account_tax_unit.action_expodo_tax_unit
+msgid "A tax unit gathers the companies that file under a single tax number. The return is then read across all of them, with one of them carrying the filing."
+msgstr "Een fiscale eenheid verenigt de vennootschappen die onder één fiscaal nummer aangifte doen. De aangifte wordt dan over het geheel gelezen, waarbij één ervan de indiening draagt."
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__active
+msgid "Active"
+msgstr "Actief"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__company_ids
+msgid "Companies"
+msgstr "Bedrijven"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__country_id
+msgid "Country"
+msgstr "Land"
+
+#. module: expodo_account_tax_unit
+#: model:ir.model.fields,field_description:expodo_account_tax_unit.field_expodo_tax_unit__name
+msgid "Name"
+msgstr "Naam"

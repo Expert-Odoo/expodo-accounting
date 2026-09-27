@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Relevé intracommunautaire.
+
+            Toute entreprise qui vend en exonération de TVA à un client
+            assujetti d'un autre État membre doit déclarer ces opérations,
+            client par client et par numéro de TVA. En France, l'état de
+            récapitulation TVA pour les services et l'EMEBI pour les biens.
+
+            Le contrôle est automatique et croisé : l'administration rapproche
+            ce que le vendeur déclare avoir livré de ce que l'acheteur déclare
+            avoir acquis, dans l'autre pays. Un écart déclenche une demande,
+            parfois des années plus tard.
+
+            Choix de sélection
+            
+            Les opérations sont retenues sur trois critères cumulatifs, et pas
+            sur le nom de la taxe :
+
+              — le client est établi dans l'Union européenne ;
+              — son pays n'est pas celui de la société, sans quoi il s'agit
+                d'une vente intérieure ;
+              — la ligne porte une taxe dont la portée dit s'il s'agit d'un
+                bien ou d'un service.
+
+            Sélectionner par nom de taxe — « 0% EU G » — aurait été plus court
+            et se serait cassé au premier client dont la localisation nomme ses
+            taxes autrement, c'est-à-dire dans la plupart des pays.
+
+            Ce que l'état ne fait pas
+            
+            Il ne produit pas le fichier de télédéclaration. Les formats
+            varient par État membre et changent régulièrement ; les recopier
+            ici les périmerait. L'état donne les montants à déclarer, la
+            transmission reste au déclarant.
+
+            Il ne vérifie pas non plus la validité des numéros de TVA auprès
+            de VIES. Un numéro invalide fait perdre l'exonération, mais ce
+            contrôle appelle un appel au service européen, qui n'a pas sa
+            place dans un état comptable.
+        -->
+
+        <record id="report_ec_sales_list" model="account.report">
+            <field name="name">EC Sales List</field>
+            <field name="name@fr">Relevé intracommunautaire</field>
+            <field name="name@es">Estado recapitulativo intracomunitario</field>
+            <field name="name@de">Zusammenfassende Meldung</field>
+            <field name="name@nl">Intracommunautaire opgaaf</field>
+            <field name="name@it">Elenco riepilogativo intracomunitario</field>
+            <field name="name@pt_BR">Mapa recapitulativo intracomunitário</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_partner" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_hide_0_lines">optional</field>
+            <field name="default_opening_date_filter">this_quarter</field>
+            <field name="column_ids">
+                <record id="report_ec_sales_col_total" model="account.report.column">
+                    <field name="name">Total</field>
+                    <field name="name@fr">Total</field>
+                    <field name="name@de">Gesamt</field>
+                    <field name="name@nl">Totaal</field>
+                    <field name="name@it">Totale</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_ec_sales_col_goods" model="account.report.column">
+                    <field name="name">Goods</field>
+                    <field name="name@fr">Biens</field>
+                    <field name="name@es">Bienes</field>
+                    <field name="name@de">Waren</field>
+                    <field name="name@nl">Goederen</field>
+                    <field name="name@it">Beni</field>
+                    <field name="name@pt_BR">Bens</field>
+                    <field name="expression_label">goods</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+                <record id="report_ec_sales_col_services" model="account.report.column">
+                    <field name="name">Services</field>
+                    <field name="name@fr">Services</field>
+                    <field name="name@es">Servicios</field>
+                    <field name="name@de">Dienstleistungen</field>
+                    <field name="name@nl">Diensten</field>
+                    <field name="name@it">Servizi</field>
+                    <field name="name@pt_BR">Serviços</field>
+                    <field name="expression_label">services</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+                <record id="ec_sales_partners" model="account.report.line">
+                    <field name="name">Customers in other member states</field>
+                    <field name="name@fr">Clients d'autres États membres</field>
+                    <field name="name@es">Clientes de otros Estados miembros</field>
+                    <field name="name@de">Kunden in anderen Mitgliedstaaten</field>
+                    <field name="name@nl">Klanten in andere lidstaten</field>
+                    <field name="name@it">Clienti di altri Stati membri</field>
+                    <field name="name@pt_BR">Clientes de outros Estados-Membros</field>
+                    <field name="code">EC_SALES_PARTNERS</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Deux niveaux : le client, puis ses pièces. Le premier
+                        donne le montant à porter en face de son numéro de
+                        TVA ; le second sert quand l'administration d'en face
+                        conteste un montant.
+                    -->
+                    <field name="groupby">partner_id,id</field>
+                    <field name="expression_ids">
+                        <record id="ec_sales_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids', '!=', False)]</field>
+                            <!-- Les ventes ont un solde créditeur : on
+                                 renverse pour déclarer des montants positifs,
+                                 comme le fait tout formulaire déclaratif. -->
+                            <field name="subformula">-sum</field>
+                        </record>
+                        <record id="ec_sales_goods" model="account.report.expression">
+                            <field name="label">goods</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'consu')]</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                        <record id="ec_sales_services" model="account.report.expression">
+                            <field name="label">services</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'service')]</field>
+                            <field name="subformula">-sum</field>
+                        </record>
+                    </field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

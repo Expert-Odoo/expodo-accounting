@@ -1,0 +1,121 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_fec
+#: model:ir.actions.act_window,name:expodo_account_fec.action_expodo_fec_export
+msgid "FEC Export"
+msgstr "Export FEC"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_export
+msgid "Export the French accounting entries file (FEC)"
+msgstr "Exporter le fichier des écritures comptables (FEC)"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_generator
+msgid "FEC file generator"
+msgstr "Générateur de fichier FEC"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_name
+msgid "File name"
+msgstr "Nom du fichier"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__line_count
+msgid "Entry lines"
+msgstr "Lignes d'écriture"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__warning
+msgid "Warning"
+msgstr "Avertissement"
+
+#. module: expodo_account_fec
+#: model:ir.ui.menu,name:expodo_account_fec.menu_expodo_fec_export
+msgid "FEC Export"
+msgstr "Export FEC"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Download"
+msgstr "Télécharger"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Generate"
+msgstr "Générer"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Export FEC"
+msgstr "Export FEC"
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/wizard/fec_export.py:0
+msgid "The start date must precede the end date."
+msgstr "La date de début doit précéder la date de fin."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s draft entries in this period are excluded from the file, as required. Post them first if they belong to the period."
+msgstr "%(count)s pièces en brouillon de cette période sont exclues du fichier, comme il se doit. Comptabilisez-les d'abord si elles appartiennent à la période."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines are dated before the start of the period. Check the period bounds."
+msgstr "%(count)s lignes d'écriture sont datées avant le début de la période. Vérifiez les bornes de la période."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines use class 8 or 9 accounts (%(codes)s), which the tax authority excludes from the FEC. Odoo creates 999xxx accounts as a fallback for exchange differences when the installed chart names none. Remap them to their French chart equivalents — 666 and 766 for exchange differences — and repost. The lines are kept in the file: removing them would unbalance it, which is a heavier objection than the account class."
+msgstr "%(count)s lignes d'écriture utilisent des comptes de classe 8 ou 9 (%(codes)s), que l'administration exclut du FEC. Odoo crée des comptes 999xxx par défaut pour les écarts de change lorsque le plan installé n'en désigne aucun. Remappez-les vers leurs équivalents du plan français, 666 et 766 pour les écarts de change, puis recomptabilisez. Les lignes sont conservées dans le fichier : les retirer le déséquilibrerait, ce qui est une objection plus lourde que la classe du compte."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No company registration number found: the file is named with a placeholder SIREN. Set the company registry (SIRET) before handing the file over."
+msgstr "Aucun numéro d'immatriculation trouvé : le fichier est nommé avec un SIREN fictif. Renseignez le registre de la société (SIRET) avant de remettre le fichier."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No opening entry is recorded on the company. Opening entries must head the file and carry forward the previous year's balances; their absence is one of the anomalies the tax authority identifies immediately."
+msgstr "Aucune écriture d'à-nouveau n'est enregistrée sur la société. Les à-nouveaux doivent ouvrir le fichier et reprendre les soldes de l'exercice précédent ; leur absence est l'une des anomalies que l'administration repère immédiatement."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "The company's fiscal country is not France. The FEC is a French requirement; check that this is what you intend."
+msgstr "Le pays fiscal de la société n'est pas la France. Le FEC est une obligation française ; vérifiez que c'est bien ce que vous voulez."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "Validation dates are set to the accounting date, as Odoo keeps no separate posting timestamp. Produce the file at the time of the year-end close, not months later, so that these dates stay consistent with the return you filed."
+msgstr "Les dates de validation reprennent la date comptable, Odoo ne conservant pas d'horodatage de comptabilisation distinct. Produisez le fichier au moment de la clôture, et non des mois plus tard, pour que ces dates restent cohérentes avec la déclaration déposée."
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__company_id
+msgid "Company"
+msgstr "Société"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_data
+msgid "File"
+msgstr "Fichier"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_from
+msgid "From"
+msgstr "Du"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_to
+msgid "To"
+msgstr "au"

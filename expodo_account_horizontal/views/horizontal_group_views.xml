@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_hgroup_form" model="ir.ui.view">
+            <field name="name">expodo.report.horizontal.group.form</field>
+            <field name="model">expodo.report.horizontal.group</field>
+            <field name="arch" type="xml">
+                <form string="Horizontal group">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="e.g. By establishment"/></h1>
+                        </div>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                        <notebook>
+                            <page string="Columns">
+                                <field name="rule_ids">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="field_name"/>
+                                        <field name="value_ids_text"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                        <div class="alert alert-info" role="alert">
+                            Each column keeps the entries whose field matches one of
+                            the listed identifiers. A column may cover several values
+                            at once — “Paris and Lyon” as one establishment.
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_expodo_hgroup_list" model="ir.ui.view">
+            <field name="name">expodo.report.horizontal.group.list</field>
+            <field name="model">expodo.report.horizontal.group</field>
+            <field name="arch" type="xml">
+                <list string="Horizontal groups">
+                    <field name="name"/>
+                    <field name="rule_ids" widget="many2many_tags"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_expodo_hgroup" model="ir.actions.act_window">
+            <field name="name">Horizontal Groups</field>
+            <field name="res_model">expodo.report.horizontal.group</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Split the columns</p>
+                <p>A statement reads time left to right. A horizontal group adds a second dimension — by establishment, by activity, by journal — and answers a question the statement alone cannot ask: where does this total come from?</p>
+            </field>
+        </record>
+
+        <menuitem id="menu_expodo_hgroup"
+                  name="Horizontal Groups"
+                  parent="account.account_account_menu"
+                  action="action_expodo_hgroup"
+                  sequence="88"/>
+
+    </data>
+</odoo>

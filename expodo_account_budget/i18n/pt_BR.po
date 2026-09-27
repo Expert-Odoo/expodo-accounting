@@ -1,0 +1,225 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_budget
+#: model:ir.actions.act_window,name:expodo_account_budget.action_expodo_budget
+msgid "Budgets"
+msgstr "Orçamentos"
+
+#. module: expodo_account_budget
+#: model_terms:ir.actions.act_window,help:expodo_account_budget.action_expodo_budget
+msgid "Plan and compare"
+msgstr "Planejar e comparar"
+
+#. module: expodo_account_budget
+#: model:ir.model,name:expodo_account_budget.model_expodo_budget
+msgid "Budget"
+msgstr "Orçamento"
+
+#. module: expodo_account_budget
+#: model:ir.model,name:expodo_account_budget.model_expodo_budget_line
+msgid "Budget line"
+msgstr "Linha orçamentária"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_actual
+msgid "Actual"
+msgstr "Realizado"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_planned
+msgid "Planned"
+msgstr "Previsto"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_variance
+msgid "Variance"
+msgstr "Desvio"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,help:expodo_account_budget.field_expodo_budget_line__account_id
+msgid "Account whose movements are compared with the planned amount."
+msgstr "Conta cujos movimentos são comparados ao valor previsto."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__achievement
+msgid "Achieved (%)"
+msgstr "Execução (%)"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,help:expodo_account_budget.field_expodo_budget_line__achievement
+msgid "Actual as a percentage of the planned amount."
+msgstr "Realizado em percentual do valor previsto."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__actual_amount
+msgid "Actual"
+msgstr "Realizado"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__budget_id
+msgid "Budget"
+msgstr "Orçamento"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__planned_amount
+msgid "Planned"
+msgstr "Previsto"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__prorated_amount
+msgid "Planned to date"
+msgstr "Previsto até a data"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__variance
+msgid "Variance"
+msgstr "Desvio"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__confirmed
+msgid "Confirmed"
+msgstr "Confirmado"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__done
+msgid "Closed"
+msgstr "Encerrado"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__draft
+msgid "Draft"
+msgstr "Provisório"
+
+#. module: expodo_account_budget
+#: model:ir.ui.menu,name:expodo_account_budget.menu_expodo_budget
+msgid "Budgets"
+msgstr "Orçamentos"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Confirm"
+msgstr "Confirmar"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Back to draft"
+msgstr "Voltar a provisório"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "e.g. Budget 2027"
+msgstr "ex.: Orçamento 2027"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Budget"
+msgstr "Orçamento"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Planned"
+msgstr "Previsto"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "To date"
+msgstr "Até a data"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Actual"
+msgstr "Realizado"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Variance"
+msgstr "Desvio"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Open the entries"
+msgstr "Abrir os lançamentos"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Budget lines"
+msgstr "Linhas orçamentárias"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_list
+msgid "Budgets"
+msgstr "Orçamentos"
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "“%(name)s” ends before it starts."
+msgstr "“%(name)s” termina antes de começar."
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "The period of a budget line ends before it starts."
+msgstr "O período de uma linha orçamentária termina antes de começar."
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "Entries behind %(account)s"
+msgstr "Lançamentos da conta %(account)s"
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models:0
+msgid "The line period (%(start)s – %(end)s) falls outside the budget (%(bstart)s – %(bend)s). A line reaching beyond its budget would be counted in no total."
+msgstr "O período da linha (%(start)s – %(end)s) fica fora do orçamento (%(bstart)s – %(bend)s). Uma linha que ultrapassa o seu orçamento não seria contada em nenhum total."
+
+#. module: expodo_account_budget
+#: model_terms:ir.actions.act_window,help:expodo_account_budget.action_expodo_budget
+msgid "A planned amount on its own says nothing. What is looked at is the gap: how much has been spent against how much was planned, and how far into the period."
+msgstr "Um valor previsto sozinho não diz nada. O que se olha é a diferença: quanto foi gasto em relação ao que estava previsto, e em que ponto do período se está."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__account_id
+msgid "Account"
+msgstr "Conta"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__company_id
+msgid "Company"
+msgstr "Empresa"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__currency_id
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__currency_id
+msgid "Currency"
+msgstr "Moeda"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__date_from
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__date_from
+msgid "From"
+msgstr "De"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__line_ids
+msgid "Lines"
+msgstr "Linhas"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__state
+msgid "Status"
+msgstr "Situação"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__date_to
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__date_to
+msgid "To"
+msgstr "até"

@@ -1,0 +1,175 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_deferred
+#: model:ir.actions.act_window,name:expodo_account_deferred.action_expodo_deferral_wizard
+msgid "Deferred Expenses and Revenues"
+msgstr "Overlopende activa en passiva"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_engine
+msgid "Deferred expense and revenue engine"
+msgstr "Motor voor overlopende posten"
+
+#. module: expodo_account_deferred
+#: model:ir.model,name:expodo_account_deferred.model_expodo_deferral_wizard
+msgid "Post deferred expenses and revenues"
+msgstr "Overlopende posten boeken"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_amount
+msgid "Deferred portion"
+msgstr "Overgedragen deel"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Covers to"
+msgstr "Dekt tot en met"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_account_move_line__deferred_end_date
+msgid "Last day of the covered period, included."
+msgstr "Laatste dag van de gedekte periode, inbegrepen."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_account_move_line__deferred_start_date
+msgid "Covers from"
+msgstr "Dekt vanaf"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid "Closing date"
+msgstr "Afsluitdatum"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,help:expodo_account_deferred.field_expodo_deferral_wizard__date_to
+msgid ""
+"Everything covering a period after this date is carried to the balance "
+"sheet."
+msgstr "Alles voor een latere periode gaat naar de balans."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__line_count
+msgid "Lines concerned"
+msgstr "Betrokken regels"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__move_id
+msgid "Deferral entry"
+msgstr "Overlopende boeking"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__preview
+msgid "Detail"
+msgstr "Detail"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__total_deferred
+msgid "Total deferred"
+msgstr "Totaal overgedragen"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__warning
+msgid "Before you post"
+msgstr "Vóór het boeken"
+
+#. module: expodo_account_deferred
+#: model:ir.ui.menu,name:expodo_account_deferred.menu_expodo_deferral
+msgid "Deferred Expenses and Revenues"
+msgstr "Overlopende activa en passiva"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Detail"
+msgstr "Detail"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Preview"
+msgstr "Voorbeeld"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Create the entry"
+msgstr "Boeking aanmaken"
+
+#. module: expodo_account_deferred
+#: model_terms:ir.ui.view,arch_db:expodo_account_deferred.view_expodo_deferral_wizard_form
+msgid "Deferred expenses and revenues"
+msgstr "Overlopende activa en passiva"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/account_move_line.py:0
+msgid "The covered period of “%(line)s” ends before it starts."
+msgstr "De periode van ‘%(line)s’ eindigt vóór het begin."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "Deferred %(start)s – %(end)s"
+msgstr "Overgedragen van %(start)s tot %(end)s"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models/deferral_engine.py:0
+msgid "draft entry"
+msgstr "concept-boeking"
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/wizard/deferral_wizard.py:0
+msgid "Nothing to defer at this date."
+msgstr "Niets over te dragen op deze datum."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "%(count)s lines carry a start date but no end date. They cannot be spread and stay entirely in this year's result."
+msgstr "%(count)s regels hebben een begindatum maar geen einddatum. Zij kunnen niet worden gespreid en blijven volledig in het resultaat van dit jaar."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date (%(names)s). Posting a second one would defer the same amounts twice."
+msgstr "Op deze datum bestaat al een afgrenzingsboeking (%(names)s). Een tweede boeken zou dezelfde bedragen dubbel spreiden."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "A deferral entry already exists at this date. Posting a second one would defer the same amounts twice. Reverse the existing entry first."
+msgstr "Op deze datum bestaat al een afgrenzingsboeking. Een tweede boeken zou dezelfde bedragen dubbel spreiden. Storneer eerst de bestaande boeking."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No balance sheet account is available to carry the deferred portion of %(line)s. Create an account typed “%(type)s”, or 486/487 in the French chart."
+msgstr "Er is geen balansrekening beschikbaar voor het gespreide deel van %(line)s. Maak een rekening van het type '%(type)s' aan, of 486/487 in het Franse schema."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "No line covers a period after %(date)s: there is nothing to defer."
+msgstr "Geen enkele regel bestrijkt een periode na %(date)s: er valt niets te spreiden."
+
+#. module: expodo_account_deferred
+#. odoo-python
+#: code:addons/expodo_account_deferred/models:0
+msgid "The deferral entry is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "De afgrenzingsboeking is %(gap).2f uit balans. Er is niets geboekt."
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_deferred
+#: model:ir.model.fields,field_description:expodo_account_deferred.field_expodo_deferral_wizard__journal_id
+msgid "Journal"
+msgstr "Dagboek"

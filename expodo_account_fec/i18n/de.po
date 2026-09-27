@@ -1,0 +1,121 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_fec
+#: model:ir.actions.act_window,name:expodo_account_fec.action_expodo_fec_export
+msgid "FEC Export"
+msgstr "FEC-Export"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_export
+msgid "Export the French accounting entries file (FEC)"
+msgstr "Französische Buchungsdatei (FEC) exportieren"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_generator
+msgid "FEC file generator"
+msgstr "FEC-Dateigenerator"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_name
+msgid "File name"
+msgstr "Dateiname"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__line_count
+msgid "Entry lines"
+msgstr "Buchungszeilen"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__warning
+msgid "Warning"
+msgstr "Warnung"
+
+#. module: expodo_account_fec
+#: model:ir.ui.menu,name:expodo_account_fec.menu_expodo_fec_export
+msgid "FEC Export"
+msgstr "FEC-Export"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Download"
+msgstr "Herunterladen"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Generate"
+msgstr "Erzeugen"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Export FEC"
+msgstr "FEC-Export"
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/wizard/fec_export.py:0
+msgid "The start date must precede the end date."
+msgstr "Das Startdatum muss vor dem Enddatum liegen."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s draft entries in this period are excluded from the file, as required. Post them first if they belong to the period."
+msgstr "%(count)s Buchungsentwürfe dieses Zeitraums sind, wie vorgeschrieben, von der Datei ausgeschlossen. Buchen Sie sie zuerst, wenn sie zum Zeitraum gehören."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines are dated before the start of the period. Check the period bounds."
+msgstr "%(count)s Buchungszeilen liegen vor dem Beginn des Zeitraums. Prüfen Sie die Zeitraumgrenzen."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines use class 8 or 9 accounts (%(codes)s), which the tax authority excludes from the FEC. Odoo creates 999xxx accounts as a fallback for exchange differences when the installed chart names none. Remap them to their French chart equivalents — 666 and 766 for exchange differences — and repost. The lines are kept in the file: removing them would unbalance it, which is a heavier objection than the account class."
+msgstr "%(count)s Buchungszeilen verwenden Konten der Klasse 8 oder 9 (%(codes)s), die die Finanzverwaltung vom FEC ausschließt. Odoo legt 999xxx-Konten als Rückfall für Kursdifferenzen an, wenn der installierte Kontenplan keine benennt. Ordnen Sie sie den Entsprechungen des französischen Kontenplans zu, 666 und 766 für Kursdifferenzen, und buchen Sie erneut. Die Zeilen bleiben in der Datei: Sie zu entfernen brächte sie aus dem Gleichgewicht, was schwerer wiegt als die Kontenklasse."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No company registration number found: the file is named with a placeholder SIREN. Set the company registry (SIRET) before handing the file over."
+msgstr "Keine Registernummer gefunden: Die Datei trägt eine Platzhalter-SIREN. Hinterlegen Sie das Handelsregister der Gesellschaft (SIRET), bevor Sie die Datei übergeben."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No opening entry is recorded on the company. Opening entries must head the file and carry forward the previous year's balances; their absence is one of the anomalies the tax authority identifies immediately."
+msgstr "Für die Gesellschaft ist keine Eröffnungsbuchung erfasst. Eröffnungsbuchungen müssen die Datei anführen und die Salden des Vorjahres vortragen; ihr Fehlen ist eine der Auffälligkeiten, die die Finanzverwaltung sofort erkennt."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "The company's fiscal country is not France. The FEC is a French requirement; check that this is what you intend."
+msgstr "Das Steuerland der Gesellschaft ist nicht Frankreich. Der FEC ist eine französische Pflicht; prüfen Sie, ob dies beabsichtigt ist."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "Validation dates are set to the accounting date, as Odoo keeps no separate posting timestamp. Produce the file at the time of the year-end close, not months later, so that these dates stay consistent with the return you filed."
+msgstr "Die Validierungsdaten übernehmen das Buchungsdatum, da Odoo keinen gesonderten Buchungszeitstempel führt. Erstellen Sie die Datei zum Zeitpunkt des Jahresabschlusses und nicht Monate später, damit diese Daten zur eingereichten Erklärung passen."
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__company_id
+msgid "Company"
+msgstr "Unternehmen"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_data
+msgid "File"
+msgstr "Datei"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_from
+msgid "From"
+msgstr "Von"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_to
+msgid "To"
+msgstr "bis"

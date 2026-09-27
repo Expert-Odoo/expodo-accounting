@@ -1,0 +1,37 @@
+# Dépôt de publication : seuls les modules Expodo y entrent.
+#
+# Le dossier custom-addons sert aussi d'aire de travail et contient des
+# modules tiers téléchargés pour comparaison. Les republier reviendrait à
+# diffuser le code d'un concurrent sous cette licence, donc la règle est
+# inversée : tout est ignoré, puis les modules Expodo sont réautorisés un
+# à un. Un `git add -A` distrait ne peut plus emporter autre chose.
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/expodo_accounting/
+!/expodo_account_annotation/
+!/expodo_account_assets/
+!/expodo_account_budget/
+!/expodo_account_closing/
+!/expodo_account_deferred/
+!/expodo_account_fec/
+!/expodo_account_fiscal_year/
+!/expodo_account_followup/
+!/expodo_account_horizontal/
+!/expodo_account_reconcile/
+!/expodo_account_reports/
+!/expodo_account_return/
+!/expodo_account_revaluation/
+!/expodo_account_tax_unit/
+
+# Artefacts Python
+__pycache__/
+*.py[cod]
+
+# Éditeurs et systèmes
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

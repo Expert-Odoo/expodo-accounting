@@ -1,0 +1,176 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_closing
+#: model:ir.actions.act_window,name:expodo_account_closing.action_expodo_year_closing
+msgid "Year-End Closing"
+msgstr "Chiusura d'esercizio"
+
+#. module: expodo_account_closing
+#: model:ir.model,name:expodo_account_closing.model_expodo_closing_engine
+msgid "Year-end closing engine"
+msgstr "Motore di chiusura d'esercizio"
+
+#. module: expodo_account_closing
+#: model:ir.model,name:expodo_account_closing.model_expodo_year_closing
+msgid "Close a fiscal year"
+msgstr "Chiudere un esercizio"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__closing_move_id
+msgid "Closing entry"
+msgstr "Scrittura di chiusura"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__create_opening
+msgid "Also create the opening entry"
+msgstr "Creare anche la scrittura di apertura"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__opening_move_id
+msgid "Opening entry"
+msgstr "Scrittura di apertura"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__result
+msgid "Result for the period"
+msgstr "Risultato dell'esercizio"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__warning
+msgid "Before you post"
+msgstr "Prima di registrare"
+
+#. module: expodo_account_closing
+#: model:ir.ui.menu,name:expodo_account_closing.menu_expodo_year_closing
+msgid "Year-End Closing"
+msgstr "Chiusura d'esercizio"
+
+#. module: expodo_account_closing
+#: model_terms:ir.ui.view,arch_db:expodo_account_closing.view_expodo_year_closing_form
+msgid "Generated"
+msgstr "Generato"
+
+#. module: expodo_account_closing
+#: model_terms:ir.ui.view,arch_db:expodo_account_closing.view_expodo_year_closing_form
+msgid "Check"
+msgstr "Verificare"
+
+#. module: expodo_account_closing
+#: model_terms:ir.ui.view,arch_db:expodo_account_closing.view_expodo_year_closing_form
+msgid "Close the year"
+msgstr "Chiudere l'esercizio"
+
+#. module: expodo_account_closing
+#: model_terms:ir.ui.view,arch_db:expodo_account_closing.view_expodo_year_closing_form
+msgid "Register as opening entry"
+msgstr "Registrare come scrittura di apertura"
+
+#. module: expodo_account_closing
+#: model_terms:ir.ui.view,arch_db:expodo_account_closing.view_expodo_year_closing_form
+msgid "Close a fiscal year"
+msgstr "Chiudere un esercizio"
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models/closing_engine.py:0
+msgid "Closing of the period"
+msgstr "Chiusura del periodo"
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models/closing_engine.py:0
+msgid "Result for the period"
+msgstr "Risultato dell'esercizio"
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models/closing_engine.py:0
+msgid "Opening balance"
+msgstr "Saldo di apertura"
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/wizard/year_closing.py:0
+msgid "The start date must precede the end date."
+msgstr "La data di inizio deve precedere quella di fine."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/wizard/year_closing.py:0
+msgid "No opening entry has been generated."
+msgstr "Nessuna scrittura di apertura è stata generata."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "%(count)s draft entries fall in this period. They are excluded from the closing; post them first if they belong to the year."
+msgstr "%(count)s registrazioni in bozza rientrano in questo periodo. Sono escluse dalla chiusura; confermale prima se appartengono all'esercizio."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "No account is typed “Unallocated Earnings” for %(company)s. The closing entry has nowhere to carry the result."
+msgstr "Nessun conto è tipizzato «Risultato non assegnato» per %(company)s. La scrittura di chiusura non ha dove riportare il risultato."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "No fiscal country is set on the company. The result account is chosen from the account type rather than from the local chart's numbering."
+msgstr "Nessun paese fiscale è impostato sulla società. Il conto di risultato è scelto in base al tipo di conto e non alla numerazione del piano locale."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "No posted profit-and-loss entry in this period: there is nothing to close."
+msgstr "Nessuna registrazione economica confermata in questo periodo: non c'è nulla da chiudere."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "The generated entry %(name)s is out of balance by %(gap).2f. Nothing has been posted."
+msgstr "La registrazione generata %(name)s è sbilanciata di %(gap).2f. Non è stato confermato nulla."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "This period already carries closing entries (%(names)s). Closing twice halves the result without warning: delete or reverse them first."
+msgstr "Questo periodo contiene già scritture di chiusura (%(names)s). Chiudere due volte dimezza il risultato senza avvisare: eliminale o stornale prima."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "This period already carries closing entries. Closing twice would halve the result. Reverse the existing entries first."
+msgstr "Questo periodo contiene già scritture di chiusura. Chiudere due volte dimezzerebbe il risultato. Storna prima le scritture esistenti."
+
+#. module: expodo_account_closing
+#. odoo-python
+#: code:addons/expodo_account_closing/models:0
+msgid "Unallocated earnings are carried to account %(code)s, a class 8 or 9 fallback that Odoo creates when the installed chart names none. In the French chart this should be 110000. Class 8 and 9 accounts are also excluded from the FEC, so this will surface twice."
+msgstr "Il risultato non assegnato è portato al conto %(code)s, un ripiego di classe 8 o 9 che Odoo crea quando il piano installato non ne indica alcuno. Nel piano francese dovrebbe essere 110000. I conti di classe 8 e 9 sono inoltre esclusi dal FEC, quindi il problema si ripresenterà."
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__date_from
+msgid "From"
+msgstr "Dal"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__journal_id
+msgid "Journal"
+msgstr "Registro"
+
+#. module: expodo_account_closing
+#: model:ir.model.fields,field_description:expodo_account_closing.field_expodo_year_closing__date_to
+msgid "To"
+msgstr "al"

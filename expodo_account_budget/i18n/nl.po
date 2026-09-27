@@ -1,0 +1,226 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_budget
+#: model:ir.actions.act_window,name:expodo_account_budget.action_expodo_budget
+msgid "Budgets"
+msgstr "Budgetten"
+
+#. module: expodo_account_budget
+#: model_terms:ir.actions.act_window,help:expodo_account_budget.action_expodo_budget
+msgid "Plan and compare"
+msgstr "Plannen en vergelijken"
+
+#. module: expodo_account_budget
+#: model:ir.model,name:expodo_account_budget.model_expodo_budget
+msgid "Budget"
+msgstr "Budget"
+
+#. module: expodo_account_budget
+#: model:ir.model,name:expodo_account_budget.model_expodo_budget_line
+msgid "Budget line"
+msgstr "Budgetregel"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_actual
+msgid "Actual"
+msgstr "Werkelijk"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_planned
+msgid "Planned"
+msgstr "Gepland"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__total_variance
+msgid "Variance"
+msgstr "Afwijking"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,help:expodo_account_budget.field_expodo_budget_line__account_id
+msgid "Account whose movements are compared with the planned amount."
+msgstr ""
+"Rekening waarvan de mutaties met het geplande bedrag worden vergeleken."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__achievement
+msgid "Achieved (%)"
+msgstr "Realisatie (%)"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,help:expodo_account_budget.field_expodo_budget_line__achievement
+msgid "Actual as a percentage of the planned amount."
+msgstr "Werkelijk als percentage van het geplande bedrag."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__actual_amount
+msgid "Actual"
+msgstr "Werkelijk"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__budget_id
+msgid "Budget"
+msgstr "Budget"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__planned_amount
+msgid "Planned"
+msgstr "Gepland"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__prorated_amount
+msgid "Planned to date"
+msgstr "Gepland tot heden"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__variance
+msgid "Variance"
+msgstr "Afwijking"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__confirmed
+msgid "Confirmed"
+msgstr "Bevestigd"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__done
+msgid "Closed"
+msgstr "Afgesloten"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields.selection,name:expodo_account_budget.selection__expodo_budget__state__draft
+msgid "Draft"
+msgstr "Concept"
+
+#. module: expodo_account_budget
+#: model:ir.ui.menu,name:expodo_account_budget.menu_expodo_budget
+msgid "Budgets"
+msgstr "Budgetten"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Confirm"
+msgstr "Bevestigen"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Back to draft"
+msgstr "Terug naar concept"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "e.g. Budget 2027"
+msgstr "bv. Budget 2027"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_form
+msgid "Budget"
+msgstr "Budget"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Planned"
+msgstr "Gepland"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "To date"
+msgstr "Tot heden"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Actual"
+msgstr "Werkelijk"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Variance"
+msgstr "Afwijking"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Open the entries"
+msgstr "De boekingen openen"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_line_list
+msgid "Budget lines"
+msgstr "Budgetregels"
+
+#. module: expodo_account_budget
+#: model_terms:ir.ui.view,arch_db:expodo_account_budget.view_expodo_budget_list
+msgid "Budgets"
+msgstr "Budgetten"
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "“%(name)s” ends before it starts."
+msgstr "‘%(name)s’ eindigt vóór het begint."
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "The period of a budget line ends before it starts."
+msgstr "De periode van een budgetregel eindigt vóór het begin."
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models/budget.py:0
+msgid "Entries behind %(account)s"
+msgstr "Boekingen van rekening %(account)s"
+
+#. module: expodo_account_budget
+#. odoo-python
+#: code:addons/expodo_account_budget/models:0
+msgid "The line period (%(start)s – %(end)s) falls outside the budget (%(bstart)s – %(bend)s). A line reaching beyond its budget would be counted in no total."
+msgstr "De periode van de regel (%(start)s – %(end)s) valt buiten het budget (%(bstart)s – %(bend)s). Een regel die verder reikt dan zijn budget zou in geen enkel totaal meetellen."
+
+#. module: expodo_account_budget
+#: model_terms:ir.actions.act_window,help:expodo_account_budget.action_expodo_budget
+msgid "A planned amount on its own says nothing. What is looked at is the gap: how much has been spent against how much was planned, and how far into the period."
+msgstr "Een begroot bedrag op zichzelf zegt niets. Waar het om gaat is het verschil: wat is uitgegeven tegenover wat begroot was, en hoe ver de periode gevorderd is."
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__account_id
+msgid "Account"
+msgstr "Rekening"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__company_id
+msgid "Company"
+msgstr "Bedrijf"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__currency_id
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__currency_id
+msgid "Currency"
+msgstr "Valuta"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__date_from
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__date_from
+msgid "From"
+msgstr "Van"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__line_ids
+msgid "Lines"
+msgstr "Regels"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__name
+msgid "Name"
+msgstr "Naam"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__state
+msgid "Status"
+msgstr "Status"
+
+#. module: expodo_account_budget
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget__date_to
+#: model:ir.model.fields,field_description:expodo_account_budget.field_expodo_budget_line__date_to
+msgid "To"
+msgstr "tot"

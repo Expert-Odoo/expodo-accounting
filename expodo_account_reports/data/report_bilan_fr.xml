@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Bilan au format du plan comptable général français.
+
+            Aucune ligne de Python : le rapport est entièrement déclaratif et
+            hérite du moteur, donc de l'interactivité, du dépliage, du
+            drill-down, des comparaisons et des exports.
+
+            Les classes 4 et 5 mélangent créances et dettes sur les mêmes
+            racines de comptes. Le suffixe D/C du moteur `account_codes` les
+            sépare selon le sens du solde de chaque compte sur la période :
+            un compte de la classe 4 dont le solde est débiteur est une
+            créance, créditeur une dette. C'est la construction classique du
+            bilan français.
+
+            Le résultat de l'exercice est calculé depuis les comptes de
+            gestion (-6-7) et non lu en classe 12 : tant que l'exercice n'est
+            pas clôturé, le compte 120000 est vide, et un bilan qui l'ignore
+            ne s'équilibre pas.
+        -->
+
+        <record id="report_bilan_fr" model="account.report">
+            <!--
+                Lecture cumulée depuis l'origine.
+
+                Un bilan porte des soldes arrêtés à une date, jamais les
+                mouvements d'une période. Ouvert du 1er juillet au 31 décembre,
+                il doit montrer la même trésorerie qu'ouvert sur l'année.
+            -->
+            <field name="expodo_cumulative" eval="True"/>
+            <field name="name">Balance Sheet</field>
+                    <field name="name@fr">Bilan</field>
+            <field name="country_id" ref="base.fr"/>
+            <!-- Rattaché à l'état universel : c'est ce lien qui permet
+                 de le résoudre automatiquement pour une société française. -->
+            <field name="root_report_id" ref="report_balance_sheet"/>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                Toutes les expressions du bilan lisent depuis l'origine : une
+                date d'ouverture n'entre dans aucun calcul. Déclarée, elle
+                s'affichait quand même et on pouvait la déplacer d'un exercice
+                entier sans qu'un seul chiffre bouge — un filtre qui ne filtre
+                rien fait douter de tout l'état.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_unfold_all" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">today</field>
+            <field name="column_ids">
+                <record id="report_bilan_fr_col_balance" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ============================ ACTIF ============================ -->
+                <record id="bilan_fr_actif" model="account.report.line">
+                    <field name="name">ASSETS</field>
+                    <field name="name@fr">ACTIF</field>
+                    <field name="code">BILAN_ACTIF</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BILAN_ACTIF_IMMO.balance + BILAN_ACTIF_CIRC.balance</field>
+                    <field name="children_ids">
+
+                        <record id="bilan_fr_actif_immo" model="account.report.line">
+                            <field name="name">Fixed assets</field>
+                    <field name="name@fr">Actif immobilisé</field>
+                            <field name="code">BILAN_ACTIF_IMMO</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bilan_fr_immo_incorp" model="account.report.line">
+                                    <field name="name">Intangible assets</field>
+                    <field name="name@fr">Immobilisations incorporelles</field>
+                                    <field name="code">BILAN_IMMO_INCORP</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">20 + 280 + 290</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_immo_corp" model="account.report.line">
+                                    <field name="name">Tangible assets</field>
+                    <field name="name@fr">Immobilisations corporelles</field>
+                                    <field name="code">BILAN_IMMO_CORP</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!--
+                                        292 : dépréciations des immobilisations mises en
+                                        concession, qui accompagnent le compte 22.
+                                        Son absence faisait disparaître ces dépréciations
+                                        du bilan. Aucun test ne l'avait vu : dans un jeu
+                                        d'essai le compte est vide, et un compte vide ne
+                                        déséquilibre rien.
+                                    -->
+                                    <field name="account_codes_formula">21 + 22 + 23 + 281 + 282 + 291 + 292 + 293</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_immo_fin" model="account.report.line">
+                                    <field name="name">Financial assets</field>
+                    <field name="name@fr">Immobilisations financières</field>
+                                    <field name="code">BILAN_IMMO_FIN</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">25 + 26 + 27 + 296 + 297</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_fr_actif_circ" model="account.report.line">
+                            <field name="name">Current assets</field>
+                    <field name="name@fr">Actif circulant</field>
+                            <field name="code">BILAN_ACTIF_CIRC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bilan_fr_stocks" model="account.report.line">
+                                    <field name="name">Inventory and work in progress</field>
+                    <field name="name@fr">Stocks et en-cours</field>
+                                    <field name="code">BILAN_STOCKS</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">3</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_creances" model="account.report.line">
+                                    <field name="name">Receivables</field>
+                    <field name="name@fr">Créances</field>
+                                    <field name="code">BILAN_CREANCES</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Comptes de tiers à solde débiteur uniquement. -->
+                                    <field name="account_codes_formula">4D</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_dispo" model="account.report.line">
+                                    <field name="name">Cash and cash equivalents</field>
+                    <field name="name@fr">Disponibilités</field>
+                                    <field name="code">BILAN_DISPO</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">5D</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ============================ PASSIF ============================ -->
+                <record id="bilan_fr_passif" model="account.report.line">
+                    <field name="name">LIABILITIES</field>
+                    <field name="name@fr">PASSIF</field>
+                    <field name="code">BILAN_PASSIF</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BILAN_CAPITAUX.balance + BILAN_PROV.balance + BILAN_DETTES.balance</field>
+                    <field name="children_ids">
+
+                        <record id="bilan_fr_capitaux" model="account.report.line">
+                            <field name="name">Equity</field>
+                    <field name="name@fr">Capitaux propres</field>
+                            <field name="code">BILAN_CAPITAUX</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bilan_fr_capital" model="account.report.line">
+                                    <field name="name">Share capital and reserves</field>
+                    <field name="name@fr">Capital et réserves</field>
+                                    <field name="code">BILAN_CAPITAL</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-10 - 13 - 14</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_report" model="account.report.line">
+                                    <field name="name">Retained earnings</field>
+                                    <field name="name@fr">Report à nouveau</field>
+                                    <field name="code">BILAN_REPORT</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Le regroupement est explicitement levé : la ligne
+                                         portait `account_id` du temps où elle lisait un
+                                         compte, et le moteur d'agrégation le refuse. Sans
+                                         cette remise à zéro, une base déjà installée garde
+                                         l'ancienne valeur et la mise à jour échoue. -->
+                                    <field name="groupby" eval="False"/>
+                                    <field name="aggregation_formula">BILAN_REPORT_COMPTE.balance + BILAN_REPORT_ANTERIEUR.balance</field>
+                                    <!--
+                                        Deux natures se rejoignent sous ce titre.
+
+                                        Le compte 11 d'abord : le report à nouveau
+                                        proprement dit, celui que l'assemblée a décidé.
+
+                                        Puis ce que les exercices antérieurs ont laissé sans
+                                        affectation — le résultat d'un exercice clos qui
+                                        attend l'assemblée, et, pour une comptabilité jamais
+                                        clôturée, le cumul des comptes de gestion d'avant
+                                        l'exercice en cours.
+
+                                        Sans cette seconde borne, le bénéfice de trois
+                                        exercices s'affichait en « résultat de l'exercice ».
+                                        Le bilan s'équilibrait, donc rien ne le signalait,
+                                        mais la ligne mentait — et c'est l'une des premières
+                                        que lit un expert-comptable.
+
+                                        Les deux natures sont des lignes filles plutôt que
+                                        deux expressions d'une même ligne : le moteur
+                                        d'agrégation interdit le regroupement, et fondre les
+                                        deux aurait coûté le dépliage par compte et l'audit
+                                        du montant. La seconde s'efface quand elle est nulle,
+                                        c'est-à-dire dès que les exercices sont clôturés.
+                                    -->
+                                    <field name="children_ids">
+                                        <record id="bilan_fr_report_compte" model="account.report.line">
+                                            <field name="name">Retained earnings carried forward</field>
+                                            <field name="name@fr">Report à nouveau comptabilisé</field>
+                                            <field name="code">BILAN_REPORT_COMPTE</field>
+                                            <field name="hierarchy_level" eval="4"/>
+                                            <field name="account_codes_formula">-11</field>
+                                            <field name="groupby">account_id</field>
+                                        </record>
+                                        <record id="bilan_fr_report_anterieur" model="account.report.line">
+                                            <field name="name">Earlier years' unallocated result</field>
+                                            <field name="name@fr">Résultat antérieur non affecté</field>
+                                            <field name="code">BILAN_REPORT_ANTERIEUR</field>
+                                            <field name="hierarchy_level" eval="4"/>
+                                            <field name="hide_if_zero" eval="True"/>
+                                            <field name="account_codes_formula">-6 - 7 - 12</field>
+                                            <field name="expodo_prior_scope" eval="True"/>
+                                            <field name="groupby">account_id</field>
+                                        </record>
+                                    </field>
+                                </record>
+                                <record id="bilan_fr_resultat" model="account.report.line">
+                                    <field name="name">Result for the period</field>
+                    <field name="name@fr">Résultat de l'exercice</field>
+                                    <field name="code">BILAN_RESULTAT</field>
+                                                        <field name="hierarchy_level" eval="3"/>
+                                    <!--
+                                        Calculé depuis les comptes de gestion, et non lu en
+                                        classe 12 : le compte 120000 reste vide tant que
+                                        l'exercice n'est pas clôturé. Le compte 12 éventuel
+                                        est ajouté pour l'exercice que la clôture vient de
+                                        solder, puisqu'elle est datée du dernier jour.
+
+                                        Borné à l'exercice en cours, et non cumulé depuis
+                                        l'origine : cette ligne porte le résultat d'un
+                                        exercice, pas celui de tous. Ce qui précède est au
+                                        report à nouveau.
+                                    -->
+                                    <field name="account_codes_formula">-6 - 7 - 12</field>
+                                    <field name="expodo_period_scope" eval="True"/>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_fr_prov" model="account.report.line">
+                            <field name="name">Provisions</field>
+                    <field name="name@fr">Provisions</field>
+                            <field name="code">BILAN_PROV</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-15</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="bilan_fr_dettes" model="account.report.line">
+                            <field name="name">Liabilities</field>
+                    <field name="name@fr">Dettes</field>
+                            <field name="code">BILAN_DETTES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bilan_fr_dettes_fin" model="account.report.line">
+                                    <field name="name">Financial debt</field>
+                    <field name="name@fr">Dettes financières</field>
+                                    <field name="code">BILAN_DETTES_FIN</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-16 - 17 - 18</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_dettes_tiers" model="account.report.line">
+                                    <field name="name">Operating and other payables</field>
+                    <field name="name@fr">Dettes d'exploitation et diverses</field>
+                                    <field name="code">BILAN_DETTES_TIERS</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Comptes de tiers à solde créditeur uniquement. -->
+                                    <field name="account_codes_formula">-4C</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bilan_fr_concours" model="account.report.line">
+                                    <field name="name">Bank overdrafts</field>
+                    <field name="name@fr">Concours bancaires courants</field>
+                                    <field name="code">BILAN_CONCOURS</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-5C</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ====================== CONTRÔLE D'ÉQUILIBRE ====================== -->
+                <record id="bilan_fr_ecart" model="account.report.line">
+                    <field name="name">Assets minus liabilities (must be zero)</field>
+                    <field name="name@fr">Écart actif / passif (doit être nul)</field>
+                    <field name="code">BILAN_ECART</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BILAN_ACTIF.balance - BILAN_PASSIF.balance</field>
+                </record>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Compte de résultat au format SYSCOHADA révisé.
+
+            Le SYSCOHADA impose une présentation en liste, par nature, jalonnée
+            de soldes intermédiaires de gestion. Ces soldes ne sont pas des
+            commodités de lecture : ils sont normalisés et servent de base aux
+            statistiques nationales et aux ratios prudentiels de la zone. Leur
+            ordre et leur composition ne se choisissent pas.
+
+            L'enchaînement, dans l'ordre du référentiel :
+
+                Marge commerciale        ventes de marchandises moins leur coût
+                Valeur ajoutée           richesse créée par l'entreprise
+                Excédent brut            avant amortissements et provisions
+                Résultat d'exploitation
+                Résultat financier
+                Résultat des activités ordinaires (RAO)
+                Résultat hors activités ordinaires (HAO)
+                Résultat net
+
+            Deux traits le distinguent nettement du compte de résultat français :
+
+            — La séparation entre activités ordinaires et HAO traverse tout
+              l'état. Le PCG isole l'exceptionnel dans un bloc en fin de
+              parcours ; le SYSCOHADA en fait une dimension propre, avec sa
+              classe de comptes (8) et son solde (RAO puis HAO).
+
+            — Les comptes de variation de stocks (603) sont ventilés entre la
+              marge commerciale et la valeur ajoutée selon la nature du stock :
+              6031 pour les marchandises, 6032/6033 pour les matières et
+              fournitures. Les regrouper fausserait la marge commerciale, qui
+              est le solde le plus suivi dans le négoce.
+
+            AVERTISSEMENT. Comme pour le bilan, cette ventilation est construite
+            d'après le référentiel et n'a pas été relue par un professionnel du
+            chiffre de la zone OHADA. La ligne de contrôle en fin d'état vérifie
+            que le résultat net coïncide avec celui du bilan — c'est une
+            cohérence interne, non une attestation de conformité.
+        -->
+
+        <record id="report_resultat_ohada" model="account.report">
+            <field name="name">Profit and Loss (SYSCOHADA)</field>
+            <field name="name@pt_BR">Demonstração de resultados (SYSCOHADA)</field>
+            <field name="name@es">Cuenta de resultados (SYSCOHADA)</field>
+            <field name="name@fr">Compte de résultat (SYSCOHADA)</field>
+            <field name="root_report_id" ref="report_profit_loss"/>
+            <!--
+                La classe 8 est réservée aux opérations hors
+                activités ordinaires dans le SYSCOHADA. Elle
+                n'existe ni au plan français ni dans les plans
+                anglo-saxons : sa présence identifie le
+                référentiel sans qu'on ait à nommer dix-sept pays.
+            -->
+            <field name="expodo_chart_prefix">8</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_unfold_all" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="report_resultat_ohada_col" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@pt_BR">Montante</field>
+                    <field name="name@es">Importe</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ===================== MARGE COMMERCIALE ===================== -->
+                <record id="res_ohada_ventes_march" model="account.report.line">
+                    <field name="sequence" eval="10"/>
+                    <field name="name">Sales of goods</field>
+                    <field name="name@pt_BR">Vendas de mercadorias</field>
+                    <field name="name@es">Ventas de mercaderías</field>
+                    <field name="name@fr">Ventes de marchandises</field>
+                    <field name="code">OHADA_VENTES_MARCH</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- Produits : soldes créditeurs, renversés pour être positifs. -->
+                    <field name="account_codes_formula">-701</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_achats_march" model="account.report.line">
+                    <field name="sequence" eval="20"/>
+                    <field name="name">Cost of goods sold</field>
+                    <field name="name@pt_BR">Compras de mercadorias e variação de existências</field>
+                    <field name="name@es">Compras de mercaderías y variación de existencias</field>
+                    <field name="name@fr">Achats de marchandises et variation de stocks</field>
+                    <field name="code">OHADA_ACHATS_MARCH</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 6031 : variation des stocks de marchandises, qui appartient
+                         à la marge commerciale et non à la valeur ajoutée. -->
+                    <field name="account_codes_formula">601 + 6031</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_marge" model="account.report.line">
+                    <field name="sequence" eval="30"/>
+                    <field name="name">GROSS TRADING MARGIN</field>
+                    <field name="name@pt_BR">MARGEM COMERCIAL</field>
+                    <field name="name@es">MARGEN COMERCIAL</field>
+                    <field name="name@fr">MARGE COMMERCIALE</field>
+                    <field name="code">OHADA_MARGE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_VENTES_MARCH.balance - OHADA_ACHATS_MARCH.balance</field>
+                </record>
+
+                <!-- ====================== VALEUR AJOUTÉE ====================== -->
+                <record id="res_ohada_prod_vendue" model="account.report.line">
+                    <field name="sequence" eval="40"/>
+                    <field name="name">Sales of manufactured goods and services</field>
+                    <field name="name@pt_BR">Vendas de produtos fabricados, trabalhos e serviços</field>
+                    <field name="name@es">Ventas de productos fabricados, trabajos y servicios</field>
+                    <field name="name@fr">Ventes de produits fabriqués, travaux et services</field>
+                    <field name="code">OHADA_PROD_VENDUE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-702 - 703 - 704 - 705 - 706 - 707</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_prod_stockee" model="account.report.line">
+                    <field name="sequence" eval="50"/>
+                    <field name="name">Change in inventories of finished goods</field>
+                    <field name="name@pt_BR">Produção armazenada (ou desarmazenagem)</field>
+                    <field name="name@es">Producción almacenada (o desalmacenaje)</field>
+                    <field name="name@fr">Production stockée (ou déstockage)</field>
+                    <field name="code">OHADA_PROD_STOCKEE</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-73</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_prod_immo" model="account.report.line">
+                    <field name="sequence" eval="60"/>
+                    <field name="name">Own work capitalised</field>
+                    <field name="name@pt_BR">Produção imobilizada</field>
+                    <field name="name@es">Producción inmovilizada</field>
+                    <field name="name@fr">Production immobilisée</field>
+                    <field name="code">OHADA_PROD_IMMO</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-72</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_subv_expl" model="account.report.line">
+                    <field name="sequence" eval="70"/>
+                    <field name="name">Operating grants</field>
+                    <field name="name@pt_BR">Subsídios à exploração</field>
+                    <field name="name@es">Subvenciones de explotación</field>
+                    <field name="name@fr">Subventions d'exploitation</field>
+                    <field name="code">OHADA_SUBV_EXPL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-71</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_autres_prod" model="account.report.line">
+                    <field name="sequence" eval="80"/>
+                    <field name="name">Other operating income</field>
+                    <field name="name@pt_BR">Outros proveitos</field>
+                    <field name="name@es">Otros ingresos</field>
+                    <field name="name@fr">Autres produits</field>
+                    <field name="code">OHADA_AUTRES_PROD</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-75 - 781</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_achats_mat" model="account.report.line">
+                    <field name="sequence" eval="90"/>
+                    <field name="name">Raw materials and other purchases</field>
+                    <field name="name@pt_BR">Compras de matérias e outros aprovisionamentos</field>
+                    <field name="name@es">Compras de materias y otros aprovisionamientos</field>
+                    <field name="name@fr">Achats de matières et autres approvisionnements</field>
+                    <field name="code">OHADA_ACHATS_MAT</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 602 matières premières, 604 à 608 autres achats,
+                         6032/6033 variations de stocks correspondantes. -->
+                    <field name="account_codes_formula">602 + 6032 + 6033 + 604 + 605 + 606 + 608</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_transports" model="account.report.line">
+                    <field name="sequence" eval="100"/>
+                    <field name="name">Transport</field>
+                    <field name="name@pt_BR">Transportes</field>
+                    <field name="name@es">Transportes</field>
+                    <field name="name@fr">Transports</field>
+                    <field name="code">OHADA_TRANSPORTS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- Poste distinct au SYSCOHADA ; le PCG le range dans les
+                         services extérieurs. -->
+                    <field name="account_codes_formula">61</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_services" model="account.report.line">
+                    <field name="sequence" eval="110"/>
+                    <field name="name">External services</field>
+                    <field name="name@pt_BR">Serviços externos</field>
+                    <field name="name@es">Servicios exteriores</field>
+                    <field name="name@fr">Services extérieurs</field>
+                    <field name="code">OHADA_SERVICES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">62 + 63</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_impots" model="account.report.line">
+                    <field name="sequence" eval="120"/>
+                    <field name="name">Taxes other than income tax</field>
+                    <field name="name@pt_BR">Impostos e taxas</field>
+                    <field name="name@es">Impuestos y tasas</field>
+                    <field name="name@fr">Impôts et taxes</field>
+                    <field name="code">OHADA_IMPOTS</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">64</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_autres_charges" model="account.report.line">
+                    <field name="sequence" eval="130"/>
+                    <field name="name">Other operating expenses</field>
+                    <field name="name@pt_BR">Outros custos</field>
+                    <field name="name@es">Otros gastos</field>
+                    <field name="name@fr">Autres charges</field>
+                    <field name="code">OHADA_AUTRES_CHARGES</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">65</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_va" model="account.report.line">
+                    <field name="sequence" eval="140"/>
+                    <field name="name">VALUE ADDED</field>
+                    <field name="name@pt_BR">VALOR ACRESCENTADO</field>
+                    <field name="name@es">VALOR AÑADIDO</field>
+                    <field name="name@fr">VALEUR AJOUTÉE</field>
+                    <field name="code">OHADA_VA</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_MARGE.balance + OHADA_PROD_VENDUE.balance + OHADA_PROD_STOCKEE.balance + OHADA_PROD_IMMO.balance + OHADA_SUBV_EXPL.balance + OHADA_AUTRES_PROD.balance - OHADA_ACHATS_MAT.balance - OHADA_TRANSPORTS.balance - OHADA_SERVICES.balance - OHADA_IMPOTS.balance - OHADA_AUTRES_CHARGES.balance</field>
+                </record>
+
+                <!-- ================== EXCÉDENT BRUT D'EXPLOITATION ================== -->
+                <record id="res_ohada_personnel" model="account.report.line">
+                    <field name="sequence" eval="150"/>
+                    <field name="name">Staff costs</field>
+                    <field name="name@pt_BR">Custos com pessoal</field>
+                    <field name="name@es">Gastos de personal</field>
+                    <field name="name@fr">Charges de personnel</field>
+                    <field name="code">OHADA_PERSONNEL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">66</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_ebe" model="account.report.line">
+                    <field name="sequence" eval="160"/>
+                    <field name="name">GROSS OPERATING SURPLUS</field>
+                    <field name="name@pt_BR">EXCEDENTE BRUTO DE EXPLORAÇÃO</field>
+                    <field name="name@es">EXCEDENTE BRUTO DE EXPLOTACIÓN</field>
+                    <field name="name@fr">EXCÉDENT BRUT D'EXPLOITATION</field>
+                    <field name="code">OHADA_EBE</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_VA.balance - OHADA_PERSONNEL.balance</field>
+                </record>
+
+                <!-- ================== RÉSULTAT D'EXPLOITATION ================== -->
+                <record id="res_ohada_reprises_expl" model="account.report.line">
+                    <field name="sequence" eval="170"/>
+                    <field name="name">Reversals of operating provisions</field>
+                    <field name="name@pt_BR">Reversões de amortizações e provisões</field>
+                    <field name="name@es">Reversiones de amortizaciones y provisiones</field>
+                    <field name="name@fr">Reprises d'amortissements et de provisions</field>
+                    <field name="code">OHADA_REPRISES_EXPL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-791 - 798 - 799</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_dotations_expl" model="account.report.line">
+                    <field name="sequence" eval="180"/>
+                    <field name="name">Depreciation and operating provisions</field>
+                    <field name="name@pt_BR">Amortizações e provisões de exploração</field>
+                    <field name="name@es">Amortizaciones y provisiones de explotación</field>
+                    <field name="name@fr">Dotations aux amortissements et provisions</field>
+                    <field name="code">OHADA_DOTATIONS_EXPL</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">681 + 691</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_res_expl" model="account.report.line">
+                    <field name="sequence" eval="190"/>
+                    <field name="name">OPERATING PROFIT</field>
+                    <field name="name@pt_BR">RESULTADO DE EXPLORAÇÃO</field>
+                    <field name="name@es">RESULTADO DE EXPLOTACIÓN</field>
+                    <field name="name@fr">RÉSULTAT D'EXPLOITATION</field>
+                    <field name="code">OHADA_RES_EXPL</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_EBE.balance + OHADA_REPRISES_EXPL.balance - OHADA_DOTATIONS_EXPL.balance</field>
+                </record>
+
+                <!-- ===================== RÉSULTAT FINANCIER ===================== -->
+                <record id="res_ohada_prod_fin" model="account.report.line">
+                    <field name="sequence" eval="200"/>
+                    <field name="name">Financial income</field>
+                    <field name="name@pt_BR">Proveitos financeiros</field>
+                    <field name="name@es">Ingresos financieros</field>
+                    <field name="name@fr">Revenus et produits financiers</field>
+                    <field name="code">OHADA_PROD_FIN</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">-77 - 787 - 797</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_charges_fin" model="account.report.line">
+                    <field name="sequence" eval="210"/>
+                    <field name="name">Financial expenses</field>
+                    <field name="name@pt_BR">Custos financeiros e equiparados</field>
+                    <field name="name@es">Gastos financieros y asimilados</field>
+                    <field name="name@fr">Frais financiers et charges assimilées</field>
+                    <field name="code">OHADA_CHARGES_FIN</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">67 + 687 + 697</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_res_fin" model="account.report.line">
+                    <field name="sequence" eval="220"/>
+                    <field name="name">FINANCIAL RESULT</field>
+                    <field name="name@pt_BR">RESULTADO FINANCEIRO</field>
+                    <field name="name@es">RESULTADO FINANCIERO</field>
+                    <field name="name@fr">RÉSULTAT FINANCIER</field>
+                    <field name="code">OHADA_RES_FIN</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_PROD_FIN.balance - OHADA_CHARGES_FIN.balance</field>
+                </record>
+
+                <record id="res_ohada_rao" model="account.report.line">
+                    <field name="sequence" eval="230"/>
+                    <field name="name">PROFIT FROM ORDINARY ACTIVITIES</field>
+                    <field name="name@pt_BR">RESULTADO DAS ATIVIDADES ORDINÁRIAS</field>
+                    <field name="name@es">RESULTADO DE LAS ACTIVIDADES ORDINARIAS</field>
+                    <field name="name@fr">RÉSULTAT DES ACTIVITÉS ORDINAIRES</field>
+                    <field name="code">OHADA_RAO</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_RES_EXPL.balance + OHADA_RES_FIN.balance</field>
+                </record>
+
+                <!-- ====================== HORS ACTIVITÉS ORDINAIRES ====================== -->
+                <record id="res_ohada_prod_hao" model="account.report.line">
+                    <field name="sequence" eval="240"/>
+                    <field name="name">Non-operating income</field>
+                    <field name="name@pt_BR">Proveitos AAO</field>
+                    <field name="name@es">Ingresos AAO</field>
+                    <field name="name@fr">Produits HAO</field>
+                    <field name="code">OHADA_PROD_HAO</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 82 produits de cession d'immobilisations, 84 produits HAO,
+                         86 reprises HAO, 88 subventions d'équilibre. -->
+                    <field name="account_codes_formula">-82 - 84 - 86 - 88</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_charges_hao" model="account.report.line">
+                    <field name="sequence" eval="250"/>
+                    <field name="name">Non-operating expenses</field>
+                    <field name="name@pt_BR">Custos AAO</field>
+                    <field name="name@es">Gastos AAO</field>
+                    <field name="name@fr">Charges HAO</field>
+                    <field name="code">OHADA_CHARGES_HAO</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <!-- 81 valeurs comptables des cessions, 83 charges HAO,
+                         85 dotations HAO. -->
+                    <field name="account_codes_formula">81 + 83 + 85</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_res_hao" model="account.report.line">
+                    <field name="sequence" eval="260"/>
+                    <field name="name">NON-OPERATING RESULT</field>
+                    <field name="name@pt_BR">RESULTADO FORA DAS ATIVIDADES ORDINÁRIAS</field>
+                    <field name="name@es">RESULTADO FUERA DE ACTIVIDADES ORDINARIAS</field>
+                    <field name="name@fr">RÉSULTAT HORS ACTIVITÉS ORDINAIRES</field>
+                    <field name="code">OHADA_RES_HAO</field>
+                    <field name="hierarchy_level" eval="1"/>
+                    <field name="aggregation_formula">OHADA_PROD_HAO.balance - OHADA_CHARGES_HAO.balance</field>
+                </record>
+
+                <!-- ========================= RÉSULTAT NET ========================= -->
+                <record id="res_ohada_participation" model="account.report.line">
+                    <field name="sequence" eval="270"/>
+                    <field name="name">Employee profit-sharing</field>
+                    <field name="name@pt_BR">Participação dos trabalhadores</field>
+                    <field name="name@es">Participación de los trabajadores</field>
+                    <field name="name@fr">Participation des travailleurs</field>
+                    <field name="code">OHADA_PARTICIPATION</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">87</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_impot_resultat" model="account.report.line">
+                    <field name="sequence" eval="280"/>
+                    <field name="name">Income tax</field>
+                    <field name="name@pt_BR">Impostos sobre o resultado</field>
+                    <field name="name@es">Impuestos sobre el resultado</field>
+                    <field name="name@fr">Impôts sur le résultat</field>
+                    <field name="code">OHADA_IMPOT_RESULTAT</field>
+                    <field name="hierarchy_level" eval="2"/>
+                    <field name="account_codes_formula">89</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="res_ohada_net" model="account.report.line">
+                    <field name="sequence" eval="290"/>
+                    <field name="name">NET RESULT</field>
+                    <field name="name@pt_BR">RESULTADO LÍQUIDO</field>
+                    <field name="name@es">RESULTADO NETO</field>
+                    <field name="name@fr">RÉSULTAT NET</field>
+                    <field name="code">OHADA_NET</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">OHADA_RAO.balance + OHADA_RES_HAO.balance - OHADA_PARTICIPATION.balance - OHADA_IMPOT_RESULTAT.balance</field>
+                </record>
+
+                <!-- ======================== CONTRÔLE ======================== -->
+                <record id="res_ohada_controle" model="account.report.line">
+                    <field name="sequence" eval="300"/>
+                    <field name="name">Gap with balance sheet result (must be zero)</field>
+                    <field name="name@pt_BR">Desvio face ao resultado do balanço (deve ser nulo)</field>
+                    <field name="name@es">Desviación respecto al resultado del balance (debe ser nulo)</field>
+                    <field name="name@fr">Écart avec le résultat du bilan (doit être nul)</field>
+                    <field name="code">OHADA_CONTROLE_RES</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Le résultat net obtenu par la cascade des soldes doit
+                        coïncider avec celui calculé globalement sur les classes
+                        de gestion — celui que porte le bilan.
+
+                        Un écart signale qu'un compte existe dans le plan mais
+                        n'a été repris dans aucun poste ci-dessus. C'est le mode
+                        de défaillance le plus probable d'un état déclaratif :
+                        il ne produit ni erreur ni message, seulement un total
+                        silencieusement faux.
+                    -->
+                    <field name="aggregation_formula">OHADA_NET.balance - OHADA_NET_GLOBAL.balance</field>
+                </record>
+
+                <record id="res_ohada_net_global" model="account.report.line">
+                    <field name="sequence" eval="310"/>
+                    <field name="name">Result from global balance</field>
+                    <field name="name@pt_BR">Resultado calculado globalmente</field>
+                    <field name="name@es">Resultado calculado globalmente</field>
+                    <field name="name@fr">Résultat calculé globalement</field>
+                    <field name="code">OHADA_NET_GLOBAL</field>
+                    <field name="hierarchy_level" eval="3"/>
+                    <field name="account_codes_formula">-6 - 7 - 8</field>
+                    <field name="groupby">account_id</field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

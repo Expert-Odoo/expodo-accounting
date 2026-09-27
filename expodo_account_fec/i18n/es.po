@@ -1,0 +1,121 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_fec
+#: model:ir.actions.act_window,name:expodo_account_fec.action_expodo_fec_export
+msgid "FEC Export"
+msgstr "Exportación FEC"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_export
+msgid "Export the French accounting entries file (FEC)"
+msgstr "Exportar el fichero de asientos contables francés (FEC)"
+
+#. module: expodo_account_fec
+#: model:ir.model,name:expodo_account_fec.model_expodo_fec_generator
+msgid "FEC file generator"
+msgstr "Generador de fichero FEC"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_name
+msgid "File name"
+msgstr "Nombre del fichero"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__line_count
+msgid "Entry lines"
+msgstr "Líneas de asiento"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__warning
+msgid "Warning"
+msgstr "Advertencia"
+
+#. module: expodo_account_fec
+#: model:ir.ui.menu,name:expodo_account_fec.menu_expodo_fec_export
+msgid "FEC Export"
+msgstr "Exportación FEC"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Download"
+msgstr "Descargar"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Generate"
+msgstr "Generar"
+
+#. module: expodo_account_fec
+#: model_terms:ir.ui.view,arch_db:expodo_account_fec.view_expodo_fec_export_form
+msgid "Export FEC"
+msgstr "Exportar FEC"
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/wizard/fec_export.py:0
+msgid "The start date must precede the end date."
+msgstr "La fecha de inicio debe ser anterior a la de fin."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s draft entries in this period are excluded from the file, as required. Post them first if they belong to the period."
+msgstr "%(count)s asientos en borrador de este periodo quedan excluidos del fichero, como corresponde. Contabilícelos antes si pertenecen al periodo."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines are dated before the start of the period. Check the period bounds."
+msgstr "%(count)s líneas de asiento están fechadas antes del inicio del periodo. Compruebe los límites del periodo."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "%(count)s entry lines use class 8 or 9 accounts (%(codes)s), which the tax authority excludes from the FEC. Odoo creates 999xxx accounts as a fallback for exchange differences when the installed chart names none. Remap them to their French chart equivalents — 666 and 766 for exchange differences — and repost. The lines are kept in the file: removing them would unbalance it, which is a heavier objection than the account class."
+msgstr "%(count)s líneas de asiento usan cuentas de clase 8 o 9 (%(codes)s), que la administración excluye del FEC. Odoo crea cuentas 999xxx por defecto para las diferencias de cambio cuando el plan instalado no indica ninguna. Reasígnelas a sus equivalentes del plan francés, 666 y 766 para las diferencias de cambio, y vuelva a contabilizar. Las líneas se mantienen en el fichero: quitarlas lo descuadraría, objeción más grave que la clase de la cuenta."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No company registration number found: the file is named with a placeholder SIREN. Set the company registry (SIRET) before handing the file over."
+msgstr "No se encuentra número de registro: el fichero se nombra con un SIREN ficticio. Indique el registro de la sociedad (SIRET) antes de entregarlo."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "No opening entry is recorded on the company. Opening entries must head the file and carry forward the previous year's balances; their absence is one of the anomalies the tax authority identifies immediately."
+msgstr "No hay asiento de apertura registrado en la sociedad. Los asientos de apertura deben encabezar el fichero y arrastrar los saldos del ejercicio anterior; su ausencia es una de las anomalías que la administración detecta de inmediato."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "The company's fiscal country is not France. The FEC is a French requirement; check that this is what you intend."
+msgstr "El país fiscal de la sociedad no es Francia. El FEC es una obligación francesa; compruebe que es lo que pretende."
+
+#. module: expodo_account_fec
+#. odoo-python
+#: code:addons/expodo_account_fec/models:0
+msgid "Validation dates are set to the accounting date, as Odoo keeps no separate posting timestamp. Produce the file at the time of the year-end close, not months later, so that these dates stay consistent with the return you filed."
+msgstr "Las fechas de validación toman la fecha contable, ya que Odoo no guarda una marca de contabilización distinta. Genere el fichero en el momento del cierre, y no meses después, para que esas fechas sigan siendo coherentes con la declaración presentada."
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__file_data
+msgid "File"
+msgstr "Archivo"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_from
+msgid "From"
+msgstr "Desde"
+
+#. module: expodo_account_fec
+#: model:ir.model.fields,field_description:expodo_account_fec.field_expodo_fec_export__date_to
+msgid "To"
+msgstr "hasta"

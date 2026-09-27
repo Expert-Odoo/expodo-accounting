@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Tableau de flux de trésorerie, méthode indirecte.
+
+            Fondement
+            =========
+            La partie double impose que la somme des mouvements de tous les
+            comptes sur une période vaille zéro. Il en découle une identité
+            exacte :
+
+                variation de trésorerie = - (mouvements de tous les autres comptes)
+
+            Chaque rubrique ci-dessous est donc définie comme l'opposé des
+            mouvements de sa catégorie de comptes. Leur somme égale la
+            variation de trésorerie **par construction**, sans approximation.
+
+            Ce que cela apporte
+            ===================
+            La ligne de contrôle finale compare ce total au mouvement réel des
+            comptes de trésorerie. Elle ne peut être non nulle que si une
+            catégorie de comptes a été oubliée dans le détail ci-dessus. C'est
+            donc un test de complétude, pas un test d'arithmétique — et c'est
+            précisément l'erreur qu'un tableau de flux écrit à la main commet.
+
+            Universalité
+            ============
+            Comme le bilan, ce rapport agrège par `account_type`, dont les
+            valeurs sont identiques dans toutes les localisations. Il fonctionne
+            sans pack et sans plan comptable national.
+
+            Signe
+            =====
+            Un encaissement est positif. L'augmentation d'une créance consomme
+            de la trésorerie : elle apparaît donc en négatif, ce qui est la
+            lecture attendue.
+        -->
+
+        <record id="report_cash_flow" model="account.report">
+            <field name="name">Cash Flow Statement</field>
+            <field name="name@fr">Tableau de flux de trésorerie</field>
+            <field name="name@es">Estado de flujos de efectivo</field>
+            <field name="name@de">Kapitalflussrechnung</field>
+            <field name="name@nl">Kasstroomoverzicht</field>
+            <field name="name@it">Rendiconto finanziario</field>
+            <field name="name@pt_BR">Demonstração dos fluxos de caixa</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="col_cf_balance" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="name@es">Importe</field>
+                    <field name="name@de">Betrag</field>
+                    <field name="name@nl">Bedrag</field>
+                    <field name="name@it">Importo</field>
+                    <field name="name@pt_BR">Valor</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ==================== EXPLOITATION ==================== -->
+                <record id="cf_operating" model="account.report.line">
+                    <field name="name">Cash flow from operating activities</field>
+                    <field name="name@fr">Flux de trésorerie d'exploitation</field>
+                    <field name="name@es">Flujos de efectivo de las actividades de explotación</field>
+                    <field name="name@de">Cashflow aus laufender Geschäftstätigkeit</field>
+                    <field name="name@nl">Kasstroom uit operationele activiteiten</field>
+                    <field name="name@it">Flusso di cassa dell'attività operativa</field>
+                    <field name="name@pt_BR">Fluxo de caixa das atividades operacionais</field>
+                    <field name="code">CF_OPERATING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+
+                        <record id="cf_result" model="account.report.line">
+                            <field name="name">Net result</field>
+                            <field name="name@fr">Résultat net</field>
+                            <field name="name@es">Resultado neto</field>
+                            <field name="name@de">Jahresergebnis</field>
+                            <field name="name@nl">Nettoresultaat</field>
+                            <field name="name@it">Risultato netto</field>
+                            <field name="name@pt_BR">Resultado líquido</field>
+                            <field name="code">CF_RESULT</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!--
+                                Les dotations sont incluses : cette ligne doit
+                                être le résultat net, celui du compte de
+                                résultat. En les excluant, elle affichait le
+                                résultat *avant* amortissement sous l'intitulé
+                                « résultat net » — 61 317,60 là où le compte de
+                                résultat disait 57 117,60. Le total du tableau
+                                tombait juste malgré tout, parce que deux
+                                erreurs se compensaient ; seul le lecteur était
+                                trompé.
+                            -->
+                            <field name="domain_formula">-sum([('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_direct_cost', 'expense_depreciation'))])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="cf_depreciation" model="account.report.line">
+                            <field name="name">Non-cash items and capital transactions</field>
+                            <field name="name@fr">Éléments sans effet de trésorerie et opérations en capital</field>
+                            <field name="name@es">Amortizaciones y provisiones (sin salida de efectivo)</field>
+                            <field name="name@de">Abschreibungen und Rückstellungen (nicht zahlungswirksam)</field>
+                            <field name="name@nl">Afschrijvingen en voorzieningen (niet-kasstroom)</field>
+                            <field name="name@it">Ammortamenti e accantonamenti (non monetari)</field>
+                            <field name="name@pt_BR">Depreciações e provisões (sem efeito de caixa)</field>
+                            <field name="code">CF_DEPRECIATION</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!--
+                                Réintégration, donc signe positif : une dotation
+                                est une charge sans décaissement. Elle s'affichait
+                                en négatif, ce qui se lisait « l'amortissement a
+                                consommé de la trésorerie » — l'inverse de ce
+                                qu'il fait.
+                            -->
+                            <!--
+                                Classement par **étiquette de compte**, pas par type.
+
+                                Le plan comptable français livré par Odoo type ses
+                                comptes 681 en « charge » et non en « amortissement » :
+                                le filtre par type ne captait rien sur une installation
+                                française standard, et cette ligne restait à zéro en
+                                promettant une réintégration qu'elle ne faisait pas.
+
+                                Les étiquettes `Operating`, `Investing` et `Financing`
+                                sont livrées par le module `account` et renseignées par
+                                chaque localisation — 254 comptes du plan français les
+                                portent. C'est le mécanisme qu'Odoo emploie lui-même,
+                                et il est configurable par l'utilisateur là où un type
+                                ne l'est pas.
+
+                                L'identifiant est résolu au chargement du module : le
+                                moteur lit les domaines avec `literal_eval`, qui refuse
+                                tout appel de fonction — et c'est une bonne chose, un
+                                domaine ne doit pas pouvoir exécuter de code.
+                            -->
+                            <field name="domain_formula" eval="&quot;sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="cf_receivables" model="account.report.line">
+                            <field name="name">Change in receivables</field>
+                            <field name="name@fr">Variation des créances clients</field>
+                            <field name="name@es">Variación de deudores comerciales</field>
+                            <field name="name@de">Veränderung der Forderungen</field>
+                            <field name="name@nl">Mutatie vorderingen</field>
+                            <field name="name@it">Variazione dei crediti</field>
+                            <field name="name@pt_BR">Variação de contas a receber</field>
+                            <field name="code">CF_RECEIVABLES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'asset_receivable')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="cf_other_assets" model="account.report.line">
+                            <field name="name">Change in other current assets</field>
+                            <field name="name@fr">Variation des autres actifs circulants</field>
+                            <field name="name@es">Variación de otros activos corrientes</field>
+                            <field name="name@de">Veränderung des sonstigen Umlaufvermögens</field>
+                            <field name="name@nl">Mutatie overige vlottende activa</field>
+                            <field name="name@it">Variazione delle altre attività correnti</field>
+                            <field name="name@pt_BR">Variação de outros ativos circulantes</field>
+                            <field name="code">CF_OTHER_ASSETS</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', 'in', ('asset_current', 'asset_prepayments'))])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="cf_payables" model="account.report.line">
+                            <field name="name">Change in payables</field>
+                            <field name="name@fr">Variation des dettes fournisseurs</field>
+                            <field name="name@es">Variación de acreedores comerciales</field>
+                            <field name="name@de">Veränderung der Verbindlichkeiten</field>
+                            <field name="name@nl">Mutatie schulden</field>
+                            <field name="name@it">Variazione dei debiti</field>
+                            <field name="name@pt_BR">Variação de contas a pagar</field>
+                            <field name="code">CF_PAYABLES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'liability_payable')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="cf_other_liab" model="account.report.line">
+                            <field name="name">Change in other current liabilities</field>
+                            <field name="name@fr">Variation des autres dettes à court terme</field>
+                            <field name="name@es">Variación de otros pasivos corrientes</field>
+                            <field name="name@de">Veränderung der sonstigen kurzfristigen Verbindlichkeiten</field>
+                            <field name="name@nl">Mutatie overige kortlopende schulden</field>
+                            <field name="name@it">Variazione delle altre passività correnti</field>
+                            <field name="name@pt_BR">Variação de outros passivos circulantes</field>
+                            <field name="code">CF_OTHER_LIAB</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', 'in', ('liability_current', 'liability_credit_card'))])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ==================== INVESTISSEMENT ==================== -->
+                <record id="cf_investing" model="account.report.line">
+                    <field name="name">Cash flow from investing activities</field>
+                    <field name="name@fr">Flux de trésorerie d'investissement</field>
+                    <field name="name@es">Flujos de efectivo de las actividades de inversión</field>
+                    <field name="name@de">Cashflow aus Investitionstätigkeit</field>
+                    <field name="name@nl">Kasstroom uit investeringsactiviteiten</field>
+                    <field name="name@it">Flusso di cassa dell'attività di investimento</field>
+                    <field name="name@pt_BR">Fluxo de caixa das atividades de investimento</field>
+                    <field name="code">CF_INVESTING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <!--
+                            La rubrique d'investissement mesure les comptes
+                            d'immobilisation, amortissements cumulés compris :
+                            elle donne donc la variation **nette**. Or ce qu'on
+                            veut lire ici est le décaissement réel, c'est-à-dire
+                            l'acquisition brute. La ligne suivante retranche la
+                            dotation de la période pour l'obtenir, et compense
+                            exactement sa réintégration en exploitation.
+                        -->
+                        <record id="cf_fixed" model="account.report.line">
+                            <field name="name">Fixed assets</field>
+                            <field name="name@fr">Immobilisations</field>
+                            <field name="name@es">Inmovilizado</field>
+                            <field name="name@de">Sachanlagen</field>
+                            <field name="name@nl">Materiële vaste activa</field>
+                            <field name="name@it">Immobilizzazioni</field>
+                            <field name="name@pt_BR">Imobilizado</field>
+                            <field name="code">CF_FIXED</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'asset_fixed')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="cf_fixed_depreciation" model="account.report.line">
+                            <field name="name">Non-cash items reclassified to investing</field>
+                            <field name="name@fr">Éléments sans effet de trésorerie reclassés</field>
+                            <field name="name@es">Amortización imputada al inmovilizado</field>
+                            <field name="name@de">Auf das Anlagevermögen verrechnete Abschreibungen</field>
+                            <field name="name@nl">Afschrijvingen toegerekend aan vaste activa</field>
+                            <field name="name@it">Ammortamenti imputati alle immobilizzazioni</field>
+                            <field name="name@pt_BR">Depreciação imputada ao imobilizado</field>
+                            <field name="code">CF_FIXED_DEPREC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!--
+                                Classement par **étiquette de compte**, pas par type.
+
+                                Le plan comptable français livré par Odoo type ses
+                                comptes 681 en « charge » et non en « amortissement » :
+                                le filtre par type ne captait rien sur une installation
+                                française standard, et cette ligne restait à zéro en
+                                promettant une réintégration qu'elle ne faisait pas.
+
+                                Les étiquettes `Operating`, `Investing` et `Financing`
+                                sont livrées par le module `account` et renseignées par
+                                chaque localisation — 254 comptes du plan français les
+                                portent. C'est le mécanisme qu'Odoo emploie lui-même,
+                                et il est configurable par l'utilisateur là où un type
+                                ne l'est pas.
+
+                                L'identifiant est résolu au chargement du module : le
+                                moteur lit les domaines avec `literal_eval`, qui refuse
+                                tout appel de fonction — et c'est une bonne chose, un
+                                domaine ne doit pas pouvoir exécuter de code.
+                            -->
+                            <field name="domain_formula" eval="&quot;-sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="cf_non_current" model="account.report.line">
+                            <field name="name">Other non-current assets</field>
+                            <field name="name@fr">Autres actifs immobilisés</field>
+                            <field name="name@es">Otros activos no corrientes</field>
+                            <field name="name@de">Sonstiges Anlagevermögen</field>
+                            <field name="name@nl">Overige vaste activa</field>
+                            <field name="name@it">Altre immobilizzazioni</field>
+                            <field name="name@pt_BR">Outros ativos não circulantes</field>
+                            <field name="code">CF_NON_CURRENT</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'asset_non_current')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ==================== FINANCEMENT ==================== -->
+                <record id="cf_financing" model="account.report.line">
+                    <field name="name">Cash flow from financing activities</field>
+                    <field name="name@fr">Flux de trésorerie de financement</field>
+                    <field name="name@es">Flujos de efectivo de las actividades de financiación</field>
+                    <field name="name@de">Cashflow aus Finanzierungstätigkeit</field>
+                    <field name="name@nl">Kasstroom uit financieringsactiviteiten</field>
+                    <field name="name@it">Flusso di cassa dell'attività di finanziamento</field>
+                    <field name="name@pt_BR">Fluxo de caixa das atividades de financiamento</field>
+                    <field name="code">CF_FINANCING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <record id="cf_equity" model="account.report.line">
+                            <field name="name">Equity</field>
+                            <field name="name@fr">Capitaux propres</field>
+                            <field name="name@es">Patrimonio neto</field>
+                            <field name="name@de">Eigenkapital</field>
+                            <field name="name@nl">Eigen vermogen</field>
+                            <field name="name@it">Patrimonio netto</field>
+                            <field name="name@pt_BR">Patrimônio líquido</field>
+                            <field name="code">CF_EQUITY</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', 'in', ('equity', 'equity_unaffected'))])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="cf_loans" model="account.report.line">
+                            <field name="name">Non-current liabilities</field>
+                            <field name="name@fr">Dettes à long terme</field>
+                            <field name="name@es">Pasivo no corriente</field>
+                            <field name="name@de">Langfristige Verbindlichkeiten</field>
+                            <field name="name@nl">Langlopende schulden</field>
+                            <field name="name@it">Passività non correnti</field>
+                            <field name="name@pt_BR">Passivo não circulante</field>
+                            <field name="code">CF_LOANS</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'liability_non_current')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!--
+                    Hors bilan : sans effet de trésorerie, mais inclus pour que
+                    l'identité reste exacte. Toute catégorie omise ferait
+                    apparaître un écart sur la ligne de contrôle.
+                -->
+                <record id="cf_off_balance" model="account.report.line">
+                    <field name="name">Off-balance sheet</field>
+                    <field name="name@fr">Hors bilan</field>
+                    <field name="name@es">Fuera de balance</field>
+                    <field name="name@de">Außerbilanziell</field>
+                    <field name="name@nl">Buiten balans</field>
+                    <field name="name@it">Fuori bilancio</field>
+                    <field name="name@pt_BR">Fora do balanço</field>
+                    <field name="code">CF_OFF_BALANCE</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="domain_formula">-sum([('account_id.account_type', '=', 'off_balance')])</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <!-- ==================== SYNTHÈSE ==================== -->
+                <record id="cf_opening" model="account.report.line">
+                    <field name="name">Cash at beginning of period</field>
+                    <field name="name@fr">Trésorerie à l'ouverture</field>
+                    <field name="name@es">Efectivo al inicio del periodo</field>
+                    <field name="name@de">Finanzmittel zu Periodenbeginn</field>
+                    <field name="name@nl">Liquide middelen begin periode</field>
+                    <field name="name@it">Disponibilità liquide iniziali</field>
+                    <field name="name@pt_BR">Caixa no início do período</field>
+                    <field name="code">CF_OPENING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="expression_ids">
+                        <record id="cf_opening_expr" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_period</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="cf_net_change" model="account.report.line">
+                    <field name="name">NET CHANGE IN CASH</field>
+                    <field name="name@fr">VARIATION DE TRÉSORERIE</field>
+                    <field name="name@es">VARIACIÓN NETA DEL EFECTIVO</field>
+                    <field name="name@de">VERÄNDERUNG DER FINANZMITTEL</field>
+                    <field name="name@nl">NETTOMUTATIE LIQUIDE MIDDELEN</field>
+                    <field name="name@it">VARIAZIONE DELLE DISPONIBILITÀ LIQUIDE</field>
+                    <field name="name@pt_BR">VARIAÇÃO LÍQUIDA DO CAIXA</field>
+                    <field name="code">CF_NET_CHANGE</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">CF_OPERATING.balance + CF_INVESTING.balance + CF_FINANCING.balance + CF_OFF_BALANCE.balance</field>
+                </record>
+
+                <record id="cf_closing" model="account.report.line">
+                    <field name="name">Cash at end of period</field>
+                    <field name="name@fr">Trésorerie à la clôture</field>
+                    <field name="name@es">Efectivo al final del periodo</field>
+                    <field name="name@de">Finanzmittel zum Periodenende</field>
+                    <field name="name@nl">Liquide middelen einde periode</field>
+                    <field name="name@it">Disponibilità liquide finali</field>
+                    <field name="name@pt_BR">Caixa no fim do período</field>
+                    <field name="code">CF_CLOSING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="expression_ids">
+                        <record id="cf_closing_expr" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!--
+                    Contrôle de complétude. Nul par construction, sauf si une
+                    catégorie de comptes manque dans le détail ci-dessus.
+                -->
+                <record id="cf_check" model="account.report.line">
+                    <field name="name">Gap with actual cash movement (must be zero)</field>
+                    <field name="name@fr">Écart avec le mouvement réel de trésorerie (doit être nul)</field>
+                    <field name="name@es">Diferencia con el movimiento real de efectivo (debe ser cero)</field>
+                    <field name="name@de">Abweichung zur tatsächlichen Finanzmittelbewegung (muss null sein)</field>
+                    <field name="name@nl">Verschil met werkelijke kasmutatie (moet nul zijn)</field>
+                    <field name="name@it">Scostamento dal movimento di cassa effettivo (deve essere zero)</field>
+                    <field name="name@pt_BR">Diferença com o movimento real de caixa (deve ser zero)</field>
+                    <field name="code">CF_CHECK</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">CF_NET_CHANGE.balance - CF_ACTUAL.balance</field>
+                    <field name="children_ids">
+                        <record id="cf_actual" model="account.report.line">
+                            <field name="name">Actual movement on cash accounts</field>
+                            <field name="name@fr">Mouvement réel des comptes de trésorerie</field>
+                            <field name="name@es">Movimiento real de las cuentas de efectivo</field>
+                            <field name="name@de">Tatsächliche Bewegung der Finanzmittelkonten</field>
+                            <field name="name@nl">Werkelijke mutatie op liquide middelen</field>
+                            <field name="name@it">Movimento effettivo dei conti liquidi</field>
+                            <field name="name@pt_BR">Movimento real das contas de caixa</field>
+                            <field name="code">CF_ACTUAL</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">sum([('account_id.account_type', '=', 'asset_cash')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

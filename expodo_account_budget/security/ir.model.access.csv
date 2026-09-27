@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expodo_budget_user,expodo.budget.user,model_expodo_budget,account.group_account_user,1,0,0,0
+access_expodo_budget_manager,expodo.budget.manager,model_expodo_budget,account.group_account_manager,1,1,1,1
+access_expodo_budget_line_user,expodo.budget.line.user,model_expodo_budget_line,account.group_account_user,1,0,0,0
+access_expodo_budget_line_manager,expodo.budget.line.manager,model_expodo_budget_line,account.group_account_manager,1,1,1,1

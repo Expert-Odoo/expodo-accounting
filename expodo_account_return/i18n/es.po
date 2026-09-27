@@ -1,0 +1,326 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_return
+#: model:ir.actions.act_window,name:expodo_account_return.action_expodo_return
+msgid "Tax Returns"
+msgstr "Declaraciones fiscales"
+
+#. module: expodo_account_return
+#: model_terms:ir.actions.act_window,help:expodo_account_return.action_expodo_return
+msgid "Track a filing"
+msgstr "Seguir una presentación"
+
+#. module: expodo_account_return
+#: model:ir.actions.act_window,name:expodo_account_return.action_expodo_return_type
+msgid "Return Types"
+msgstr "Tipos de declaración"
+
+#. module: expodo_account_return
+#: model:ir.model,name:expodo_account_return.model_expodo_return
+msgid "Tax return"
+msgstr "Declaración fiscal"
+
+#. module: expodo_account_return
+#: model:ir.model,name:expodo_account_return.model_expodo_return_type
+msgid "Tax return type"
+msgstr "Tipo de declaración"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__check_result
+msgid "Checks"
+msgstr "Comprobaciones"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__date_deadline
+msgid "Due date"
+msgstr "Vencimiento"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__date_paid
+msgid "Paid on"
+msgstr "Pagada el"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__date_submitted
+msgid "Filed on"
+msgstr "Presentada el"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__reference
+msgid "Filing reference"
+msgstr "Referencia de presentación"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,help:expodo_account_return.field_expodo_return__reference
+msgid "Acknowledgement number returned by the tax portal."
+msgstr "Número de acuse devuelto por el portal tributario."
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__deadline_days
+msgid "Days to file"
+msgstr "Plazo de presentación (días)"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__lock_on_submission
+msgid "Lock the period when filed"
+msgstr "Bloquear el período al presentar"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__periodicity
+msgid "Periodicity"
+msgstr "Periodicidad"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return__state__checked
+msgid "Checked"
+msgstr "Comprobada"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return__state__draft
+msgid "Draft"
+msgstr "Borrador"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return__state__paid
+msgid "Paid"
+msgstr "Pagada"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return__state__submitted
+msgid "Filed"
+msgstr "Presentada"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return_type__periodicity__monthly
+msgid "Monthly"
+msgstr "Mensual"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return_type__periodicity__quarterly
+msgid "Quarterly"
+msgstr "Trimestral"
+
+#. module: expodo_account_return
+#: model:ir.model.fields.selection,name:expodo_account_return.selection__expodo_return_type__periodicity__yearly
+msgid "Yearly"
+msgstr "Anual"
+
+#. module: expodo_account_return
+#: model:ir.ui.menu,name:expodo_account_return.menu_expodo_return
+msgid "Tax Returns"
+msgstr "Declaraciones fiscales"
+
+#. module: expodo_account_return
+#: model:ir.ui.menu,name:expodo_account_return.menu_expodo_return_type
+msgid "Return Types"
+msgstr "Tipos de declaración"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Run checks"
+msgstr "Ejecutar las comprobaciones"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Mark as filed"
+msgstr "Marcar como presentada"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Mark as paid"
+msgstr "Marcar como pagada"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Open the report"
+msgstr "Abrir el informe"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Back to draft"
+msgstr "Volver a borrador"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Anything worth remembering at the next filing…"
+msgstr "Lo que convendrá recordar en la próxima presentación…"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_form
+msgid "Tax return"
+msgstr "Declaración fiscal"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_list
+msgid "Tax returns"
+msgstr "Declaraciones fiscales"
+
+#. module: expodo_account_return
+#: model_terms:ir.ui.view,arch_db:expodo_account_return.view_expodo_return_type_list
+msgid "Return types"
+msgstr "Tipos de declaración"
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/return_type.py:0
+msgid "A filing deadline cannot be negative."
+msgstr "Un plazo de presentación no puede ser negativo."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "New return"
+msgstr "Nueva declaración"
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "The period of “%(name)s” ends before it starts."
+msgstr "El período de «%(name)s» termina antes de empezar."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "The filing deadline (%(date)s) has passed."
+msgstr "El plazo de presentación (%(date)s) ha vencido."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "Only a draft return can be checked."
+msgstr "Solo puede comprobarse una declaración en borrador."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid ""
+"No mechanical anomaly found. This does not replace a review by an "
+"accountant."
+msgstr ""
+"Ninguna anomalía mecánica. Esto no sustituye la revisión de un contable."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "Return filed for %(start)s – %(end)s."
+msgstr "Declaración presentada para el período %(start)s – %(end)s."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "Only a filed return can be marked as paid."
+msgstr "Solo una declaración presentada puede marcarse pagada."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models/tax_return.py:0
+msgid "No report is attached to this return type."
+msgstr "No hay ningún informe asociado a este tipo de declaración."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models:0
+msgid "%(count)s draft entries fall in this period. They are not in the figures and will be once posted — after the return is filed."
+msgstr "%(count)s asientos en borrador caen en este periodo. No están en las cifras y lo estarán una vez contabilizados, es decir, después de presentar la declaración."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models:0
+msgid "A paid return cannot be reopened. Record the correction as a new return instead, which is what the tax authority expects to see."
+msgstr "Una declaración pagada no puede reabrirse. Registre la corrección como una nueva declaración, que es lo que la administración espera ver."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models:0
+msgid "An earlier return of the same type is still unfiled (%(name)s). Filing out of order leaves a gap the tax authority notices before you do."
+msgstr "Una declaración anterior del mismo tipo sigue sin presentarse (%(name)s). Presentar fuera de orden deja un hueco que la administración advierte antes que usted."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models:0
+msgid "Run the checks before filing “%(name)s”. Filing is an act: it is worth two minutes of verification."
+msgstr "Ejecute las comprobaciones antes de presentar «%(name)s». Presentar es un acto: bien vale dos minutos de verificación."
+
+#. module: expodo_account_return
+#. odoo-python
+#: code:addons/expodo_account_return/models:0
+msgid "The tax lock date (%(date)s) already covers this period, which suggests it has been filed already."
+msgstr "La fecha de bloqueo fiscal (%(date)s) ya cubre este periodo, lo que sugiere que ya se ha presentado."
+
+#. module: expodo_account_return
+#: model_terms:ir.actions.act_window,help:expodo_account_return.action_expodo_return
+msgid "A report is consulted; a return is an act. It is filed on a date, for a period, and what it contains should no longer move."
+msgstr "Un estado se consulta; una declaración es un acto. Se presenta en una fecha, para un periodo, y lo que contiene ya no debe moverse."
+
+#. module: expodo_account_return
+#: model_terms:ir.actions.act_window,help:expodo_account_return.action_expodo_return
+msgid "Filing moves the tax lock date to the end of the period, so that an entry posted afterwards cannot silently make the books and the return disagree."
+msgstr "La presentación sitúa la fecha de bloqueo fiscal al final del periodo, para que un asiento contabilizado después no haga divergir en silencio la contabilidad y la declaración."
+
+#. module: expodo_account_return
+#: model_terms:ir.actions.act_window,help:expodo_account_return.action_expodo_return_type
+msgid "Describe a return"
+msgstr "Describir una declaración"
+
+#. module: expodo_account_return
+#: model_terms:ir.actions.act_window,help:expodo_account_return.action_expodo_return_type
+msgid "A return type carries a periodicity, a filing deadline and the report to read. It is what tells a tax return which period to open on, and whether filing it locks that period."
+msgstr "Un tipo de declaración lleva una periodicidad, un plazo de presentación y el estado a leer. Es lo que indica a una declaración sobre qué periodo abrirse, y si su presentación bloquea ese periodo."
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__amount
+msgid "Amount"
+msgstr "Importe"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__company_id
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__date_from
+msgid "From"
+msgstr "Desde"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__note
+msgid "Notes"
+msgstr "Notas"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__name
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return_type__report_id
+msgid "Report"
+msgstr "Informe"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__state
+msgid "Status"
+msgstr "Estado"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__date_to
+msgid "To"
+msgstr "hasta"
+
+#. module: expodo_account_return
+#: model:ir.model.fields,field_description:expodo_account_return.field_expodo_return__type_id
+msgid "Type"
+msgstr "Tipo"

@@ -1,0 +1,41 @@
+// Rapports comptables Expodo.
+// Volontairement minimal : le rapport doit ressembler au reste d'Odoo, pas
+// imposer sa propre identite visuelle.
+
+.o_expodo_report {
+
+    .o_expodo_report_table {
+
+        td, th {
+            vertical-align: middle;
+        }
+
+        .o_expodo_level_0 {
+            border-top: 2px solid var(--bs-border-color);
+            background-color: var(--bs-tertiary-bg);
+        }
+
+        // Une cellule auditable ouvre les ecritures sous-jacentes : l'indice
+        // visuel doit etre discret mais present, sinon personne ne decouvre
+        // que le chiffre est cliquable.
+        .o_expodo_auditable {
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+                text-underline-offset: 3px;
+            }
+        }
+
+        .o_expodo_caret {
+            cursor: pointer;
+            display: inline-block;
+            width: 1em;
+            color: var(--bs-secondary-color);
+        }
+
+        .o_expodo_clickable {
+            cursor: pointer;
+        }
+    }
+}

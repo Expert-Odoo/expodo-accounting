@@ -1,0 +1,247 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_followup
+#: model:ir.actions.act_window,name:expodo_account_followup.action_expodo_followup
+msgid "Customer Follow-up"
+msgstr "Solleciti clienti"
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup
+msgid "Nobody to chase"
+msgstr "Nessuno da sollecitare"
+
+#. module: expodo_account_followup
+#: model:ir.actions.act_window,name:expodo_account_followup.action_expodo_followup_level
+msgid "Follow-up Levels"
+msgstr "Livelli di sollecito"
+
+#. module: expodo_account_followup
+#: model:ir.model,name:expodo_account_followup.model_expodo_followup_level
+msgid "Follow-up level"
+msgstr "Livello di sollecito"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__delay_days
+msgid "Days overdue"
+msgstr "Giorni di ritardo"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__print_letter
+msgid "Print a letter"
+msgstr "Stampare una lettera"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,help:expodo_account_followup.field_expodo_followup_level__print_letter
+msgid ""
+"For levels where a trace on paper matters — a formal notice usually does."
+msgstr ""
+"Per i livelli in cui conta una traccia cartacea — la messa in mora in "
+"particolare."
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__send_email
+msgid "Send an email"
+msgstr "Inviare un'e-mail"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__subject
+msgid "Email subject"
+msgstr "Oggetto dell'e-mail"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_amount_due
+msgid "Overdue"
+msgstr "Scaduto"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_days_overdue
+msgid "Days overdue"
+msgstr "Giorni di ritardo"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_last_date
+msgid "Last chased on"
+msgstr "Ultimo sollecito il"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_level_id
+msgid "Level reached"
+msgstr "Livello raggiunto"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_note
+msgid "Follow-up note"
+msgstr "Nota di sollecito"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_partner__followup_oldest_due
+msgid "Oldest due date"
+msgstr "Scadenza più antica"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_amount_due
+msgid "Overdue"
+msgstr "Scaduto"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_days_overdue
+msgid "Days overdue"
+msgstr "Giorni di ritardo"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_last_date
+msgid "Last chased on"
+msgstr "Ultimo sollecito il"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_level_id
+msgid "Level reached"
+msgstr "Livello raggiunto"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_note
+msgid "Follow-up note"
+msgstr "Nota di sollecito"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_res_users__followup_oldest_due
+msgid "Oldest due date"
+msgstr "Scadenza più antica"
+
+#. module: expodo_account_followup
+#: model:ir.ui.menu,name:expodo_account_followup.menu_expodo_followup
+msgid "Customer Follow-up"
+msgstr "Solleciti clienti"
+
+#. module: expodo_account_followup
+#: model:ir.ui.menu,name:expodo_account_followup.menu_expodo_followup_level
+msgid "Follow-up Levels"
+msgstr "Livelli di sollecito"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "e.g. First reminder"
+msgstr "es. Primo sollecito"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "Wording of the reminder…"
+msgstr "Testo del sollecito…"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_form
+msgid "Follow-up level"
+msgstr "Livello di sollecito"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_expodo_followup_level_list
+msgid "Follow-up levels"
+msgstr "Livelli di sollecito"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Overdue"
+msgstr "Scaduto"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Open the overdue items"
+msgstr "Aprire le partite scadute"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Send the reminders"
+msgstr "Inviare i solleciti"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_list
+msgid "Customers to chase"
+msgstr "Clienti da sollecitare"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Overdue"
+msgstr "Scaduto"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Never chased"
+msgstr "Mai sollecitato"
+
+#. module: expodo_account_followup
+#: model_terms:ir.ui.view,arch_db:expodo_account_followup.view_partner_followup_search
+msgid "Customers to chase"
+msgstr "Clienti da sollecitare"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/followup_level.py:0
+msgid "Outstanding balance"
+msgstr "Saldo scoperto"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Overdue items — %(partner)s"
+msgstr "Partite scadute — %(partner)s"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Reminder: %(amount)s is outstanding."
+msgstr "Promemoria: %(amount)s risultano scoperti."
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models/res_partner.py:0
+msgid "Outstanding balance"
+msgstr "Saldo scoperto"
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models:0
+msgid "%(sent)s reminders sent out of %(total)s selected. Customers with no level reached, no email address, or a level that does not send email were skipped."
+msgstr "%(sent)s solleciti inviati su %(total)s selezionati. Sono stati saltati i clienti senza livello raggiunto, senza indirizzo e-mail o con un livello che non invia e-mail."
+
+#. module: expodo_account_followup
+#. odoo-python
+#: code:addons/expodo_account_followup/models:0
+msgid "“%(other)s” already triggers at %(days)s days. Two levels at the same delay would make the sequence arbitrary."
+msgstr "«%(other)s» scatta già a %(days)s giorni. Due livelli con lo stesso termine renderebbero arbitraria la sequenza."
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup
+msgid "No customer has an overdue unpaid item. Levels are set under Configuration; they trigger on how late the oldest unpaid instalment is."
+msgstr "Nessun cliente ha un insoluto scaduto. I livelli si impostano in Configurazione; scattano in base al ritardo dell'insoluto più vecchio."
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup_level
+msgid "Set the first level"
+msgstr "Definire il primo livello"
+
+#. module: expodo_account_followup
+#: model_terms:ir.actions.act_window,help:expodo_account_followup.action_expodo_followup_level
+msgid "A level is a delay and a message. It is reached according to how late the oldest unpaid item is, so two levels sharing the same delay would compete for the same customer."
+msgstr "Un livello è un termine e un messaggio. Viene raggiunto in base al ritardo dell'insoluto più vecchio: due livelli con lo stesso termine si contenderebbero lo stesso cliente."
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__active
+msgid "Active"
+msgstr "Attivo"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__body
+msgid "Message"
+msgstr "Messaggio"
+
+#. module: expodo_account_followup
+#: model:ir.model.fields,field_description:expodo_account_followup.field_expodo_followup_level__name
+msgid "Name"
+msgstr "Nome"

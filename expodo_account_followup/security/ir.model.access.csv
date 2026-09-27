@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expodo_followup_level_user,expodo.followup.level.user,model_expodo_followup_level,account.group_account_user,1,0,0,0
+access_expodo_followup_level_manager,expodo.followup.level.manager,model_expodo_followup_level,account.group_account_manager,1,1,1,1

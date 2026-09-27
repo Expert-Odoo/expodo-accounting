@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_followup_level_list" model="ir.ui.view">
+            <field name="name">expodo.followup.level.list</field>
+            <field name="model">expodo.followup.level</field>
+            <field name="arch" type="xml">
+                <list string="Follow-up levels" editable="bottom">
+                    <field name="delay_days"/>
+                    <field name="name"/>
+                    <field name="subject"/>
+                    <field name="send_email"/>
+                    <field name="print_letter"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_followup_level_form" model="ir.ui.view">
+            <field name="name">expodo.followup.level.form</field>
+            <field name="model">expodo.followup.level</field>
+            <field name="arch" type="xml">
+                <form string="Follow-up level">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" placeholder="e.g. First reminder"/>
+                                <field name="delay_days"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="send_email"/>
+                                <field name="print_letter"/>
+                                <field name="subject"/>
+                            </group>
+                        </group>
+                        <field name="body" placeholder="Wording of the reminder…"/>
+                        <div class="alert alert-info" role="alert">
+                            Do not quote the outstanding amount inside the wording.
+                            A figure in the message and a statement showing another
+                            is the fastest way to get the whole thing disputed.
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_followup_level" model="ir.actions.act_window">
+            <field name="name">Follow-up Levels</field>
+            <field name="res_model">expodo.followup.level</field>
+            <field name="view_mode">list,form</field>
+                    <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Set the first level</p>
+                <p>A level is a delay and a message. It is reached according to how late the oldest unpaid item is, so two levels sharing the same delay would compete for the same customer.</p>
+            </field>
+        </record>
+
+        <record id="view_partner_followup_list" model="ir.ui.view">
+            <field name="name">res.partner.followup.list</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <list string="Customers to chase" create="false"
+                      decoration-danger="followup_days_overdue &gt; 60"
+                      decoration-warning="followup_days_overdue &gt; 30">
+                    <field name="display_name" string="Customer"/>
+                    <field name="email"/>
+                    <field name="followup_oldest_due"/>
+                    <field name="followup_days_overdue"/>
+                    <field name="followup_level_id"/>
+                    <field name="followup_amount_due" sum="Overdue"/>
+                    <field name="followup_last_date"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <button name="action_open_overdue" type="object"
+                            icon="fa-search" title="Open the overdue items"/>
+                    <header>
+                        <button name="action_send_followup" type="object"
+                                string="Send the reminders" class="btn-primary"/>
+                    </header>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_partner_followup_search" model="ir.ui.view">
+            <field name="name">res.partner.followup.search</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <search string="Customers to chase">
+                    <field name="name" string="Customer"/>
+                    <filter name="overdue" string="Overdue"
+                            domain="[('followup_amount_due', '&gt;', 0)]"/>
+                    <filter name="never_chased" string="Never chased"
+                            domain="[('followup_last_date', '=', False)]"/>
+                    <separator/>
+                    <filter name="by_level" string="Level"
+                            context="{'group_by': 'followup_level_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_expodo_followup" model="ir.actions.act_window">
+            <field name="name">Customer Follow-up</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('followup_amount_due', '&gt;', 0)]</field>
+            <field name="search_view_id" ref="view_partner_followup_search"/>
+            <field name="context">{'list_view_ref': 'expodo_account_followup.view_partner_followup_list'}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Nobody to chase</p>
+                <p>No customer has an overdue unpaid item. Levels are set under Configuration; they trigger on how late the oldest unpaid instalment is.</p>
+            </field>
+        </record>
+
+        <menuitem id="menu_expodo_followup"
+                  name="Customer Follow-up"
+                  parent="account.menu_finance_receivables"
+                  action="action_expodo_followup"
+                  sequence="60"/>
+
+        <menuitem id="menu_expodo_followup_level"
+                  name="Follow-up Levels"
+                  parent="account.account_account_menu"
+                  action="action_expodo_followup_level"
+                  sequence="87"/>
+
+    </data>
+</odoo>

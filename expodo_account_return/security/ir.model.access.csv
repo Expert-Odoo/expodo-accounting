@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expodo_return_type_user,expodo.return.type.user,model_expodo_return_type,account.group_account_user,1,0,0,0
+access_expodo_return_type_manager,expodo.return.type.manager,model_expodo_return_type,account.group_account_manager,1,1,1,1
+access_expodo_return_user,expodo.return.user,model_expodo_return,account.group_account_user,1,0,0,0
+access_expodo_return_manager,expodo.return.manager,model_expodo_return,account.group_account_manager,1,1,1,1

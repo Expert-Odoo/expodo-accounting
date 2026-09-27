@@ -1,0 +1,79 @@
+#
+msgid ""
+msgstr ""
+
+#. module: expodo_account_annotation
+#: model:ir.actions.act_window,name:expodo_account_annotation.action_expodo_report_annotation
+msgid "Report Annotations"
+msgstr "Berichtsanmerkungen"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.actions.act_window,help:expodo_account_annotation.action_expodo_report_annotation
+msgid "Explain a figure"
+msgstr "Eine Zahl erläutern"
+
+#. module: expodo_account_annotation
+#: model:ir.model,name:expodo_account_annotation.model_expodo_report_annotation
+msgid "Report line annotation"
+msgstr "Anmerkung zu einer Berichtszeile"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__report_line_id
+msgid "Report line"
+msgstr "Berichtszeile"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__text
+msgid "Annotation"
+msgstr "Anmerkung"
+
+#. module: expodo_account_annotation
+#: model:ir.ui.menu,name:expodo_account_annotation.menu_expodo_report_annotation
+msgid "Report Annotations"
+msgstr "Berichtsanmerkungen"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_form
+msgid "Why the figure is what it is…"
+msgstr "Warum die Zahl so ist, wie sie ist …"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_form
+msgid "Annotation"
+msgstr "Anmerkung"
+
+#. module: expodo_account_annotation
+#: model_terms:ir.ui.view,arch_db:expodo_account_annotation.view_expodo_report_annotation_list
+msgid "Annotations"
+msgstr "Anmerkungen"
+
+#. module: expodo_account_annotation
+#. odoo-python
+#: code:addons/expodo_account_annotation/models/annotation.py:0
+msgid "The annotation period ends before it starts."
+msgstr "Der Zeitraum der Anmerkung endet vor seinem Beginn."
+
+#. module: expodo_account_annotation
+#: model_terms:ir.actions.act_window,help:expodo_account_annotation.action_expodo_report_annotation
+msgid "A statement answers “how much” and never “why”. Write the why here, for whoever reads the statement next — who will not be you."
+msgstr "Ein Abschluss beantwortet „wie viel“, nie „warum“. Halten Sie das Warum hier fest, für denjenigen, der den Abschluss nach Ihnen liest und der nicht Sie sein wird."
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__company_id
+msgid "Company"
+msgstr "Unternehmen"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__date_from
+msgid "From"
+msgstr "Von"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__report_id
+msgid "Parent Report"
+msgstr "Übergeordneter Bericht"
+
+#. module: expodo_account_annotation
+#: model:ir.model.fields,field_description:expodo_account_annotation.field_expodo_report_annotation__date_to
+msgid "To"
+msgstr "bis"

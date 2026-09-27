@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Bilan au format SYSCOHADA révisé (Acte uniforme du 26 janvier 2017,
+            applicable depuis le 1er janvier 2018).
+
+            Portée. Le SYSCOHADA est commun aux dix-sept États de l'OHADA :
+            Bénin, Burkina Faso, Cameroun, Centrafrique, Comores, Congo, Côte
+            d'Ivoire, Gabon, Guinée, Guinée-Bissau, Guinée équatoriale, Mali,
+            Niger, RD Congo, Sénégal, Tchad, Togo. L'état n'est donc rattaché
+            à aucun pays : c'est un plan supranational, contrairement au PCG
+            qui est français et à lui seul.
+
+            Ce choix a une conséquence directe : `country_id` reste vide et la
+            résolution automatique par pays ne joue pas. L'état apparaît dans
+            la liste sans se substituer à l'état universel. Rattacher dix-sept
+            pays demanderait dix-sept enregistrements ; le faire tenir sur un
+            seul champ n'est pas possible dans Odoo.
+
+            Différences structurelles avec le bilan français, qui expliquent
+            pourquoi ce n'est pas une simple traduction :
+
+            — La trésorerie est un poste de premier niveau, distinct de
+              l'actif circulant. Le SYSCOHADA isole « Trésorerie-Actif » et
+              « Trésorerie-Passif » là où le PCG range les disponibilités dans
+              l'actif circulant. Cette séparation est le fondement du calcul
+              de la trésorerie nette, central dans l'analyse OHADA.
+
+            — Les écarts de conversion (478 et 479) sont des postes du bilan
+              à part entière, ce qu'ils ne sont pas au PCG.
+
+            — Les opérations hors activités ordinaires (HAO) sont isolées
+              jusque dans le bilan : comptes 481, 482, 485, 488.
+
+            — La classe 8 est réservée aux charges et produits HAO, alors
+              qu'au PCG elle n'existe pas.
+
+            AVERTISSEMENT. La ventilation ci-dessous a été construite à partir
+            du référentiel SYSCOHADA. Elle n'a pas été relue par un
+            professionnel du chiffre de la zone OHADA. Avant tout usage sur
+            une base réelle, elle doit l'être : un regroupement plausible et un
+            regroupement exact ne se distinguent pas à l'œil, et l'équilibre du
+            bilan ne prouve que la cohérence interne, pas la conformité.
+        -->
+
+        <record id="report_bilan_ohada" model="account.report">
+            <!--
+                Lecture cumulée depuis l'origine.
+
+                Un bilan porte des soldes arrêtés à une date, jamais les
+                mouvements d'une période. Ouvert du 1er juillet au 31 décembre,
+                il doit montrer la même trésorerie qu'ouvert sur l'année.
+            -->
+            <field name="expodo_cumulative" eval="True"/>
+            <field name="name">Balance Sheet (SYSCOHADA)</field>
+            <field name="name@pt_BR">Balanço (SYSCOHADA)</field>
+            <field name="name@es">Balance (SYSCOHADA)</field>
+            <field name="name@fr">Bilan (SYSCOHADA)</field>
+            <!-- Volontairement sans pays : voir l'en-tête. -->
+            <field name="root_report_id" ref="report_balance_sheet"/>
+            <!--
+                La classe 8 est réservée aux opérations hors
+                activités ordinaires dans le SYSCOHADA. Elle
+                n'existe ni au plan français ni dans les plans
+                anglo-saxons : sa présence identifie le
+                référentiel sans qu'on ait à nommer dix-sept pays.
+            -->
+            <field name="expodo_chart_prefix">8</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                Toutes les expressions du bilan lisent depuis l'origine : une
+                date d'ouverture n'entre dans aucun calcul. Déclarée, elle
+                s'affichait quand même et on pouvait la déplacer d'un exercice
+                entier sans qu'un seul chiffre bouge — un filtre qui ne filtre
+                rien fait douter de tout l'état.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_unfold_all" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="default_opening_date_filter">today</field>
+            <field name="column_ids">
+                <record id="report_bilan_ohada_col_balance" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <!-- ============================ ACTIF ============================ -->
+                <record id="bilan_ohada_actif" model="account.report.line">
+                    <field name="sequence" eval="10"/>
+                    <field name="name">ASSETS</field>
+                    <field name="name@pt_BR">ATIVO</field>
+                    <field name="name@es">ACTIVO</field>
+                    <field name="name@fr">ACTIF</field>
+                    <field name="code">OHADA_ACTIF</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+
+                        <record id="bilan_ohada_actif_immo" model="account.report.line">
+                            <field name="sequence" eval="20"/>
+                            <field name="name">Fixed assets</field>
+                            <field name="name@pt_BR">Ativo imobilizado</field>
+                            <field name="name@es">Activo inmovilizado</field>
+                            <field name="name@fr">Actif immobilisé</field>
+                            <field name="code">OHADA_ACTIF_IMMO</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+
+                                <record id="bilan_ohada_immo_incorp" model="account.report.line">
+                                    <field name="sequence" eval="30"/>
+                                    <field name="name">Intangible assets</field>
+                                    <field name="name@pt_BR">Imobilizações incorpóreas</field>
+                                    <field name="name@es">Inmovilizaciones intangibles</field>
+                                    <field name="name@fr">Immobilisations incorporelles</field>
+                                    <field name="code">OHADA_IMMO_INCORP</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- 20 : charges immobilisées et frais de développement.
+                                         21 : immobilisations incorporelles.
+                                         281/291 : amortissements et dépréciations
+                                         correspondants, de solde créditeur, qui viennent
+                                         donc en diminution. -->
+                                    <field name="account_codes_formula">20 + 21 + 281 + 291</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_immo_corp" model="account.report.line">
+                                    <field name="sequence" eval="40"/>
+                                    <field name="name">Tangible assets</field>
+                                    <field name="name@pt_BR">Imobilizações corpóreas</field>
+                                    <field name="name@es">Inmovilizaciones materiales</field>
+                                    <field name="name@fr">Immobilisations corporelles</field>
+                                    <field name="code">OHADA_IMMO_CORP</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- 22 terrains, 23 bâtiments et installations,
+                                         24 matériel. Le SYSCOHADA ouvre une racine 24
+                                         là où le PCG s'arrête à 21x. -->
+                                    <field name="account_codes_formula">22 + 23 + 24 + 282 + 283 + 284 + 292 + 293 + 294</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_immo_avances" model="account.report.line">
+                                    <field name="sequence" eval="50"/>
+                                    <field name="name">Advances paid on fixed assets</field>
+                                    <field name="name@pt_BR">Adiantamentos sobre imobilizações</field>
+                                    <field name="name@es">Anticipos sobre inmovilizaciones</field>
+                                    <field name="name@fr">Avances et acomptes versés sur immobilisations</field>
+                                    <field name="code">OHADA_IMMO_AVANCES</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Poste distinct au SYSCOHADA ; le PCG le range
+                                         avec les immobilisations correspondantes. -->
+                                    <field name="account_codes_formula">25 + 295</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_immo_fin" model="account.report.line">
+                                    <field name="sequence" eval="60"/>
+                                    <field name="name">Financial assets</field>
+                                    <field name="name@pt_BR">Imobilizações financeiras</field>
+                                    <field name="name@es">Inmovilizaciones financieras</field>
+                                    <field name="name@fr">Immobilisations financières</field>
+                                    <field name="code">OHADA_IMMO_FIN</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">26 + 27 + 296 + 297</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_ohada_actif_circ" model="account.report.line">
+                            <field name="sequence" eval="70"/>
+                            <field name="name">Current assets</field>
+                            <field name="name@pt_BR">Ativo circulante</field>
+                            <field name="name@es">Activo circulante</field>
+                            <field name="name@fr">Actif circulant</field>
+                            <field name="code">OHADA_ACTIF_CIRC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+
+                                <record id="bilan_ohada_circ_hao" model="account.report.line">
+                                    <field name="sequence" eval="80"/>
+                                    <field name="name">Non-operating current assets</field>
+                                    <field name="name@pt_BR">Ativo circulante AAO</field>
+                                    <field name="name@es">Activo circulante AAO</field>
+                                    <field name="name@fr">Actif circulant HAO</field>
+                                    <field name="code">OHADA_CIRC_HAO</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Créances nées d'opérations hors activités
+                                         ordinaires : cessions d'immobilisations (485),
+                                         créances HAO diverses (488). Le PCG n'a pas
+                                         d'équivalent. -->
+                                    <field name="account_codes_formula">485D + 488D</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_stocks" model="account.report.line">
+                                    <field name="sequence" eval="90"/>
+                                    <field name="name">Inventory and work in progress</field>
+                                    <field name="name@pt_BR">Existências e produtos em curso</field>
+                                    <field name="name@es">Existencias y productos en curso</field>
+                                    <field name="name@fr">Stocks et en-cours</field>
+                                    <field name="code">OHADA_STOCKS</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- 39 : dépréciations des stocks, créditrices. -->
+                                    <field name="account_codes_formula">3</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_creances" model="account.report.line">
+                                    <field name="sequence" eval="100"/>
+                                    <field name="name">Trade and other receivables</field>
+                                    <field name="name@pt_BR">Créditos e usos equiparados</field>
+                                    <field name="name@es">Créditos y empleos asimilados</field>
+                                    <field name="name@fr">Créances et emplois assimilés</field>
+                                    <field name="code">OHADA_CREANCES</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!--
+                                        Comptes de tiers à solde débiteur, hors ceux déjà
+                                        portés en actif circulant HAO (485, 488) et hors
+                                        écarts de conversion (478), qui font l'objet d'un
+                                        poste propre.
+
+                                        Le suffixe D retient les seuls comptes dont le
+                                        solde est débiteur sur la période : un compte 401
+                                        débiteur est une avance à un fournisseur, donc une
+                                        créance ; créditeur, c'est une dette.
+                                    -->
+                                    <field name="account_codes_formula">40D + 41D + 42D + 43D + 44D + 45D + 46D + 47D - 478D - 485D - 488D + 49</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_ohada_treso_actif" model="account.report.line">
+                            <field name="sequence" eval="110"/>
+                            <field name="name">Cash assets</field>
+                            <field name="name@pt_BR">Tesouraria-Ativo</field>
+                            <field name="name@es">Tesorería-Activo</field>
+                            <field name="name@fr">Trésorerie-Actif</field>
+                            <field name="code">OHADA_TRESO_ACTIF</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!--
+                                Poste de premier niveau, à la différence du PCG.
+                                Le SYSCOHADA en fait une masse distincte de l'actif
+                                circulant, car la trésorerie nette (Trésorerie-Actif
+                                moins Trésorerie-Passif) est un solde d'analyse à part
+                                entière dans le référentiel.
+
+                                50 titres de placement, 51 valeurs à encaisser,
+                                52D banques débitrices, 53 établissements financiers,
+                                54 instruments de trésorerie, 55 caisses,
+                                57 caisse, 58 virements internes, 59 dépréciations.
+                            -->
+                            <field name="account_codes_formula">50 + 51 + 52D + 53 + 54 + 55 + 57 + 58 + 59</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="bilan_ohada_ecart_conv_actif" model="account.report.line">
+                            <field name="sequence" eval="120"/>
+                            <field name="name">Translation differences — assets</field>
+                            <field name="name@pt_BR">Diferenças de câmbio-Ativo</field>
+                            <field name="name@es">Diferencias de conversión-Activo</field>
+                            <field name="name@fr">Écart de conversion-Actif</field>
+                            <field name="code">OHADA_ECART_ACTIF</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!-- Poste de bilan à part entière au SYSCOHADA. -->
+                            <field name="account_codes_formula">478</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ============================ PASSIF ============================ -->
+                <record id="bilan_ohada_passif" model="account.report.line">
+                    <field name="sequence" eval="130"/>
+                    <field name="name">LIABILITIES AND EQUITY</field>
+                    <field name="name@pt_BR">PASSIVO</field>
+                    <field name="name@es">PASIVO</field>
+                    <field name="name@fr">PASSIF</field>
+                    <field name="code">OHADA_PASSIF</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">OHADA_CAPITAUX.balance + OHADA_DETTES_FIN.balance + OHADA_PASSIF_CIRC.balance + OHADA_TRESO_PASSIF.balance + OHADA_ECART_PASSIF.balance</field>
+                    <field name="children_ids">
+
+                        <!--
+                            Toutes les lignes de passif portent un signe négatif.
+
+                            Odoo tient les soldes en convention signée : un compte
+                            créditeur a un solde négatif. Sans ce renversement le
+                            passif s'affiche en négatif et le bilan ne s'équilibre
+                            pas — c'est exactement ce qui s'est produit à la
+                            première exécution, avec un écart de 164 449 600 francs
+                            sur une base d'essai. L'erreur est invisible à la
+                            lecture d'une seule colonne : seule la ligne de
+                            contrôle en fin d'état la fait apparaître.
+                        -->
+                        <record id="bilan_ohada_capitaux" model="account.report.line">
+                            <field name="sequence" eval="140"/>
+                            <field name="name">Equity and similar resources</field>
+                            <field name="name@pt_BR">Capitais próprios e recursos equiparados</field>
+                            <field name="name@es">Fondos propios y recursos asimilados</field>
+                            <field name="name@fr">Capitaux propres et ressources assimilées</field>
+                            <field name="code">OHADA_CAPITAUX</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">OHADA_CAPITAL.balance + OHADA_PRIMES.balance + OHADA_RESERVES.balance + OHADA_REPORT.balance + OHADA_RESULTAT.balance + OHADA_SUBV.balance + OHADA_PROV_REGL.balance</field>
+                            <field name="children_ids">
+
+                                <record id="bilan_ohada_capital" model="account.report.line">
+                                    <field name="sequence" eval="150"/>
+                                    <field name="name">Share capital</field>
+                                    <field name="name@pt_BR">Capital social</field>
+                                    <field name="name@es">Capital social</field>
+                                    <field name="name@fr">Capital</field>
+                                    <field name="code">OHADA_CAPITAL</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-101 - 102 - 103 - 104 - 109</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_primes" model="account.report.line">
+                                    <field name="sequence" eval="160"/>
+                                    <field name="name">Share premiums and revaluation differences</field>
+                                    <field name="name@pt_BR">Prémios e diferenças de reavaliação</field>
+                                    <field name="name@es">Primas y diferencias de revalorización</field>
+                                    <field name="name@fr">Primes et écarts de réévaluation</field>
+                                    <field name="code">OHADA_PRIMES</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-105 - 106</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_reserves" model="account.report.line">
+                                    <field name="sequence" eval="170"/>
+                                    <field name="name">Reserves</field>
+                                    <field name="name@pt_BR">Reservas</field>
+                                    <field name="name@es">Reservas</field>
+                                    <field name="name@fr">Réserves</field>
+                                    <field name="code">OHADA_RESERVES</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-11</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_report" model="account.report.line">
+                                    <field name="sequence" eval="180"/>
+                                    <field name="name">Retained earnings</field>
+                                    <field name="name@pt_BR">Resultados transitados</field>
+                                    <field name="name@es">Resultados acumulados</field>
+                                    <field name="name@fr">Report à nouveau</field>
+                                    <field name="code">OHADA_REPORT</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Voir la note de la ligne jumelle au bilan français :
+                                         le report à nouveau comptabilisé d'un côté, ce que
+                                         les exercices antérieurs ont laissé sans affectation
+                                         de l'autre. Le regroupement est levé parce que le
+                                         moteur d'agrégation le refuse. -->
+                                    <field name="groupby" eval="False"/>
+                                    <field name="aggregation_formula">OHADA_REPORT_COMPTE.balance + OHADA_REPORT_ANTERIEUR.balance</field>
+                                    <field name="children_ids">
+                                        <record id="bilan_ohada_report_compte" model="account.report.line">
+                                            <field name="sequence" eval="181"/>
+                                            <field name="name">Retained earnings carried forward</field>
+                                            <field name="name@pt_BR">Resultados transitados contabilizados</field>
+                                            <field name="name@es">Resultados acumulados contabilizados</field>
+                                            <field name="name@fr">Report à nouveau comptabilisé</field>
+                                            <field name="code">OHADA_REPORT_COMPTE</field>
+                                            <field name="hierarchy_level" eval="4"/>
+                                            <field name="account_codes_formula">-12</field>
+                                            <field name="groupby">account_id</field>
+                                        </record>
+                                        <record id="bilan_ohada_report_anterieur" model="account.report.line">
+                                            <field name="sequence" eval="182"/>
+                                            <field name="name">Earlier years' unallocated result</field>
+                                            <field name="name@pt_BR">Resultado anterior não afetado</field>
+                                            <field name="name@es">Resultado anterior no asignado</field>
+                                            <field name="name@fr">Résultat antérieur non affecté</field>
+                                            <field name="code">OHADA_REPORT_ANTERIEUR</field>
+                                            <field name="hierarchy_level" eval="4"/>
+                                            <field name="hide_if_zero" eval="True"/>
+                                            <field name="account_codes_formula">-6 - 7 - 8 - 130 - 131 - 138 - 139</field>
+                                            <field name="expodo_prior_scope" eval="True"/>
+                                            <field name="groupby">account_id</field>
+                                        </record>
+                                    </field>
+                                </record>
+
+                                <record id="bilan_ohada_resultat" model="account.report.line">
+                                    <field name="sequence" eval="190"/>
+                                    <field name="name">Profit or loss for the period</field>
+                                    <field name="name@pt_BR">Resultado líquido do exercício</field>
+                                    <field name="name@es">Resultado neto del ejercicio</field>
+                                    <field name="name@fr">Résultat net de l'exercice</field>
+                                    <field name="code">OHADA_RESULTAT</field>
+                                                        <field name="hierarchy_level" eval="3"/>
+                                    <!--
+                                        Les comptes de gestion d'abord.
+
+                                        Tant que l'exercice n'est pas clôturé, le compte
+                                        de résultat de la classe 13 est vide : un bilan
+                                        qui s'y fierait ne s'équilibrerait pas en cours
+                                        d'année. Le même raisonnement vaut au PCG avec la
+                                        classe 12.
+
+                                        Les classes 6 et 7 couvrent les activités
+                                        ordinaires ; la classe 8 les opérations hors
+                                        activités ordinaires, qui entrent aussi dans le
+                                        résultat net. Les trois sont donc reprises.
+
+                                        La classe 13 ensuite, qui manquait. Une fois
+                                        l'exercice clôturé, les comptes de gestion sont
+                                        soldés et le résultat est porté en 130, 131 ou 139
+                                        selon son sens : le bilan perdait alors le résultat
+                                        tout entier et la ligne de contrôle s'allumait. Les
+                                        comptes 132 à 137 sont écartés à dessein — ce sont
+                                        les soldes intermédiaires de gestion, déjà comptés
+                                        dans le résultat qu'ils décomposent.
+
+                                        Borné à l'exercice en cours : ce qui précède est au
+                                        report à nouveau.
+                                    -->
+                                    <field name="account_codes_formula">-6 - 7 - 8 - 130 - 131 - 138 - 139</field>
+                                    <field name="expodo_period_scope" eval="True"/>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_subv" model="account.report.line">
+                                    <field name="sequence" eval="200"/>
+                                    <field name="name">Investment grants</field>
+                                    <field name="name@pt_BR">Subsídios ao investimento</field>
+                                    <field name="name@es">Subvenciones de inversión</field>
+                                    <field name="name@fr">Subventions d'investissement</field>
+                                    <field name="code">OHADA_SUBV</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-14</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_prov_regl" model="account.report.line">
+                                    <field name="sequence" eval="210"/>
+                                    <field name="name">Regulated provisions</field>
+                                    <field name="name@pt_BR">Provisões regulamentadas</field>
+                                    <field name="name@es">Provisiones reglamentadas</field>
+                                    <field name="name@fr">Provisions réglementées</field>
+                                    <field name="code">OHADA_PROV_REGL</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-15</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_ohada_dettes_fin" model="account.report.line">
+                            <field name="sequence" eval="220"/>
+                            <field name="name">Financial debt and similar resources</field>
+                            <field name="name@pt_BR">Dívidas financeiras e recursos equiparados</field>
+                            <field name="name@es">Deudas financieras y recursos asimilados</field>
+                            <field name="name@fr">Dettes financières et ressources assimilées</field>
+                            <field name="code">OHADA_DETTES_FIN</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!-- 16 emprunts, 17 dettes de location-acquisition,
+                                 18 dettes liées à des participations,
+                                 19 provisions pour risques et charges. -->
+                            <field name="account_codes_formula">-16 - 17 - 18 - 19</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="bilan_ohada_passif_circ" model="account.report.line">
+                            <field name="sequence" eval="230"/>
+                            <field name="name">Current liabilities</field>
+                            <field name="name@pt_BR">Passivo circulante</field>
+                            <field name="name@es">Pasivo circulante</field>
+                            <field name="name@fr">Passif circulant</field>
+                            <field name="code">OHADA_PASSIF_CIRC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+
+                                <record id="bilan_ohada_dettes_hao" model="account.report.line">
+                                    <field name="sequence" eval="240"/>
+                                    <field name="name">Non-operating current liabilities</field>
+                                    <field name="name@pt_BR">Dívidas circulantes AAO</field>
+                                    <field name="name@es">Deudas circulantes AAO</field>
+                                    <field name="name@fr">Dettes circulantes HAO</field>
+                                    <field name="code">OHADA_DETTES_HAO</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="account_codes_formula">-481C - 482C</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+
+                                <record id="bilan_ohada_dettes_expl" model="account.report.line">
+                                    <field name="sequence" eval="250"/>
+                                    <field name="name">Trade and other payables</field>
+                                    <field name="name@pt_BR">Dívidas de exploração e equiparadas</field>
+                                    <field name="name@es">Deudas de explotación y asimiladas</field>
+                                    <field name="name@fr">Dettes d'exploitation et assimilées</field>
+                                    <field name="code">OHADA_DETTES_EXPL</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <!-- Symétrique des créances : comptes de tiers à
+                                         solde créditeur, hors dettes HAO et hors écart
+                                         de conversion-Passif. -->
+                                    <field name="account_codes_formula">-40C - 41C - 42C - 43C - 44C - 45C - 46C - 47C + 479C + 481C + 482C</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bilan_ohada_treso_passif" model="account.report.line">
+                            <field name="sequence" eval="260"/>
+                            <field name="name">Cash liabilities</field>
+                            <field name="name@pt_BR">Tesouraria-Passivo</field>
+                            <field name="name@es">Tesorería-Pasivo</field>
+                            <field name="name@fr">Trésorerie-Passif</field>
+                            <field name="code">OHADA_TRESO_PASSIF</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <!-- Banques créditrices (découverts) et crédits de
+                                 trésorerie. Pendant de la Trésorerie-Actif : leur
+                                 différence donne la trésorerie nette. -->
+                            <field name="account_codes_formula">-52C - 56</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="bilan_ohada_ecart_conv_passif" model="account.report.line">
+                            <field name="sequence" eval="270"/>
+                            <field name="name">Translation differences — liabilities</field>
+                            <field name="name@pt_BR">Diferenças de câmbio-Passivo</field>
+                            <field name="name@es">Diferencias de conversión-Pasivo</field>
+                            <field name="name@fr">Écart de conversion-Passif</field>
+                            <field name="code">OHADA_ECART_PASSIF</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="account_codes_formula">-479</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!-- ====================== CONTRÔLE D'ÉQUILIBRE ====================== -->
+                <record id="bilan_ohada_controle" model="account.report.line">
+                    <field name="sequence" eval="280"/>
+                    <field name="name">Balance check (must be zero)</field>
+                    <field name="name@pt_BR">Controlo de equilíbrio (deve ser nulo)</field>
+                    <field name="name@es">Control de equilibrio (debe ser nulo)</field>
+                    <field name="name@fr">Contrôle d'équilibre (doit être nul)</field>
+                    <field name="code">OHADA_CONTROLE</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <!--
+                        Un bilan déséquilibré est un bilan faux, et rien dans
+                        l'affichage ne le signale : les deux colonnes se lisent
+                        séparément. Cette ligne rend l'écart visible plutôt que de
+                        compter sur le lecteur pour faire la soustraction.
+
+                        Elle sert aussi de garde-fou lors des reprises de plan
+                        comptable : un compte ajouté au plan mais oublié dans les
+                        regroupements ci-dessus se manifeste ici, et nulle part
+                        ailleurs.
+                    -->
+                    <field name="aggregation_formula">OHADA_ACTIF.balance - OHADA_PASSIF.balance</field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

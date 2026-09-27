@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expodo_fiscal_year_readonly,expodo.fiscal.year.readonly,model_expodo_fiscal_year,account.group_account_readonly,1,0,0,0
+access_expodo_fiscal_year_basic,expodo.fiscal.year.basic,model_expodo_fiscal_year,account.group_account_basic,1,0,0,0
+access_expodo_fiscal_year_user,expodo.fiscal.year.user,model_expodo_fiscal_year,account.group_account_user,1,0,0,0
+access_expodo_fiscal_year_manager,expodo.fiscal.year.manager,model_expodo_fiscal_year,account.group_account_manager,1,1,1,1

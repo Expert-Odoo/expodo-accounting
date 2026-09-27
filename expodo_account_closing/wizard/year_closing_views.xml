@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_year_closing_form" model="ir.ui.view">
+            <field name="name">expodo.year.closing.form</field>
+            <field name="model">expodo.year.closing</field>
+            <field name="arch" type="xml">
+                <form string="Close a fiscal year">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                            <group>
+                                <field name="journal_id"/>
+                                <field name="create_opening"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <group invisible="not closing_move_id" string="Generated">
+                            <field name="result"/>
+                            <field name="closing_move_id" readonly="1"/>
+                            <field name="opening_move_id" readonly="1"
+                                   invisible="not opening_move_id"/>
+                        </group>
+
+                        <div class="alert alert-warning" role="alert" invisible="not warning">
+                            <field name="warning" nolabel="1"/>
+                        </div>
+
+                        <!--
+                            Le texte dit ce que fait l'opération avant qu'on la
+                            lance. Une clôture est irréversible une fois
+                            comptabilisée : la découvrir après coup est trop tard.
+                        -->
+                        <div class="alert alert-info" role="alert" invisible="closing_move_id">
+                            The closing entry zeroes profit-and-loss accounts and
+                            carries the result to the balance sheet. The opening
+                            entry then brings balance sheet accounts forward to the
+                            first day of the next year. Check first, then close.
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_check" type="object" string="Check"
+                                class="btn-secondary" invisible="closing_move_id"/>
+                        <button name="action_close" type="object" string="Close the year"
+                                class="btn-primary" invisible="closing_move_id"/>
+                        <button name="action_register_opening" type="object"
+                                string="Register as opening entry" class="btn-primary"
+                                invisible="not opening_move_id"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_year_closing" model="ir.actions.act_window">
+            <field name="name">Year-End Closing</field>
+            <field name="res_model">expodo.year.closing</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_expodo_year_closing"
+                  name="Year-End Closing"
+                  parent="account.menu_finance_entries"
+                  action="action_expodo_year_closing"
+                  sequence="90"
+                  groups="account.group_account_manager"/>
+
+    </data>
+</odoo>

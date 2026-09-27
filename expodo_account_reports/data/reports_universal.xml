@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Bilan et compte de résultat **universels**.
+
+            Ils ne s'appuient sur aucun plan comptable national : ils agrègent
+            par `account_type`, un champ dont les 19 valeurs sont identiques
+            dans toutes les localisations d'Odoo, de l'Arabie saoudite au
+            Japon. Chaque localisation attribue ces types à ses propres
+            comptes ; le regroupement est donc correct partout, sans code ni
+            pack.
+
+            Rapport avec les packs nationaux
+            Un pack (français, OHADA, belge…) ne rend pas ces rapports plus
+            justes : il en donne la **présentation statutaire**, celle que
+            l'expert-comptable et l'administration attendent. Les deux
+            coexistent, et celui-ci fonctionne dès l'installation, partout.
+
+            Convention de signe
+            En base, un actif porte un solde débiteur donc positif, un passif
+            et les capitaux propres un solde créditeur donc négatif. Les
+            postes de passif sont négés pour s'afficher positivement, ce qui
+            est la lecture attendue d'un bilan.
+
+            Résultat de l'exercice
+            Calculé depuis les comptes de produits et de charges, et non lu
+            sur un compte de report : tant que l'exercice n'est pas clôturé,
+            ce compte est vide et un bilan qui l'ignore ne s'équilibre pas.
+        -->
+
+        <!-- ====================== BILAN UNIVERSEL ====================== -->
+        <record id="report_balance_sheet" model="account.report">
+            <!--
+                Lecture cumulée depuis l'origine.
+
+                Un bilan porte des soldes arrêtés à une date, jamais les
+                mouvements d'une période. Ouvert du 1er juillet au 31 décembre,
+                il doit montrer la même trésorerie qu'ouvert sur l'année.
+            -->
+            <field name="expodo_cumulative" eval="True"/>
+            <field name="name">Balance Sheet</field>
+            <field name="name@fr">Bilan</field>
+            <field name="name@es">Balance de situación</field>
+            <field name="name@de">Bilanz</field>
+            <field name="name@nl">Balans</field>
+            <field name="name@it">Stato patrimoniale</field>
+            <field name="name@pt_BR">Balanço patrimonial</field>
+            <!--
+                Arrêté à une date, sans date de début.
+
+                Toutes les expressions du bilan lisent depuis l'origine : une
+                date d'ouverture n'entre dans aucun calcul. Déclarée, elle
+                s'affichait quand même et on pouvait la déplacer d'un exercice
+                entier sans qu'un seul chiffre bouge — un filtre qui ne filtre
+                rien fait douter de tout l'état.
+            -->
+            <field name="filter_date_range" eval="False"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="default_opening_date_filter">today</field>
+            <field name="column_ids">
+                <record id="col_bs_balance" model="account.report.column">
+                    <field name="name">Balance</field>
+                    <field name="name@fr">Solde</field>
+                    <field name="name@es">Saldo</field>
+                    <field name="name@de">Saldo</field>
+                    <field name="name@nl">Saldo</field>
+                    <field name="name@it">Saldo</field>
+                    <field name="name@pt_BR">Saldo</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <record id="bs_assets" model="account.report.line">
+                    <field name="name">ASSETS</field>
+                    <field name="name@fr">ACTIF</field>
+                    <field name="name@es">ACTIVO</field>
+                    <field name="name@de">AKTIVA</field>
+                    <field name="name@nl">ACTIVA</field>
+                    <field name="name@it">ATTIVO</field>
+                    <field name="name@pt_BR">ATIVO</field>
+                    <field name="code">BS_ASSETS</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BS_ASSETS_NC.balance + BS_ASSETS_C.balance</field>
+                    <field name="children_ids">
+
+                        <record id="bs_assets_nc" model="account.report.line">
+                            <field name="name">Non-current assets</field>
+                            <field name="name@fr">Actif immobilisé</field>
+                            <field name="name@es">Activo no corriente</field>
+                            <field name="name@de">Anlagevermögen</field>
+                            <field name="name@nl">Vaste activa</field>
+                            <field name="name@it">Attivo immobilizzato</field>
+                            <field name="name@pt_BR">Ativo não circulante</field>
+                            <field name="code">BS_ASSETS_NC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bs_fixed" model="account.report.line">
+                                    <field name="name">Fixed assets</field>
+                                    <field name="name@fr">Immobilisations</field>
+                                    <field name="name@es">Inmovilizado</field>
+                                    <field name="name@de">Sachanlagen</field>
+                                    <field name="name@nl">Materiële vaste activa</field>
+                                    <field name="name@it">Immobilizzazioni</field>
+                                    <field name="name@pt_BR">Imobilizado</field>
+                                    <field name="code">BS_FIXED</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">sum([('account_id.account_type', '=', 'asset_fixed')])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bs_nc_other" model="account.report.line">
+                                    <field name="name">Other non-current assets</field>
+                                    <field name="name@fr">Autres actifs immobilisés</field>
+                                    <field name="name@es">Otros activos no corrientes</field>
+                                    <field name="name@de">Sonstiges Anlagevermögen</field>
+                                    <field name="name@nl">Overige vaste activa</field>
+                                    <field name="name@it">Altre immobilizzazioni</field>
+                                    <field name="name@pt_BR">Outros ativos não circulantes</field>
+                                    <field name="code">BS_NC_OTHER</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">sum([('account_id.account_type', '=', 'asset_non_current')])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <record id="bs_assets_c" model="account.report.line">
+                            <field name="name">Current assets</field>
+                            <field name="name@fr">Actif circulant</field>
+                            <field name="name@es">Activo corriente</field>
+                            <field name="name@de">Umlaufvermögen</field>
+                            <field name="name@nl">Vlottende activa</field>
+                            <field name="name@it">Attivo circolante</field>
+                            <field name="name@pt_BR">Ativo circulante</field>
+                            <field name="code">BS_ASSETS_C</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bs_receivable" model="account.report.line">
+                                    <field name="name">Receivables</field>
+                                    <field name="name@fr">Créances clients</field>
+                                    <field name="name@es">Deudores comerciales</field>
+                                    <field name="name@de">Forderungen</field>
+                                    <field name="name@nl">Vorderingen</field>
+                                    <field name="name@it">Crediti</field>
+                                    <field name="name@pt_BR">Contas a receber</field>
+                                    <field name="code">BS_RECEIVABLE</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">sum([('account_id.account_type', '=', 'asset_receivable')])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bs_current" model="account.report.line">
+                                    <field name="name">Other current assets</field>
+                                    <field name="name@fr">Autres actifs circulants</field>
+                                    <field name="name@es">Otros activos corrientes</field>
+                                    <field name="name@de">Sonstiges Umlaufvermögen</field>
+                                    <field name="name@nl">Overige vlottende activa</field>
+                                    <field name="name@it">Altre attività correnti</field>
+                                    <field name="name@pt_BR">Outros ativos circulantes</field>
+                                    <field name="code">BS_CURRENT</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">sum([('account_id.account_type', 'in', ('asset_current', 'asset_prepayments'))])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bs_cash" model="account.report.line">
+                                    <field name="name">Bank and cash</field>
+                                    <field name="name@fr">Disponibilités</field>
+                                    <field name="name@es">Efectivo y bancos</field>
+                                    <field name="name@de">Kasse und Bank</field>
+                                    <field name="name@nl">Liquide middelen</field>
+                                    <field name="name@it">Disponibilità liquide</field>
+                                    <field name="name@pt_BR">Caixa e bancos</field>
+                                    <field name="code">BS_CASH</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">sum([('account_id.account_type', '=', 'asset_cash')])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="bs_liabilities" model="account.report.line">
+                    <field name="name">LIABILITIES AND EQUITY</field>
+                    <field name="name@fr">PASSIF</field>
+                    <field name="name@es">PASIVO Y PATRIMONIO NETO</field>
+                    <field name="name@de">PASSIVA UND EIGENKAPITAL</field>
+                    <field name="name@nl">PASSIVA EN EIGEN VERMOGEN</field>
+                    <field name="name@it">PASSIVO E PATRIMONIO NETTO</field>
+                    <field name="name@pt_BR">PASSIVO E PATRIMÔNIO LÍQUIDO</field>
+                    <field name="code">BS_LIAB</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BS_EQUITY.balance + BS_LIAB_NC.balance + BS_LIAB_C.balance</field>
+                    <field name="children_ids">
+
+                        <record id="bs_equity" model="account.report.line">
+                            <field name="name">Equity</field>
+                            <field name="name@fr">Capitaux propres</field>
+                            <field name="name@es">Patrimonio neto</field>
+                            <field name="name@de">Eigenkapital</field>
+                            <field name="name@nl">Eigen vermogen</field>
+                            <field name="name@it">Patrimonio netto</field>
+                            <field name="name@pt_BR">Patrimônio líquido</field>
+                            <field name="code">BS_EQUITY</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bs_capital" model="account.report.line">
+                                    <field name="name">Capital and reserves</field>
+                                    <field name="name@fr">Capital et réserves</field>
+                                    <field name="name@es">Capital y reservas</field>
+                                    <field name="name@de">Kapital und Rücklagen</field>
+                                    <field name="name@nl">Kapitaal en reserves</field>
+                                    <field name="name@it">Capitale e riserve</field>
+                                    <field name="name@pt_BR">Capital e reservas</field>
+                                    <field name="code">BS_CAPITAL</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('equity', 'equity_unaffected'))])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bs_result" model="account.report.line">
+                                    <field name="name">Unallocated result</field>
+                                    <field name="name@fr">Résultat non affecté</field>
+                                    <field name="name@es">Resultado pendiente de aplicación</field>
+                                    <field name="name@de">Nicht verwendetes Ergebnis</field>
+                                    <field name="name@nl">Onverdeeld resultaat</field>
+                                    <field name="name@it">Risultato non destinato</field>
+                                    <field name="name@pt_BR">Resultado não destinado</field>
+                                    <field name="code">BS_RESULT</field>
+                                    <!--
+                                        Cette ligne porte **tous** les
+                                        résultats non encore affectés, pas le
+                                        seul exercice en cours.
+
+                                        Tant qu'un exercice n'est pas clôturé,
+                                        son résultat reste dans les comptes de
+                                        produits et de charges plutôt que dans
+                                        le report à nouveau. Le restreindre à
+                                        l'exercice courant ferait disparaître
+                                        les précédents des capitaux propres,
+                                        et le bilan cesserait de s'équilibrer.
+
+                                        Son nom le dit : « résultat non
+                                        affecté », et non « résultat de
+                                        l'exercice ». La nuance compte pour le
+                                        lecteur qui rapproche ce montant du
+                                        compte de résultat.
+                                    -->
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))])</field>
+                                </record>
+
+                            </field>
+                        </record>
+
+                        <record id="bs_liab_nc" model="account.report.line">
+                            <field name="name">Non-current liabilities</field>
+                            <field name="name@fr">Dettes à long terme</field>
+                            <field name="name@es">Pasivo no corriente</field>
+                            <field name="name@de">Langfristige Verbindlichkeiten</field>
+                            <field name="name@nl">Langlopende schulden</field>
+                            <field name="name@it">Passività non correnti</field>
+                            <field name="name@pt_BR">Passivo não circulante</field>
+                            <field name="code">BS_LIAB_NC</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'liability_non_current')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+
+                        <record id="bs_liab_c" model="account.report.line">
+                            <field name="name">Current liabilities</field>
+                            <field name="name@fr">Dettes à court terme</field>
+                            <field name="name@es">Pasivo corriente</field>
+                            <field name="name@de">Kurzfristige Verbindlichkeiten</field>
+                            <field name="name@nl">Kortlopende schulden</field>
+                            <field name="name@it">Passività correnti</field>
+                            <field name="name@pt_BR">Passivo circulante</field>
+                            <field name="code">BS_LIAB_C</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="aggregation_formula">sum_children</field>
+                            <field name="children_ids">
+                                <record id="bs_payable" model="account.report.line">
+                                    <field name="name">Payables</field>
+                                    <field name="name@fr">Dettes fournisseurs</field>
+                                    <field name="name@es">Acreedores comerciales</field>
+                                    <field name="name@de">Verbindlichkeiten</field>
+                                    <field name="name@nl">Schulden</field>
+                                    <field name="name@it">Debiti</field>
+                                    <field name="name@pt_BR">Contas a pagar</field>
+                                    <field name="code">BS_PAYABLE</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">-sum([('account_id.account_type', '=', 'liability_payable')])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                                <record id="bs_liab_other" model="account.report.line">
+                                    <field name="name">Other current liabilities</field>
+                                    <field name="name@fr">Autres dettes à court terme</field>
+                                    <field name="name@es">Otros pasivos corrientes</field>
+                                    <field name="name@de">Sonstige kurzfristige Verbindlichkeiten</field>
+                                    <field name="name@nl">Overige kortlopende schulden</field>
+                                    <field name="name@it">Altre passività correnti</field>
+                                    <field name="name@pt_BR">Outros passivos circulantes</field>
+                                    <field name="code">BS_LIAB_OTHER</field>
+                                    <field name="hierarchy_level" eval="3"/>
+                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('liability_current', 'liability_credit_card'))])</field>
+                                    <field name="groupby">account_id</field>
+                                </record>
+                            </field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="bs_check" model="account.report.line">
+                    <field name="name">Assets minus liabilities (must be zero)</field>
+                    <field name="name@fr">Écart actif / passif (doit être nul)</field>
+                    <field name="name@es">Activo menos pasivo (debe ser cero)</field>
+                    <field name="name@de">Aktiva minus Passiva (muss null sein)</field>
+                    <field name="name@nl">Activa minus passiva (moet nul zijn)</field>
+                    <field name="name@it">Attivo meno passivo (deve essere zero)</field>
+                    <field name="name@pt_BR">Ativo menos passivo (deve ser zero)</field>
+                    <field name="code">BS_CHECK</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">BS_ASSETS.balance - BS_LIAB.balance</field>
+                </record>
+
+            </field>
+        </record>
+
+        <!-- ================ COMPTE DE RÉSULTAT UNIVERSEL ================ -->
+        <record id="report_profit_loss" model="account.report">
+            <field name="name">Profit and Loss</field>
+            <field name="name@fr">Compte de résultat</field>
+            <field name="name@es">Cuenta de resultados</field>
+            <field name="name@de">Gewinn- und Verlustrechnung</field>
+            <field name="name@nl">Winst- en verliesrekening</field>
+            <field name="name@it">Conto economico</field>
+            <field name="name@pt_BR">Demonstração do resultado</field>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_show_draft" eval="True"/>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="col_pl_balance" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="name@es">Importe</field>
+                    <field name="name@de">Betrag</field>
+                    <field name="name@nl">Bedrag</field>
+                    <field name="name@it">Importo</field>
+                    <field name="name@pt_BR">Valor</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <record id="pl_income" model="account.report.line">
+                    <field name="name">Income</field>
+                    <field name="name@fr">Produits</field>
+                    <field name="name@es">Ingresos</field>
+                    <field name="name@de">Erträge</field>
+                    <field name="name@nl">Opbrengsten</field>
+                    <field name="name@it">Ricavi</field>
+                    <field name="name@pt_BR">Receitas</field>
+                    <field name="code">PL_INCOME</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <record id="pl_revenue" model="account.report.line">
+                            <field name="name">Operating income</field>
+                            <field name="name@fr">Produits d'exploitation</field>
+                            <field name="name@es">Ingresos de explotación</field>
+                            <field name="name@de">Betriebserträge</field>
+                            <field name="name@nl">Bedrijfsopbrengsten</field>
+                            <field name="name@it">Ricavi operativi</field>
+                            <field name="name@pt_BR">Receitas operacionais</field>
+                            <field name="code">PL_REVENUE</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'income')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="pl_income_other" model="account.report.line">
+                            <field name="name">Other income</field>
+                            <field name="name@fr">Autres produits</field>
+                            <field name="name@es">Otros ingresos</field>
+                            <field name="name@de">Sonstige Erträge</field>
+                            <field name="name@nl">Overige opbrengsten</field>
+                            <field name="name@it">Altri ricavi</field>
+                            <field name="name@pt_BR">Outras receitas</field>
+                            <field name="code">PL_INCOME_OTHER</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'income_other')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pl_cost" model="account.report.line">
+                    <field name="name">Cost of revenue</field>
+                    <field name="name@fr">Coût des ventes</field>
+                    <field name="name@es">Coste de las ventas</field>
+                    <field name="name@de">Umsatzkosten</field>
+                    <field name="name@nl">Kostprijs van de omzet</field>
+                    <field name="name@it">Costo del venduto</field>
+                    <field name="name@pt_BR">Custo das vendas</field>
+                    <field name="code">PL_COST</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="domain_formula">sum([('account_id.account_type', '=', 'expense_direct_cost')])</field>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="pl_gross" model="account.report.line">
+                    <field name="name">GROSS PROFIT</field>
+                    <field name="name@fr">MARGE BRUTE</field>
+                    <field name="name@es">MARGEN BRUTO</field>
+                    <field name="name@de">ROHERTRAG</field>
+                    <field name="name@nl">BRUTOWINST</field>
+                    <field name="name@it">MARGINE LORDO</field>
+                    <field name="name@pt_BR">LUCRO BRUTO</field>
+                    <field name="code">PL_GROSS</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">PL_INCOME.balance - PL_COST.balance</field>
+                </record>
+
+                <record id="pl_expenses" model="account.report.line">
+                    <field name="name">Expenses</field>
+                    <field name="name@fr">Charges</field>
+                    <field name="name@es">Gastos</field>
+                    <field name="name@de">Aufwendungen</field>
+                    <field name="name@nl">Kosten</field>
+                    <field name="name@it">Costi</field>
+                    <field name="name@pt_BR">Despesas</field>
+                    <field name="code">PL_EXPENSES</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">sum_children</field>
+                    <field name="children_ids">
+                        <record id="pl_operating" model="account.report.line">
+                            <field name="name">Operating expenses</field>
+                            <field name="name@fr">Charges d'exploitation</field>
+                            <field name="name@es">Gastos de explotación</field>
+                            <field name="name@de">Betriebsaufwendungen</field>
+                            <field name="name@nl">Bedrijfskosten</field>
+                            <field name="name@it">Costi operativi</field>
+                            <field name="name@pt_BR">Despesas operacionais</field>
+                            <field name="code">PL_OPERATING</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">sum([('account_id.account_type', '=', 'expense')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="pl_depreciation" model="account.report.line">
+                            <field name="name">Depreciation</field>
+                            <field name="name@fr">Dotations aux amortissements</field>
+                            <field name="name@es">Amortizaciones</field>
+                            <field name="name@de">Abschreibungen</field>
+                            <field name="name@nl">Afschrijvingen</field>
+                            <field name="name@it">Ammortamenti</field>
+                            <field name="name@pt_BR">Depreciações</field>
+                            <field name="code">PL_DEPRECIATION</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">sum([('account_id.account_type', '=', 'expense_depreciation')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                        <record id="pl_expense_other" model="account.report.line">
+                            <field name="name">Other expenses</field>
+                            <field name="name@fr">Autres charges</field>
+                            <field name="name@es">Otros gastos</field>
+                            <field name="name@de">Sonstige Aufwendungen</field>
+                            <field name="name@nl">Overige kosten</field>
+                            <field name="name@it">Altri costi</field>
+                            <field name="name@pt_BR">Outras despesas</field>
+                            <field name="code">PL_EXPENSE_OTHER</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">sum([('account_id.account_type', '=', 'expense_other')])</field>
+                            <field name="groupby">account_id</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="pl_net" model="account.report.line">
+                    <field name="name">NET RESULT</field>
+                    <field name="name@fr">RÉSULTAT NET</field>
+                    <field name="name@es">RESULTADO NETO</field>
+                    <field name="name@de">JAHRESERGEBNIS</field>
+                    <field name="name@nl">NETTORESULTAAT</field>
+                    <field name="name@it">RISULTATO NETTO</field>
+                    <field name="name@pt_BR">RESULTADO LÍQUIDO</field>
+                    <field name="code">PL_NET</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">PL_GROSS.balance - PL_EXPENSES.balance</field>
+                </record>
+
+                <!--
+                    Contrôle : le résultat affiché au bilan doit être identique.
+                    Les deux l'obtiennent par des chemins différents — ici par
+                    recomposition, là par solde global. Un écart signale un type
+                    de compte oublié dans le détail ci-dessus.
+                -->
+                <record id="pl_check" model="account.report.line">
+                    <field name="name">Gap with balance sheet result (must be zero)</field>
+                    <field name="name@fr">Écart avec le résultat du bilan (doit être nul)</field>
+                    <field name="name@es">Diferencia con el resultado del balance (debe ser cero)</field>
+                    <field name="name@de">Abweichung zum Bilanzergebnis (muss null sein)</field>
+                    <field name="name@nl">Verschil met balansresultaat (moet nul zijn)</field>
+                    <field name="name@it">Scostamento dal risultato di bilancio (deve essere zero)</field>
+                    <field name="name@pt_BR">Diferença com o resultado do balanço (deve ser zero)</field>
+                    <field name="code">PL_CHECK</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="aggregation_formula">PL_NET.balance - PL_GLOBAL.balance</field>
+                    <field name="children_ids">
+                        <record id="pl_global" model="account.report.line">
+                            <field name="name">Result from global balance</field>
+                            <field name="name@fr">Résultat par solde global</field>
+                            <field name="name@es">Resultado por saldo global</field>
+                            <field name="name@de">Ergebnis aus Gesamtsaldo</field>
+                            <field name="name@nl">Resultaat uit totaalsaldo</field>
+                            <field name="name@it">Risultato da saldo globale</field>
+                            <field name="name@pt_BR">Resultado pelo saldo global</field>
+                            <field name="code">PL_GLOBAL</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="domain_formula">-sum([('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))])</field>
+                        </record>
+                    </field>
+                </record>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

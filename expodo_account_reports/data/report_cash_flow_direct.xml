@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Tableau de flux de trésorerie, méthode directe.
+
+            Deux méthodes, deux lectures
+            Le tableau de flux existe sous deux formes, l'une et l'autre
+            admises par les référentiels, et qui répondent à des questions
+            différentes.
+
+            La méthode **indirecte** part du résultat net et le corrige de ce
+            qui n'a pas touché la trésorerie. Elle explique *pourquoi* le
+            résultat et la trésorerie diffèrent — question que pose tout
+            dirigeant qui affiche un bénéfice et n'a pas d'argent en banque.
+            C'est la présentation attendue à l'arrêté des comptes.
+
+            La méthode **directe**, celle de cet état, part des mouvements
+            réels de trésorerie et les classe par nature. Elle dit *d'où vient
+            et où va l'argent*, sans passer par le résultat. C'est la
+            présentation que recommande la norme internationale, et celle que
+            retient l'édition Enterprise d'Odoo.
+
+            Le classement
+            Il s'appuie sur les étiquettes de compte livrées par le module
+            `account` — `Operating Activities`, `Investing & Extraordinary
+            Activities`, `Financing Activities` — que chaque localisation
+            renseigne sur son propre plan. Deux cent cinquante-quatre comptes
+            du plan français les portent.
+
+            C'est le mécanisme qu'Odoo emploie lui-même, et il a deux mérites
+            sur une sélection par type ou par numéro : il est configurable par
+            l'utilisateur, et il est renseigné par ceux qui connaissent le
+            plan comptable de leur pays.
+
+            La contrepartie de la méthode directe
+            Un mouvement de trésorerie dont la contrepartie ne porte aucune
+            étiquette ne peut pas être classé. Plutôt que de le répartir au
+            jugé, cet état l'affiche dans une ligne « non classés » — visible,
+            chiffrée, et qui dit à l'utilisateur quels comptes étiqueter pour
+            la faire disparaître.
+
+            Un poste non classé qu'on voit vaut mieux qu'une ventilation
+            plausible et fausse.
+        -->
+
+        <record id="report_cash_flow_direct" model="account.report">
+            <field name="name">Cash Flow Statement (direct method)</field>
+            <field name="name@fr">Tableau de flux de trésorerie (méthode directe)</field>
+            <field name="name@es">Estado de flujos de efectivo (método directo)</field>
+            <field name="name@de">Kapitalflussrechnung (direkte Methode)</field>
+            <field name="name@nl">Kasstroomoverzicht (directe methode)</field>
+            <field name="name@it">Rendiconto finanziario (metodo diretto)</field>
+            <field name="name@pt_BR">Demonstração dos fluxos de caixa (método direto)</field>
+            <field name="root_report_id" ref="report_cash_flow"/>
+            <field name="filter_date_range" eval="True"/>
+            <field name="filter_journals" eval="True"/>
+            <field name="filter_multi_company">selector</field>
+            <field name="filter_period_comparison" eval="True"/>
+            <field name="default_opening_date_filter">this_year</field>
+            <field name="column_ids">
+                <record id="report_cash_flow_direct_col" model="account.report.column">
+                    <field name="name">Amount</field>
+                    <field name="name@fr">Montant</field>
+                    <field name="name@es">Importe</field>
+                    <field name="name@de">Betrag</field>
+                    <field name="name@nl">Bedrag</field>
+                    <field name="name@it">Importo</field>
+                    <field name="name@pt_BR">Valor</field>
+                    <field name="expression_label">balance</field>
+                    <field name="figure_type">monetary</field>
+                </record>
+            </field>
+            <field name="line_ids">
+
+                <record id="cfd_opening" model="account.report.line">
+                    <field name="name">Cash at beginning of period</field>
+                    <field name="name@fr">Trésorerie à l'ouverture</field>
+                    <field name="code">CFD_OPENING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="10"/>
+                    <field name="expression_ids">
+                        <record id="cfd_opening_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_period</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="cfd_operating" model="account.report.line">
+                    <field name="name">Cash flow from operating activities</field>
+                    <field name="name@fr">Flux de trésorerie d'exploitation</field>
+                    <field name="code">CFD_OPERATING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="20"/>
+                    <!--
+                        Le signe est inversé : on lit la contrepartie du
+                        mouvement de trésorerie. Un encaissement crédite un
+                        compte de produit — solde négatif — et constitue une
+                        entrée d'argent, donc positive au tableau de flux.
+                    -->
+                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_operating')"/>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="cfd_investing" model="account.report.line">
+                    <field name="name">Cash flow from investing activities</field>
+                    <field name="name@fr">Flux de trésorerie d'investissement</field>
+                    <field name="code">CFD_INVESTING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="30"/>
+                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_investing')"/>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="cfd_financing" model="account.report.line">
+                    <field name="name">Cash flow from financing activities</field>
+                    <field name="name@fr">Flux de trésorerie de financement</field>
+                    <field name="code">CFD_FINANCING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="40"/>
+                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_financing')"/>
+                    <field name="groupby">account_id</field>
+                </record>
+
+                <record id="cfd_unclassified" model="account.report.line">
+                    <field name="name">Unclassified movements</field>
+                    <field name="name@fr">Mouvements non classés</field>
+                    <field name="name@es">Movimientos sin clasificar</field>
+                    <field name="name@de">Nicht zugeordnete Bewegungen</field>
+                    <field name="name@nl">Niet-ingedeelde mutaties</field>
+                    <field name="name@it">Movimenti non classificati</field>
+                    <field name="name@pt_BR">Movimentos não classificados</field>
+                    <field name="code">CFD_UNCLASSIFIED</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="50"/>
+                    <!--
+                        Ce que les trois étiquettes n'ont pas attrapé.
+
+                        Le poste est obtenu par différence plutôt que par un
+                        domaine « sans étiquette » : ainsi il capte aussi bien
+                        les comptes non étiquetés que les cas où une écriture
+                        échapperait au classement pour une autre raison. Une
+                        ligne calculée par différence ne peut pas rater ce
+                        qu'elle est censée ramasser.
+
+                        Un poste non classé visible vaut mieux qu'une
+                        ventilation plausible et fausse : celui qui le lit sait
+                        quoi étiqueter pour le faire disparaître.
+                    -->
+                    <field name="aggregation_formula">CFD_ACTUAL.balance - CFD_OPERATING.balance - CFD_INVESTING.balance - CFD_FINANCING.balance</field>
+                </record>
+
+                <record id="cfd_net_change" model="account.report.line">
+                    <field name="name">NET CHANGE IN CASH</field>
+                    <field name="name@fr">VARIATION DE TRÉSORERIE</field>
+                    <field name="name@es">VARIACIÓN DE TESORERÍA</field>
+                    <field name="name@de">VERÄNDERUNG DER LIQUIDITÄT</field>
+                    <field name="name@nl">MUTATIE LIQUIDE MIDDELEN</field>
+                    <field name="name@it">VARIAZIONE DI LIQUIDITÀ</field>
+                    <field name="name@pt_BR">VARIAÇÃO DE CAIXA</field>
+                    <field name="code">CFD_NET_CHANGE</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="60"/>
+                    <field name="aggregation_formula">CFD_OPERATING.balance + CFD_INVESTING.balance + CFD_FINANCING.balance + CFD_UNCLASSIFIED.balance</field>
+                </record>
+
+                <record id="cfd_closing" model="account.report.line">
+                    <field name="name">Cash at end of period</field>
+                    <field name="name@fr">Trésorerie à la clôture</field>
+                    <field name="code">CFD_CLOSING</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="70"/>
+                    <field name="expression_ids">
+                        <record id="cfd_closing_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">from_beginning</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="cfd_control" model="account.report.line">
+                    <field name="name">Gap with actual cash movement (must be zero)</field>
+                    <field name="name@fr">Écart avec le mouvement réel de trésorerie (doit être nul)</field>
+                    <field name="code">CFD_CONTROL</field>
+                    <field name="hierarchy_level" eval="0"/>
+                    <field name="sequence" eval="80"/>
+                    <!--
+                        La méthode directe classe des mouvements : la somme des
+                        classes doit égaler le mouvement réel des comptes de
+                        trésorerie, à l'unité près. Sans ce contrôle, une
+                        étiquette posée sur un compte qui n'aurait pas dû la
+                        porter déplacerait un montant d'une classe à l'autre
+                        sans que rien ne le signale.
+                    -->
+                    <field name="aggregation_formula">CFD_NET_CHANGE.balance - CFD_ACTUAL.balance</field>
+                </record>
+
+                <record id="cfd_actual" model="account.report.line">
+                    <field name="name">Actual movement on cash accounts</field>
+                    <field name="name@fr">Mouvement réel des comptes de trésorerie</field>
+                    <field name="code">CFD_ACTUAL</field>
+                    <field name="hierarchy_level" eval="3"/>
+                    <field name="sequence" eval="90"/>
+                    <field name="domain_formula">sum([('account_id.account_type', 'in', ('asset_cash', 'liability_credit_card'))])</field>
+                    <field name="groupby">account_id</field>
+                </record>
+            </field>
+        </record>
+
+    </data>
+</odoo>

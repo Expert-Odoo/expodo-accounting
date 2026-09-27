@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Groupes des menus d'états.
+
+    Chaque menu déclare `account_basic` **et** `account_readonly`, ce qui
+    signifie « l'un ou l'autre suffit ».
+
+    Les deux sont nécessaires parce qu'aucun n'implique l'autre :
+
+        account_basic     implique « Invoicing »
+        account_readonly  implique « Role / User »
+        account_user      implique les deux
+        account_manager   implique « Invoicing » seulement
+
+    Un gestionnaire comptable n'a donc **pas** `readonly`. En ne déclarant
+    que ce dernier, les états restaient invisibles à l'administrateur
+    comptable d'une base fraîchement installée — celui-là même qui évalue le
+    module avant de le déployer, et qui en conclut qu'il ne fonctionne pas.
+
+    L'édition Enterprise déclare `basic` et `readonly` sur ses états
+    statutaires. Mesuré sur une base neuve, son gestionnaire comptable voit
+    tout de même douze menus sur vingt-sept, parce que plusieurs de ses
+    menus ne portent aucun groupe et restent donc visibles.
+
+    Le gestionnaire est ajouté ici explicitement plutôt que de compter sur
+    cet effet de bord : c'est le profil de l'intégrateur qui évalue le
+    module avant de le déployer, et un module qui paraît vide à
+    l'évaluation n'est pas déployé. Les droits d'accès continuent de
+    gouverner ce qu'il peut lire ; seul l'affichage du menu est élargi.
+-->
+<odoo>
+    <data>
+
+        <!--
+            Un menu et une action client par rapport.
+
+            L'action porte `report_id` dans son contexte : le composant OWL est
+            unique et générique, c'est le contexte qui détermine le rapport
+            affiché. Ajouter un rapport ne demande donc aucun code, seulement
+            une définition XML et une entrée ici.
+        -->
+
+        <menuitem id="menu_expodo_reports_root"
+                  name="Expodo Reports"
+                  parent="account.menu_finance"
+                  sequence="90"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+
+
+
+
+        <record id="action_balance_sheet" model="ir.actions.client">
+            <field name="name">Balance Sheet</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context">{'report_kind': 'balance_sheet'}</field>
+        </record>
+
+        <menuitem id="menu_balance_sheet"
+                  name="Balance Sheet"
+                  parent="menu_expodo_reports_root"
+                  action="action_balance_sheet"
+                  sequence="10"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_profit_loss" model="ir.actions.client">
+            <field name="name">Profit and Loss</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context">{'report_kind': 'profit_loss'}</field>
+        </record>
+
+        <menuitem id="menu_profit_loss"
+                  name="Profit and Loss"
+                  parent="menu_expodo_reports_root"
+                  action="action_profit_loss"
+                  sequence="20"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_cash_flow" model="ir.actions.client">
+            <field name="name">Cash Flow Statement</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_cash_flow')}"/>
+        </record>
+
+        <menuitem id="menu_cash_flow"
+                  name="Cash Flow Statement"
+                  parent="menu_expodo_reports_root"
+                  action="action_cash_flow"
+                  sequence="25"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_balance" model="ir.actions.client">
+            <field name="name">Trial Balance</field>
+                    <field name="name@fr">Balance générale</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_balance_fr')}"/>
+        </record>
+
+        <menuitem id="menu_balance"
+                  name="Trial Balance"
+                  parent="menu_expodo_reports_root"
+                  action="action_balance"
+                  sequence="30"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_grand_livre" model="ir.actions.client">
+            <field name="name">General Ledger</field>
+                    <field name="name@fr">Grand livre</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_grand_livre_fr')}"/>
+        </record>
+
+        <menuitem id="menu_grand_livre"
+                  name="General Ledger"
+                  parent="menu_expodo_reports_root"
+                  action="action_grand_livre"
+                  sequence="40"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_auxiliaire" model="ir.actions.client">
+            <field name="name">Partner Ledger</field>
+                    <field name="name@fr">Grand livre auxiliaire</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_auxiliaire_fr')}"/>
+        </record>
+
+        <menuitem id="menu_auxiliaire"
+                  name="Partner Ledger"
+                  parent="menu_expodo_reports_root"
+                  action="action_auxiliaire"
+                  sequence="50"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_open_items" model="ir.actions.client">
+            <field name="name">Open Items</field>
+                    <field name="name@fr">Écritures ouvertes</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_open_items_fr')}"/>
+        </record>
+
+        <menuitem id="menu_open_items"
+                  name="Open Items"
+                  parent="menu_expodo_reports_root"
+                  action="action_open_items"
+                  sequence="60"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_aged_recv" model="ir.actions.client">
+            <field name="name">Aged Receivable</field>
+                    <field name="name@fr">Balance âgée clients</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_aged_receivable_fr')}"/>
+        </record>
+
+        <menuitem id="menu_aged_recv"
+                  name="Aged Receivable"
+                  parent="menu_expodo_reports_root"
+                  action="action_aged_recv"
+                  sequence="70"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_aged_pay" model="ir.actions.client">
+            <field name="name">Aged Payable</field>
+                    <field name="name@fr">Balance âgée fournisseurs</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_aged_payable_fr')}"/>
+        </record>
+
+        <menuitem id="menu_aged_pay"
+                  name="Aged Payable"
+                  parent="menu_expodo_reports_root"
+                  action="action_aged_pay"
+                  sequence="80"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_day_book" model="ir.actions.client">
+            <field name="name">Day Book</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_day_book')}"/>
+        </record>
+
+        <menuitem id="menu_day_book"
+                  name="Day Book"
+                  parent="menu_expodo_reports_root"
+                  action="action_day_book"
+                  sequence="88"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_journaux" model="ir.actions.client">
+            <field name="name">Journals</field>
+                    <field name="name@fr">Journaux</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_journaux_fr')}"/>
+        </record>
+
+        <menuitem id="menu_journaux"
+                  name="Journals"
+                  parent="menu_expodo_reports_root"
+                  action="action_journaux"
+                  sequence="90"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_livre_banque" model="ir.actions.client">
+            <field name="name">Bank Book</field>
+                    <field name="name@fr">Livre de banque</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_livre_banque_fr')}"/>
+        </record>
+
+        <menuitem id="menu_livre_banque"
+                  name="Bank Book"
+                  parent="menu_expodo_reports_root"
+                  action="action_livre_banque"
+                  sequence="100"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <record id="action_livre_caisse" model="ir.actions.client">
+            <field name="name">Cash Book</field>
+                    <field name="name@fr">Livre de caisse</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_livre_caisse_fr')}"/>
+        </record>
+
+        <menuitem id="menu_livre_caisse"
+                  name="Cash Book"
+                  parent="menu_expodo_reports_root"
+                  action="action_livre_caisse"
+                  sequence="110"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+
+        <!--
+            Trois états existaient sans menu ni rapport racine.
+
+            Le sélecteur de présentation ne rattrape que les états rattachés à
+            une racine par `root_report_id` — les soldes intermédiaires de
+            gestion, la méthode directe. Ceux-ci n'en ont pas : livrés,
+            traduits et testés, ils n'étaient atteignables par aucun chemin de
+            l'interface.
+        -->
+        <record id="action_executive_summary" model="ir.actions.client">
+            <field name="name">Executive Summary</field>
+                    <field name="name@fr">Résumé général</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_executive_summary')}"/>
+        </record>
+
+        <menuitem id="menu_executive_summary"
+                  name="Executive Summary"
+                  parent="menu_expodo_reports_root"
+                  action="action_executive_summary"
+                  sequence="8"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_customer_statement" model="ir.actions.client">
+            <field name="name">Customer Statement</field>
+                    <field name="name@fr">Relevé de compte client</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_customer_statement')}"/>
+        </record>
+
+        <menuitem id="menu_customer_statement"
+                  name="Customer Statement"
+                  parent="menu_expodo_reports_root"
+                  action="action_customer_statement"
+                  sequence="55"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <record id="action_ec_sales_list" model="ir.actions.client">
+            <field name="name">EC Sales List</field>
+                    <field name="name@fr">Relevé intracommunautaire</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context" eval="{'report_id': ref('report_ec_sales_list')}"/>
+        </record>
+
+        <menuitem id="menu_ec_sales_list"
+                  name="EC Sales List"
+                  parent="menu_expodo_reports_root"
+                  action="action_ec_sales_list"
+                  sequence="7"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+        <!--
+            Déclaration de taxes de la localisation installée, quelle qu'elle
+            soit. L'action ne désigne aucun rapport : il est résolu à
+            l'exécution depuis le pays de la société. Le même menu affiche donc
+            la CA3 en France, la déclaration TVA en Belgique, la VAT Return aux
+            Émirats.
+        -->
+        <record id="action_tax_report" model="ir.actions.client">
+            <field name="name">Tax Return</field>
+                    <field name="name@fr">Déclaration de taxes</field>
+            <field name="tag">expodo_account_report</field>
+            <field name="context">{'report_kind': 'tax'}</field>
+        </record>
+
+        <menuitem id="menu_tax_report"
+                  name="Tax Return"
+                  parent="menu_expodo_reports_root"
+                  action="action_tax_report"
+                  sequence="5"
+                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+
+    </data>
+</odoo>

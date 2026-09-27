@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_expodo_return_type_list" model="ir.ui.view">
+            <field name="name">expodo.return.type.list</field>
+            <field name="model">expodo.return.type</field>
+            <field name="arch" type="xml">
+                <list string="Return types" editable="bottom">
+                    <field name="name"/>
+                    <field name="periodicity"/>
+                    <field name="deadline_days"/>
+                    <field name="report_id"/>
+                    <field name="lock_on_submission"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_expodo_return_type" model="ir.actions.act_window">
+            <field name="name">Return Types</field>
+            <field name="res_model">expodo.return.type</field>
+            <field name="view_mode">list,form</field>
+                    <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Describe a return</p>
+                <p>A return type carries a periodicity, a filing deadline and the report to read. It is what tells a tax return which period to open on, and whether filing it locks that period.</p>
+            </field>
+        </record>
+
+        <record id="view_expodo_return_list" model="ir.ui.view">
+            <field name="name">expodo.return.list</field>
+            <field name="model">expodo.return</field>
+            <field name="arch" type="xml">
+                <list string="Tax returns" decoration-danger="date_deadline &lt; current_date and state in ('draft','checked')"
+                      decoration-muted="state == 'paid'">
+                    <field name="name"/>
+                    <field name="type_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="date_deadline"/>
+                    <field name="amount"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'checked'"
+                           decoration-success="state in ('submitted','paid')"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_expodo_return_form" model="ir.ui.view">
+            <field name="name">expodo.return.form</field>
+            <field name="model">expodo.return</field>
+            <field name="arch" type="xml">
+                <form string="Tax return">
+                    <header>
+                        <button name="action_check" type="object" string="Run checks"
+                                class="btn-primary" invisible="state not in ('draft','checked')"/>
+                        <button name="action_submit" type="object" string="Mark as filed"
+                                class="btn-primary" invisible="state != 'checked'"/>
+                        <button name="action_pay" type="object" string="Mark as paid"
+                                class="btn-primary" invisible="state != 'submitted'"/>
+                        <button name="action_open_report" type="object" string="Open the report"
+                                class="btn-secondary" invisible="not type_id"/>
+                        <button name="action_reset" type="object" string="Back to draft"
+                                invisible="state in ('draft','paid')"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,checked,submitted,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="type_id" readonly="state != 'draft'"/>
+                                <field name="company_id" groups="base.group_multi_company"
+                                       readonly="state != 'draft'"/>
+                                <field name="date_from" readonly="state != 'draft'"/>
+                                <field name="date_to" readonly="state != 'draft'"/>
+                                <field name="date_deadline"/>
+                            </group>
+                            <group>
+                                <field name="amount"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="reference" invisible="state == 'draft'"/>
+                                <field name="date_submitted" invisible="not date_submitted"/>
+                                <field name="date_paid" invisible="not date_paid"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-warning" role="alert" invisible="not check_result">
+                            <field name="check_result" nolabel="1" readonly="1"/>
+                        </div>
+
+                        <notebook>
+                            <page string="Notes">
+                                <field name="note" placeholder="Anything worth remembering at the next filing…"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_return" model="ir.actions.act_window">
+            <field name="name">Tax Returns</field>
+            <field name="res_model">expodo.return</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Track a filing</p>
+                <p>A report is consulted; a return is an act. It is filed on a date, for a period, and what it contains should no longer move.</p>
+                <p>Filing moves the tax lock date to the end of the period, so that an entry posted afterwards cannot silently make the books and the return disagree.</p>
+            </field>
+        </record>
+
+        <!--
+            Le menu déclare ses groupes.
+
+            Sans déclaration, il s'affichait sous Analyse pour un utilisateur
+            de facturation, qui ne peut pas lire les déclarations : le menu
+            s'ouvrait sur une erreur de droits.
+        -->
+        <menuitem id="menu_expodo_return"
+                  name="Tax Returns"
+                  parent="account.menu_finance_reports"
+                  action="action_expodo_return"
+                  sequence="97"
+                  groups="account.group_account_user,account.group_account_manager"/>
+
+        <menuitem id="menu_expodo_return_type"
+                  name="Return Types"
+                  parent="account.account_account_menu"
+                  action="action_expodo_return_type"
+                  sequence="85"/>
+
+    </data>
+</odoo>

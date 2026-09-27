@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_move_line_deferred_dates" model="ir.ui.view">
+            <field name="name">account.move.line.deferred.dates</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_form"/>
+            <field name="arch" type="xml">
+                <field name="date" position="after">
+                    <field name="deferred_start_date"/>
+                    <field name="deferred_end_date"/>
+                    <field name="deferred_amount"
+                           invisible="not deferred_start_date"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_expodo_deferral_wizard_form" model="ir.ui.view">
+            <field name="name">expodo.deferral.wizard.form</field>
+            <field name="model">expodo.deferral.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Deferred expenses and revenues">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="date_to"/>
+                                <field name="journal_id"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group invisible="not line_count">
+                                <field name="line_count"/>
+                                <field name="total_deferred"/>
+                                <field name="move_id" readonly="1" invisible="not move_id"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-warning" role="alert" invisible="not warning">
+                            <field name="warning" nolabel="1"/>
+                        </div>
+
+                        <group invisible="not preview" string="Detail">
+                            <field name="preview" nolabel="1" readonly="1"/>
+                        </group>
+
+                        <div class="alert alert-info" role="alert" invisible="preview">
+                            Lines carrying a covered period are split pro rata by
+                            exact days. The part belonging to later periods leaves
+                            the profit-and-loss account for the balance sheet —
+                            486 and 487 in the French chart. Preview first.
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_preview" type="object" string="Preview"
+                                class="btn-secondary" invisible="move_id"/>
+                        <button name="action_post_deferral" type="object"
+                                string="Create the entry" class="btn-primary"
+                                invisible="move_id"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_expodo_deferral_wizard" model="ir.actions.act_window">
+            <field name="name">Deferred Expenses and Revenues</field>
+            <field name="res_model">expodo.deferral.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_expodo_deferral"
+                  name="Deferred Expenses and Revenues"
+                  parent="account.menu_finance_entries"
+                  action="action_expodo_deferral_wizard"
+                  sequence="94"
+                  groups="account.group_account_manager"/>
+
+    </data>
+</odoo>
