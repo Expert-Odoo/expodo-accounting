@@ -3,8 +3,10 @@
 # License LGPL-3
 {
     "name": "Accounting for Community",
-    "summary": "Financial statements, tax returns, year-end closing, assets, "
-               "reconciliation, budgets and follow-up for Odoo Community",
+    "summary": "Accounting Community: financial statements, tax returns, "
+               "year-end closing, assets, reconciliation, budgets and "
+               "follow-up. Balance sheet, profit and loss, general ledger, "
+               "trial balance and aged balance for Odoo Community.",
     "description": """
 Accounting for Community
 ========================
@@ -38,7 +40,7 @@ activity, VAT groups across companies.
 
 Built and maintained by Expodo — https://expodo.fr
     """,
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Accounting/Accounting",
     # Vignette de la fiche App Store. Sans cette clé, le module
     # est le seul de la suite à n'en avoir aucune.
