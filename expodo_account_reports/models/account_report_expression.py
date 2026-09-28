@@ -18,7 +18,7 @@ s'effondrerait sur une base volumineuse.
 import ast
 from collections import defaultdict
 
-from odoo import models
+from odoo import fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
@@ -28,6 +28,25 @@ from ..engine.formula import AGED_RE, parse_account_codes_formula
 
 class AccountReportExpression(models.Model):
     _inherit = "account.report.expression"
+
+    #: Deux portées propres à la balance générale.
+    #
+    #: Un compte de gestion est soldé à chaque clôture : son ouverture repart
+    #: du début de l'exercice, alors qu'un compte de bilan se cumule depuis
+    #: l'origine. Les portées natives ne savent pas faire cette distinction —
+    #: elles s'appliquent à toutes les lignes sans regarder la nature du
+    #: compte — d'où ces deux-là, qui ne diffèrent des portées `*_period` que
+    #: par ce traitement des classes de gestion.
+    date_scope = fields.Selection(
+        selection_add=[
+            ("expodo_opening",
+             "Opening balance (income and expenses from the fiscal year start)"),
+            ("expodo_closing",
+             "Closing balance (income and expenses from the fiscal year start)"),
+        ],
+        ondelete={"expodo_opening": "set default",
+                  "expodo_closing": "set default"},
+    )
 
     # ------------------------------------------------------------------
     # Utilitaires de requêtage

@@ -97,6 +97,9 @@
                     <field name="name@it">Conti</field>
                     <field name="name@pt_BR">Contas</field>
                     <field name="code">BAL_COMPTES</field>
+                    <!-- Séquence explicite : les deux lignes qui suivent en
+                         dépendent pour s'afficher après les comptes. -->
+                    <field name="sequence" eval="10"/>
                     <field name="groupby">account_id</field>
                     <field name="foldable" eval="False"/>
                     <field name="expression_ids">
@@ -112,7 +115,7 @@
                                 sur la clôture de la précédente — c'est-à-dire
                                 le premier contrôle qu'on lui demande.
                             -->
-                            <field name="date_scope">to_beginning_of_period</field>
+                            <field name="date_scope">expodo_opening</field>
                         </record>
                         <record id="expr_balance_debit" model="account.report.expression">
                             <field name="label">debit</field>
@@ -141,7 +144,95 @@
                                 que la période part du début des écritures —
                                 c'est-à-dire pendant tout le premier exercice.
                             -->
-                            <field name="date_scope">from_beginning</field>
+                            <field name="date_scope">expodo_closing</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!--
+                    Ce que l'ouverture retire aux comptes de gestion doit
+                    reparaître quelque part, sinon la balance cesse de
+                    s'équilibrer du résultat des exercices précédents.
+
+                    C'est la ligne que tient l'édition Enterprise, sous le même
+                    intitulé. Elle s'efface dès qu'elle est nulle, c'est-à-dire
+                    sur un premier exercice ou après une clôture qui a tout
+                    affecté.
+                -->
+                <record id="line_balance_fr_anterieur" model="account.report.line">
+                    <field name="name">Earlier years' unallocated result</field>
+                    <field name="name@fr">Résultat antérieur non affecté</field>
+                    <field name="name@es">Resultado de ejercicios anteriores no aplicado</field>
+                    <field name="name@de">Nicht zugewiesenes Vorjahresergebnis</field>
+                    <field name="name@nl">Niet toegewezen resultaat vorige jaren</field>
+                    <field name="name@it">Risultato esercizi precedenti non destinato</field>
+                    <field name="name@pt_BR">Resultado de exercícios anteriores não destinado</field>
+                    <field name="code">BAL_ANTERIEUR</field>
+                    <field name="hide_if_zero" eval="True"/>
+                    <field name="sequence" eval="20"/>
+                    <field name="expression_ids">
+                        <record id="expr_bal_anterieur_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <record id="expr_bal_anterieur_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <!--
+                            Débit et crédit valent zéro, mais doivent exister.
+                            Sans eux la cellule vaut `None`, et le tri des
+                            colonnes compare `None` à des nombres.
+                        -->
+                        <record id="expr_bal_anterieur_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">0</field>
+                        </record>
+                        <record id="expr_bal_anterieur_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">0</field>
+                        </record>
+                    </field>
+                </record>
+
+                <record id="line_balance_fr_total" model="account.report.line">
+                    <field name="name">Total</field>
+                    <field name="name@fr">Total</field>
+                    <field name="name@es">Total</field>
+                    <field name="name@de">Summe</field>
+                    <field name="name@nl">Totaal</field>
+                    <field name="name@it">Totale</field>
+                    <field name="name@pt_BR">Total</field>
+                    <field name="code">BAL_TOTAL</field>
+                    <field name="sequence" eval="30"/>
+                    <field name="expression_ids">
+                        <record id="expr_bal_total_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">BAL_COMPTES.initial + BAL_ANTERIEUR.initial</field>
+                        </record>
+                        <record id="expr_bal_total_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">BAL_COMPTES.debit</field>
+                        </record>
+                        <record id="expr_bal_total_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">BAL_COMPTES.credit</field>
+                        </record>
+                        <record id="expr_bal_total_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">BAL_COMPTES.balance + BAL_ANTERIEUR.balance</field>
                         </record>
                     </field>
                 </record>

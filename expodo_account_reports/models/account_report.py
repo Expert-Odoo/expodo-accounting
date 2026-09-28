@@ -34,6 +34,12 @@ CUMULATIVE_SCOPES = ("from_beginning", "from_fiscalyear")
 #: Portées de date qui produisent un solde à une date, sans borne basse.
 POINT_IN_TIME_SCOPES = ("to_beginning_of_period", "to_beginning_of_fiscalyear")
 
+#: Types de compte soldés par la clôture de l'exercice.
+PROFIT_AND_LOSS_TYPES = (
+    "income", "income_other", "expense", "expense_other",
+    "expense_depreciation", "expense_direct_cost",
+)
+
 
 class AccountReport(models.Model):
     _inherit = "account.report"
@@ -383,8 +389,12 @@ class AccountReport(models.Model):
             return None, date_to
         if date_scope == "from_fiscalyear":
             return company.compute_fiscalyear_dates(date_to)["date_from"], date_to
-        if date_scope == "to_beginning_of_period":
+        if date_scope in ("to_beginning_of_period", "expodo_opening"):
+            # `expodo_opening` partage ces bornes : c'est `_expodo_base_domain`
+            # qui les restreint ensuite pour les seuls comptes de gestion.
             return None, date_from - relativedelta(days=1)
+        if date_scope == "expodo_closing":
+            return None, date_to
         if date_scope == "to_beginning_of_fiscalyear":
             fiscalyear_start = company.compute_fiscalyear_dates(date_to)["date_from"]
             return None, fiscalyear_start - relativedelta(days=1)
@@ -424,6 +434,26 @@ class AccountReport(models.Model):
         ]
         if date_from is not None:
             domain.append(("date", ">=", date_from))
+
+        if date_scope in ("expodo_opening", "expodo_closing"):
+            # Un compte de gestion est soldé par la clôture : il repart du
+            # début de l'exercice, quand un compte de bilan se cumule depuis
+            # l'origine. La balance générale mélangeait les deux et cumulait
+            # tous les exercices sur les charges et les produits. Le total
+            # restait nul, donc la ligne de contrôle ne voyait rien : seule
+            # une lecture compte par compte révélait l'écart.
+            #
+            # L'exercice de référence est celui de la fin de période, comme
+            # pour `from_fiscalyear` : c'est ce qui garde exacte la ligne de
+            # résultat antérieur, qui lit la borne symétrique.
+            debut_exercice = self.env.company.compute_fiscalyear_dates(
+                options["column_groups"][column_group_key]["date"]["date_to"]
+            )["date_from"]
+            domain += [
+                "|",
+                ("account_id.account_type", "not in", PROFIT_AND_LOSS_TYPES),
+                ("date", ">=", debut_exercice),
+            ]
 
         if not options.get("all_entries"):
             domain.append(("parent_state", "=", "posted"))
