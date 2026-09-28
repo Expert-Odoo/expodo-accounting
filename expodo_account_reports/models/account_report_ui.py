@@ -140,6 +140,16 @@ class AccountReport(models.Model):
                         "auditable": line._expodo_is_auditable(column["label"]),
                     })
 
+                # `hide_if_zero` : la ligne et ses filles s'effacent quand
+                # toutes leurs valeurs numériques sont nulles. Le champ était
+                # déclaré sur plusieurs lignes et lu par aucune : les lignes
+                # nulles s'affichaient toujours.
+                if line.hide_if_zero and all(
+                    not isinstance(raw, (int, float)) or abs(raw) < 0.005
+                    for cell in cells for raw in cell["raw"].values()
+                ):
+                    continue
+
                 serialized.append({
                     "id": self._expodo_line_id("line", line.id),
                     "line_id": line.id,

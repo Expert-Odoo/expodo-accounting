@@ -253,8 +253,17 @@ class AccountReportLine(models.Model):
                 rows_by_scope[date_scope].setdefault(cle, {}).update(valeurs)
 
         # Assemblage : un groupe peut n'exister que dans certaines portées.
+        #
+        # Au niveau de l'écriture (`id`), seules les portées de la période
+        # désignent les lignes à afficher. Les portées cumulées (solde
+        # d'ouverture, solde final) ne font que compléter les valeurs : sans
+        # cette règle, le détail d'un compte listerait toutes ses écritures
+        # depuis l'origine dès que l'état porte un solde d'ouverture.
+        sources = rows_by_scope
+        if field_name == "id" and "strict_range" in rows_by_scope:
+            sources = {"strict_range": rows_by_scope["strict_range"]}
         keys = []
-        for rows in rows_by_scope.values():
+        for rows in sources.values():
             for key in rows:
                 if key not in keys:
                     keys.append(key)

@@ -201,6 +201,12 @@ class AccountReport(models.Model):
                 developper(enfant, enfant.get("group"), niveau + 1)
 
         for line in data["lines"]:
+            # La borne vaut aussi pour les lignes de premier niveau : une fois
+            # l'export tronqué, les lignes suivantes (résultat antérieur d'un
+            # grand livre, par exemple) la dépassaient.
+            if tronque or len(rows) >= plafond:
+                tronque = True
+                break
             developper(line)
 
         # Le message expliquant qu'un rapport n'a aucune ligne définie doit

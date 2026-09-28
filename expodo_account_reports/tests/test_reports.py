@@ -2813,3 +2813,127 @@ class TestBalanceGeneraleOuverture(TransactionCase):
                 -1000.0, places=2)
             self.assertAlmostEqual(apres[("BAL_TOTAL", etiquette)], 0.0, places=2,
                                    msg="La balance doit rester équilibrée")
+
+
+@tagged("post_install", "-at_install")
+class TestGrandsLivresSoldeFinal(TransactionCase):
+    """Solde des grands livres : solde final, et non mouvement de la période.
+
+    Constaté en comparant avec Enterprise (port 20.0, grand livre et grand
+    livre des tiers sur 2026) : notre colonne « Solde » portait le seul
+    mouvement de la période (client : 20 000) quand Enterprise porte le solde
+    final (38 000). Un compte ou un tiers sans mouvement dans la période,
+    mais avec un solde, disparaissait de l'état.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        societe = cls.env.company
+        comptes = cls.env["account.account"]
+        cls.client_ = comptes.search([("account_type", "=", "asset_receivable"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        cls.vente = comptes.search([("account_type", "=", "income"),
+                                    ("company_ids", "in", societe.id)], limit=1)
+        cls.journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        cls.tiers = cls.env["res.partner"].create({"name": "Tiers solde final"})
+        cls.dormant = cls.env["res.partner"].create({"name": "Tiers sans mouvement"})
+
+    def _vente(self, jour, montant, tiers):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour, "ref": "SOLDE",
+            "line_ids": [
+                Command.create({"name": "V", "account_id": self.client_.id,
+                                "partner_id": tiers.id, "debit": montant, "credit": 0.0}),
+                Command.create({"name": "V", "account_id": self.vente.id,
+                                "debit": 0.0, "credit": montant}),
+            ],
+        })
+        ecriture.action_post()
+        return ecriture
+
+    def _lignes(self, xmlid_rapport, xmlid_ligne, champ_cle, cle):
+        rapport = self.env.ref("expodo_account_reports." + xmlid_rapport)
+        ligne = self.env.ref("expodo_account_reports." + xmlid_ligne)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2032, 3, 1), "date_to": date(2032, 3, 31)}})
+        premier = {r["group_id"]: r for r in ligne._expodo_expand(rapport, options, "main")}
+        detail = []
+        if cle in premier:
+            detail = ligne._expodo_expand(
+                rapport, options, "main", level=1,
+                parent_domain=[(champ_cle, "=", cle)])
+        return premier, detail
+
+    def test_le_grand_livre_des_tiers_porte_le_solde_final(self):
+        self._vente(date(2031, 6, 1), 1000.0, self.tiers)
+        self._vente(date(2032, 3, 10), 200.0, self.tiers)
+        self._vente(date(2031, 7, 1), 300.0, self.dormant)
+        premier, detail = self._lignes("report_auxiliaire_fr", "line_aux_fr",
+                                       "partner_id", self.tiers.id)
+        tiers = premier[self.tiers.id]["values"]
+        self.assertAlmostEqual(tiers["debit"], 200.0, places=2)
+        self.assertAlmostEqual(tiers["initial"], 1000.0, places=2)
+        self.assertAlmostEqual(tiers["balance"], 1200.0, places=2,
+                               msg="Le solde est le solde final du tiers")
+        self.assertIn(self.dormant.id, premier,
+                      "Un tiers avec un solde mais sans mouvement doit figurer")
+        self.assertEqual(len(detail), 1,
+                         "Le détail ne liste que les écritures de la période")
+
+    def test_le_grand_livre_porte_le_solde_final_du_compte(self):
+        avant, _d = self._lignes("report_grand_livre_fr", "line_gl_fr",
+                                 "account_id", self.client_.id)
+        a = avant.get(self.client_.id, {"values": {"initial": 0.0, "balance": 0.0}})["values"]
+        self._vente(date(2031, 6, 1), 1000.0, self.tiers)
+        self._vente(date(2032, 3, 10), 200.0, self.tiers)
+        apres, detail = self._lignes("report_grand_livre_fr", "line_gl_fr",
+                                     "account_id", self.client_.id)
+        c = apres[self.client_.id]["values"]
+        self.assertAlmostEqual(c["initial"] - a["initial"], 1000.0, places=2)
+        self.assertAlmostEqual(c["balance"] - a["balance"], 1200.0, places=2)
+        self.assertAlmostEqual(c["balance"], c["initial"] + c["debit"] - c["credit"], places=2)
+        self.assertTrue(detail)
+        self.assertTrue(all(str(r["values"].get("line_date"))[:7] == "2032-03" for r in detail),
+                        "Le détail ne liste que des écritures datées de la période : %s"
+                        % [r["values"].get("line_date") for r in detail])
+
+
+@tagged("post_install", "-at_install")
+class TestLignesMasqueesSiNulles(TransactionCase):
+    """`hide_if_zero` : la ligne et ses filles s'effacent quand tout est nul.
+
+    Le champ était posé sur plusieurs lignes (résultat antérieur, résultats
+    affectés) mais aucun code ne le lisait : les lignes nulles s'affichaient
+    toujours. Constaté au port 20.0, en vérifiant l'écran du bilan.
+    """
+
+    def _codes(self, annee):
+        rapport = self.env.ref("expodo_account_reports.report_balance_fr")
+        donnees = rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 3, 1), "date_to": date(annee, 3, 31)}})
+        return {ligne["code"] for ligne in donnees["lines"]}
+
+    def test_une_ligne_nulle_marquee_s_efface_et_reparait_des_qu_elle_porte_un_montant(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        client = comptes.search([("account_type", "=", "asset_receivable"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        vente = comptes.search([("account_type", "=", "income"),
+                                ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        # Aucun résultat avant 2011 dans une base de test : la ligne est nulle.
+        self.assertNotIn("BAL_ANTERIEUR", self._codes(2011))
+        ecriture = self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2010, 6, 1),
+            "line_ids": [
+                Command.create({"name": "V", "account_id": client.id, "debit": 100.0}),
+                Command.create({"name": "V", "account_id": vente.id, "credit": 100.0}),
+            ],
+        })
+        ecriture.action_post()
+        self.assertIn("BAL_ANTERIEUR", self._codes(2011))
