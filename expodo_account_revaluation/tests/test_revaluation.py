@@ -43,7 +43,10 @@ class TestEcartsDeConversion(TransactionCase):
         # que de créer, sans quoi la préparation du test échoue selon l'état
         # de la base — c'est-à-dire de façon reproductible en développement et
         # pas en intégration continue.
-        for jour, taux in ((date(2026, 10, 1), 0.92), (date(2026, 12, 31), 0.95)):
+        # Cours de clôture daté du 30/12 : en v20, la conversion au 31/12
+        # retient le dernier cours daté strictement avant ce jour (voir
+        # TestCoursDuJourDeCloture).
+        for jour, taux in ((date(2026, 10, 1), 0.92), (date(2026, 12, 30), 0.95)):
             existant = cls.env["res.currency.rate"].search([
                 ("currency_id", "=", cls.devise.id),
                 ("name", "=", jour),
@@ -260,3 +263,38 @@ class TestEcartsDeConversion(TransactionCase):
             "taux_perime", releves,
             "Six mois après le dernier cours connu, la conversion doit être "
             "signalée comme reposant sur un taux périmé")
+
+
+@tagged("post_install", "-at_install")
+class TestCoursDuJourDeCloture(TransactionCase):
+    """Hypothèse du module sur la conversion d'Odoo, fixée par un test.
+
+    Jusqu'en v19, `res.currency._convert` retenait le dernier cours daté
+    **au plus tard** du jour demandé. En v20 il retient le dernier cours daté
+    **strictement avant** : un cours saisi au 31/12 ne s'applique qu'à partir
+    du 01/01. L'édition Enterprise v20 fait de même (rapport de réévaluation
+    observé sur l'instance témoin : au 31/12, il affiche le cours précédent).
+
+    Le module suit le cœur. Si Odoo revient à l'ancienne règle, ce test
+    tombe et signale que le contrôle de fraîcheur du cours est à revoir.
+    """
+
+    def test_un_cours_date_du_jour_ne_s_applique_qu_au_lendemain(self):
+        societe = self.env.company
+        devise = self.env["res.currency"].with_context(
+            active_test=False).search([("name", "=", "USD")], limit=1)
+        devise.active = True
+        for jour, taux in ((date(2026, 10, 1), 0.92), (date(2026, 12, 31), 0.95)):
+            existant = self.env["res.currency.rate"].search([
+                ("currency_id", "=", devise.id), ("name", "=", jour),
+                ("company_id", "=", societe.id)], limit=1)
+            if existant:
+                existant.inverse_company_rate = taux
+            else:
+                self.env["res.currency.rate"].create({
+                    "currency_id": devise.id, "name": jour,
+                    "company_id": societe.id, "inverse_company_rate": taux})
+        convertir = lambda jour: devise._convert(  # noqa: E731
+            10000.0, societe.currency_id, societe, jour)
+        self.assertAlmostEqual(convertir(date(2026, 12, 31)), 9200.0, places=2)
+        self.assertAlmostEqual(convertir(date(2027, 1, 1)), 9500.0, places=2)

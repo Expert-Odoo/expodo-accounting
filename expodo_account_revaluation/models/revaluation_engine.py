@@ -238,13 +238,17 @@ class MoteurReevaluation(models.AbstractModel):
         # Un taux de change absent à la date de clôture fait retomber la
         # conversion sur le dernier taux connu, sans rien signaler. Le
         # résultat paraît juste et repose sur un cours périmé.
+        #
+        # Odoo 20 : la conversion retient le dernier cours daté strictement
+        # avant la date demandée (v19 : au plus tard ce jour-là). Le contrôle
+        # porte sur le cours réellement utilisé, d'où l'inégalité stricte.
         devises = {d["currency"] for d in details}
         sans_taux = []
         for devise in devises:
             taux = self.env["res.currency.rate"].search([
                 ("currency_id", "=", devise.id),
                 ("company_id", "in", (societe.id, False)),
-                ("name", "<=", date_cloture),
+                ("name", "<", date_cloture),
             ], order="name desc", limit=1)
             if not taux or (date_cloture - taux.name).days > 31:
                 sans_taux.append(devise.name)
