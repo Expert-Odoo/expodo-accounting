@@ -329,17 +329,25 @@
                             <field name="code">EXEC_POSITION_NETTE</field>
                             <field name="hierarchy_level" eval="1"/>
                             <!--
-                                Trésorerie moins besoin en fonds de roulement.
+                                Trésorerie après encaissement des créances et
+                                paiement des dettes à court terme :
+                                disponibilités + créances − dettes, soit
+                                disponibilités + BFR.
 
                                 C'est le chiffre qui répond à « puis-je payer
                                 mes fournisseurs ce mois-ci ». Une trésorerie
-                                confortable adossée à un besoin en fonds de
-                                roulement supérieur n'est pas une trésorerie
+                                confortable adossée à des dettes supérieures
+                                aux créances n'est pas une trésorerie
                                 confortable, et c'est exactement ce qu'un
                                 dirigeant ne voit pas en regardant son seul
                                 solde bancaire.
+
+                                La formule était « disponibilités − BFR » :
+                                chaque facture fournisseur non payée
+                                augmentait la position, chaque créance la
+                                diminuait (constaté au port 20.0).
                             -->
-                            <field name="aggregation_formula">EXEC_DISPO.balance - EXEC_BFR.balance</field>
+                            <field name="aggregation_formula">EXEC_DISPO.balance + EXEC_BFR.balance</field>
                         </record>
                     </field>
                 </record>

@@ -3059,6 +3059,42 @@ class TestFluxDeTresorerieAffectation(TransactionCase):
         self.assertAlmostEqual(apres["EXEC_BFR"] - avant["EXEC_BFR"], 1000.0, places=2,
                                msg="Seul le hors-taxe de la créance est un besoin de financement")
 
+    def test_une_dette_fournisseur_diminue_la_position_nette(self):
+        """Une facture fournisseur non payée est de l'argent qui va sortir :
+        la position nette de trésorerie doit baisser, une créance client la
+        faire monter. La formule « disponibilités − BFR » faisait l'inverse
+        (constaté au port 20.0)."""
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(type_):
+            return comptes.search([("account_type", "=", type_),
+                                   ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_executive_summary")
+
+        def position():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2034, 1, 1), "date_to": date(2034, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")[("EXEC_POSITION_NETTE", "balance")]
+
+        def ecriture(jour, debit, credit):
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": date(2034, 3, jour),
+                "line_ids": [
+                    Command.create({"name": "P", "account_id": debit.id, "debit": 1000.0}),
+                    Command.create({"name": "P", "account_id": credit.id, "credit": 1000.0}),
+                ],
+            }).action_post()
+
+        depart = position()
+        ecriture(10, compte("expense"), compte("liability_payable"))
+        self.assertAlmostEqual(position() - depart, -1000.0, places=2)
+        ecriture(11, compte("asset_receivable"), compte("income"))
+        self.assertAlmostEqual(position() - depart, 0.0, places=2)
+
     def test_une_dotation_aux_amortissements_est_un_element_sans_effet_de_tresorerie(self):
         """Une dotation n'est pas un décaissement.
 
