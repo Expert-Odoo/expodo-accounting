@@ -105,6 +105,22 @@
                             <field name="groupby">account_id</field>
                         </record>
 
+                        <!--
+                            Sont aussi retenues les charges et produits des écritures
+                            qui touchent un compte d'immobilisation : dotations,
+                            plus ou moins-values de cession. Le plan français type
+                            la dotation 6811 en charge ordinaire, pas en
+                            `expense_depreciation` : elle n'était pas réintégrée,
+                            et la variation de l'amortissement cumulé passait en
+                            encaissement d'investissement.
+
+                            Le compte de résultat non affecté (999999) porte
+                            l'étiquette « Investing » dans les données d'Odoo.
+                            Il est écarté : une affectation de résultat n'est
+                            ni une dotation ni un flux. Retenu, il gonflait les
+                            flux d'exploitation et amputait ceux
+                            d'investissement du montant affecté.
+                        -->
                         <record id="cf_depreciation" model="account.report.line">
                             <field name="name">Non-cash items and capital transactions</field>
                             <field name="name@fr">Éléments sans effet de trésorerie et opérations en capital</field>
@@ -143,7 +159,7 @@
                                 tout appel de fonction — et c'est une bonne chose, un
                                 domaine ne doit pas pouvoir exécuter de code.
                             -->
-                            <field name="domain_formula" eval="&quot;sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <field name="domain_formula" eval="&quot;sum(['&amp;', ('account_id.account_type', '!=', 'equity_unaffected'), '|', '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation'), '&amp;', ('account_id.internal_group', 'in', ('income', 'expense')), ('move_id.line_ids.account_id.account_type', '=', 'asset_fixed')])&quot; % ref('account.account_tag_investing')"/>
                             <field name="groupby">account_id</field>
                         </record>
 
@@ -271,7 +287,7 @@
                                 tout appel de fonction — et c'est une bonne chose, un
                                 domaine ne doit pas pouvoir exécuter de code.
                             -->
-                            <field name="domain_formula" eval="&quot;-sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <field name="domain_formula" eval="&quot;-sum(['&amp;', ('account_id.account_type', '!=', 'equity_unaffected'), '|', '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation'), '&amp;', ('account_id.internal_group', 'in', ('income', 'expense')), ('move_id.line_ids.account_id.account_type', '=', 'asset_fixed')])&quot; % ref('account.account_tag_investing')"/>
                             <field name="groupby">account_id</field>
                         </record>
                         <record id="cf_non_current" model="account.report.line">

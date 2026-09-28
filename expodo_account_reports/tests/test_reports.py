@@ -2937,3 +2937,126 @@ class TestLignesMasqueesSiNulles(TransactionCase):
         })
         ecriture.action_post()
         self.assertIn("BAL_ANTERIEUR", self._codes(2011))
+
+
+@tagged("post_install", "-at_install")
+class TestFluxDeTresorerieAffectation(TransactionCase):
+    """Une affectation de résultat ne produit aucun flux de trésorerie.
+
+    Constaté en comparant avec Enterprise (port 20.0) : Odoo étiquette le
+    compte de résultat non affecté (999999) « Investing & Extraordinary
+    Activities ». Nos lignes d'éléments sans effet de trésorerie retenaient les
+    comptes de cette étiquette : l'affectation du résultat 2025 ajoutait 8 600
+    aux flux d'exploitation et les retirait des flux d'investissement. Le total
+    restait juste, la ventilation non.
+    """
+
+    def test_l_affectation_ne_deplace_rien_entre_les_flux(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(domaine):
+            return comptes.search(domaine + [("company_ids", "in", societe.id)],
+                                  limit=1, order="code")
+
+        client = compte([("account_type", "=", "asset_receivable")])
+        vente = compte([("account_type", "=", "income")])
+        reserves = compte([("account_type", "=", "equity")])
+        non_affecte = compte([("account_type", "=", "equity_unaffected")])
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_cash_flow")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")
+
+        def ecriture(jour, debit, credit):
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": jour,
+                "line_ids": [
+                    Command.create({"name": "A", "account_id": debit.id, "debit": 1000.0}),
+                    Command.create({"name": "A", "account_id": credit.id, "credit": 1000.0}),
+                ],
+            }).action_post()
+
+        avant = valeurs()
+        ecriture(date(2031, 6, 1), client, vente)
+        ecriture(date(2032, 5, 31), non_affecte, reserves)
+        apres = valeurs()
+        for code in ("CF_OPERATING", "CF_INVESTING", "CF_FINANCING"):
+            self.assertAlmostEqual(
+                apres[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
+                msg="%s ne doit pas bouger : une affectation n'est pas un flux" % code)
+
+    def test_les_capitaux_de_la_synthese_integrent_l_affectation(self):
+        """Même cause, synthèse de direction : le compte non affecté était
+        compté dans les capitaux, et masquait la hausse des réserves."""
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        reserves = comptes.search([("account_type", "=", "equity"),
+                                   ("company_ids", "in", societe.id)], limit=1, order="code")
+        non_affecte = comptes.search([("account_type", "=", "equity_unaffected"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_executive_summary")
+
+        def capitaux():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")[("EXEC_CAPITAUX", "balance")]
+
+        avant = capitaux()
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2032, 5, 31),
+            "line_ids": [
+                Command.create({"name": "A", "account_id": non_affecte.id, "debit": 1000.0}),
+                Command.create({"name": "A", "account_id": reserves.id, "credit": 1000.0}),
+            ],
+        }).action_post()
+        self.assertAlmostEqual(capitaux() - avant, 1000.0, places=2)
+
+    def test_une_dotation_aux_amortissements_est_un_element_sans_effet_de_tresorerie(self):
+        """Une dotation n'est pas un décaissement.
+
+        Le plan comptable français type la dotation 6811 en charge ordinaire
+        (`expense_other`), pas en `expense_depreciation` : elle n'était donc pas
+        réintégrée aux flux d'exploitation, et la variation de l'amortissement
+        cumulé (2818) apparaissait en encaissement d'investissement. Constaté
+        au port 20.0 : exploitation 37 600 contre 40 000 chez Enterprise.
+        """
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        charge = comptes.search([("code", "=like", "6811%"), ("account_type", "!=", "expense_depreciation"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        amortissement = comptes.search([("code", "=like", "281%"),
+                                        ("company_ids", "in", societe.id)], limit=1)
+        if not charge or not amortissement:
+            self.skipTest("Cas du plan comptable français (6811 non typé dotation)")
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_cash_flow")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")
+
+        avant = valeurs()
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2032, 12, 31),
+            "line_ids": [
+                Command.create({"name": "Dotation", "account_id": charge.id, "debit": 1000.0}),
+                Command.create({"name": "Dotation", "account_id": amortissement.id, "credit": 1000.0}),
+            ],
+        }).action_post()
+        apres = valeurs()
+        for code in ("CF_OPERATING", "CF_INVESTING", "CF_FINANCING"):
+            self.assertAlmostEqual(
+                apres[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
+                msg="%s ne doit pas bouger : une dotation n'est pas un flux" % code)
