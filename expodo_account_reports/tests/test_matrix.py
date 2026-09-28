@@ -1649,3 +1649,63 @@ class TestLignesDeControle(TransactionCase):
             "Les lignes de contrôle sont repérées par leur libellé anglais "
             "« must be zero » ; si le compte tombe, c'est la convention qui "
             "a changé et le test ne contrôle plus rien")
+
+
+@tagged("post_install", "-at_install")
+class TestJustificationDesPostesTiers(TransactionCase):
+    """Les états de tiers doivent justifier le bilan, à la date d'arrêté.
+
+    C'est leur raison d'être : présenter tiers par tiers ce que le bilan
+    donne en un chiffre. Trois états y concourent, la balance âgée, les
+    écritures ouvertes et le relevé client, et les trois retenaient les
+    lignes non lettrées **aujourd'hui** au lieu des lignes ouvertes **à la
+    date d'arrêté**. Une facture de décembre réglée en mars disparaissait,
+    et l'écart avec le bilan grandissait à mesure que les règlements
+    rentraient.
+
+    Le contrôle porte sur deux exercices : le défaut est invisible sur
+    l'exercice courant, où presque rien n'est encore lettré.
+    """
+
+    def _valeur(self, xmlid, code, annee, label="balance"):
+        rapport = self.env.ref("expodo_account_reports." + xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 1, 1), "date_to": date(annee, 12, 31)}})
+        return round(rapport._expodo_compute_values(
+            options, "main").get((code, label), 0.0), 2)
+
+    def test_la_balance_agee_clients_egale_le_poste_du_bilan(self):
+        for annee in (2026, 2027):
+            with self.subTest(exercice=annee):
+                self.assertAlmostEqual(
+                    self._valeur("report_aged_receivable_fr", "AGEDR", annee),
+                    self._valeur("report_balance_sheet", "BS_RECEIVABLE", annee),
+                    places=2,
+                    msg="La balance âgée détaille le poste client du bilan : "
+                        "les deux totaux ne peuvent pas différer")
+
+    def test_la_balance_agee_fournisseurs_egale_le_poste_du_bilan(self):
+        for annee in (2026, 2027):
+            with self.subTest(exercice=annee):
+                self.assertAlmostEqual(
+                    abs(self._valeur("report_aged_payable_fr", "AGEDP", annee)),
+                    abs(self._valeur("report_balance_sheet", "BS_PAYABLE", annee)),
+                    places=2,
+                    msg="La balance âgée fournisseurs détaille le poste "
+                        "fournisseurs du bilan")
+
+    def test_les_ecritures_ouvertes_recouvrent_les_deux_postes(self):
+        """L'état porte les clients et les fournisseurs, avec leur sens
+        comptable : les dettes y sont créditrices, donc négatives, là où le
+        bilan les présente en positif au passif."""
+        for annee in (2026, 2027):
+            with self.subTest(exercice=annee):
+                self.assertAlmostEqual(
+                    self._valeur("report_open_items_fr",
+                                 "OPEN_PARTENAIRES", annee),
+                    self._valeur("report_balance_sheet", "BS_RECEIVABLE", annee)
+                    - self._valeur("report_balance_sheet", "BS_PAYABLE", annee),
+                    places=2,
+                    msg="Les écritures ouvertes justifient les deux postes de "
+                        "tiers du bilan")

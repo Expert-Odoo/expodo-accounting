@@ -145,7 +145,7 @@
                     <field name="expression_ids">
                         <record id="expr_agedr_t0" model="account.report.expression">
                             <field name="label">t0</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(-99999,0)</field>
                         
                             <!--
@@ -164,7 +164,7 @@
                         </record>
                         <record id="expr_agedr_t1" model="account.report.expression">
                             <field name="label">t1</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(1,30)</field>
                         
                             <!--
@@ -183,7 +183,7 @@
                         </record>
                         <record id="expr_agedr_t2" model="account.report.expression">
                             <field name="label">t2</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(31,60)</field>
                         
                             <!--
@@ -202,7 +202,7 @@
                         </record>
                         <record id="expr_agedr_t3" model="account.report.expression">
                             <field name="label">t3</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(61,90)</field>
                         
                             <!--
@@ -221,7 +221,7 @@
                         </record>
                         <record id="expr_agedr_t4" model="account.report.expression">
                             <field name="label">t4</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(91,120)</field>
                         
                             <!--
@@ -240,7 +240,7 @@
                         </record>
                         <record id="expr_agedr_t5" model="account.report.expression">
                             <field name="label">t5</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(121,*)</field>
                         
                             <!--
@@ -259,7 +259,7 @@
                         </record>
                         <record id="expr_agedr_tot" model="account.report.expression">
                             <field name="label">balance</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'asset_receivable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">sum</field>
                         
                             <!--
@@ -400,7 +400,7 @@
                     <field name="expression_ids">
                         <record id="expr_agedp_t0" model="account.report.expression">
                             <field name="label">t0</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(-99999,0)</field>
                         
                             <!--
@@ -419,7 +419,7 @@
                         </record>
                         <record id="expr_agedp_t1" model="account.report.expression">
                             <field name="label">t1</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(1,30)</field>
                         
                             <!--
@@ -438,7 +438,7 @@
                         </record>
                         <record id="expr_agedp_t2" model="account.report.expression">
                             <field name="label">t2</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(31,60)</field>
                         
                             <!--
@@ -457,7 +457,7 @@
                         </record>
                         <record id="expr_agedp_t3" model="account.report.expression">
                             <field name="label">t3</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(61,90)</field>
                         
                             <!--
@@ -476,7 +476,7 @@
                         </record>
                         <record id="expr_agedp_t4" model="account.report.expression">
                             <field name="label">t4</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(91,120)</field>
                         
                             <!--
@@ -495,7 +495,7 @@
                         </record>
                         <record id="expr_agedp_t5" model="account.report.expression">
                             <field name="label">t5</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(121,*)</field>
                         
                             <!--
@@ -514,7 +514,7 @@
                         </record>
                         <record id="expr_agedp_tot" model="account.report.expression">
                             <field name="label">balance</field><field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', '=', 'liability_payable'), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">sum</field>
                         
                             <!--

@@ -18,6 +18,8 @@ s'effondrerait sur une base volumineuse.
 import ast
 from collections import defaultdict
 
+from datetime import date
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
@@ -69,6 +71,7 @@ class AccountReportExpression(models.Model):
         "__company_fiscal_country__",
         "__bank_journal_accounts__",
         "__cash_journal_accounts__",
+        "__date_to__",
     )
 
     @api.model
@@ -88,7 +91,62 @@ class AccountReportExpression(models.Model):
             "__company_fiscal_country__": pays.id,
             "__bank_journal_accounts__": comptes_de("bank"),
             "__cash_journal_accounts__": comptes_de("cash"),
+            # Repli volontairement inatteignable : sans borne connue, une
+            # condition « lettré après cette date » ne retient rien et le
+            # domaine se comporte comme avant l'ajout du jeton. Le repli
+            # inverse ferait ressortir des lignes soldées depuis des années.
+            "__date_to__": date.max,
         }
+
+    @api.constrains("formula")
+    def _check_formula(self):
+        """Valide les domaines **après** résolution des jetons.
+
+        Le contrôle du cœur exécute la recherche sur la formule brute. Un
+        jeton y passe tant qu'il se compare à un champ relationnel, où Odoo
+        accepte un nom, mais il est rejeté dès qu'il se compare à une date :
+        « __date_to__ » n'en est pas une. Le module refusait alors de
+        s'installer, ce qui est la façon la plus bruyante possible de
+        découvrir qu'une validation ignore un mécanisme du module.
+        """
+        import ast
+
+        avec_jetons = self.filtered(
+            lambda e: e.engine == "domain" and any(
+                jeton in (e.formula or "") for jeton in self.EXPODO_DOMAIN_TOKENS))
+        for expression in avec_jetons:
+            try:
+                domaine = self._expodo_resolve_tokens(
+                    ast.literal_eval(expression.formula))
+                self.env["account.move.line"]._search(domaine)
+            except Exception as erreur:
+                raise ValidationError(self.env._(
+                    "Invalid formula for expression '%(label)s' of line "
+                    "'%(line)s': %(formula)s",
+                    label=expression.label,
+                    line=expression.report_line_name,
+                    formula=expression.formula)) from erreur
+        return super(AccountReportExpression, self - avec_jetons)._check_formula()
+
+    @api.model
+    def _expodo_tokens_a_la_date(self, report, options, column_group_key,
+                                 date_scope, base=None):
+        """Les jetons, complétés par la date d'arrêté de la portée demandée.
+
+        Un état arrêté à une date doit dire ce qui était vrai **à cette
+        date**. Le lettrage, lui, arrive plus tard : une facture de décembre
+        réglée en mars n'était pas soldée au 31 décembre. L'état qui justifie
+        le poste client du bilan doit donc la porter, sans quoi les deux
+        écrans se contredisent d'autant plus que les règlements rentrent.
+        """
+        valeurs = dict(base or self._expodo_token_values())
+        try:
+            _debut, fin = report._expodo_get_date_bounds(
+                options, column_group_key, date_scope)
+        except Exception:
+            fin = None
+        valeurs["__date_to__"] = fin or date.max
+        return valeurs
 
     @api.model
     def _expodo_resolve_tokens(self, domaine, valeurs=None):
@@ -291,7 +349,9 @@ class AccountReportExpression(models.Model):
         if self.engine == "domain":
             try:
                 return self._expodo_resolve_tokens(
-                    ast.literal_eval(self.formula or "[]"))
+                    ast.literal_eval(self.formula or "[]"),
+                    self._expodo_tokens_a_la_date(
+                        report, options, column_group_key, self.date_scope))
             except (ValueError, SyntaxError) as erreur:
                 raise ValidationError(
                     self.env._(
@@ -390,7 +450,10 @@ class AccountReportExpression(models.Model):
             for expression in expressions:
                 try:
                     domain = self._expodo_resolve_tokens(
-                        ast.literal_eval(expression.formula), jetons)
+                        ast.literal_eval(expression.formula),
+                        self._expodo_tokens_a_la_date(
+                            report, options, column_group_key, date_scope,
+                            base=jetons))
                 except (ValueError, SyntaxError) as error:
                     raise ValidationError(
                         self.env._(

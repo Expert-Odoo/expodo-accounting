@@ -140,14 +140,14 @@
                                 déjà réglée fait contester tout le relevé, y
                                 compris ses lignes justes.
                             -->
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">sum</field>
                             <field name="date_scope">from_beginning</field>
                         </record>
                         <record id="customer_statement_current" model="account.report.expression">
                             <field name="label">current</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <!-- Échéance dans le futur : rien n'est encore dû. -->
                             <field name="subformula">aged(-99999, 0)</field>
                             <field name="date_scope">from_beginning</field>
@@ -155,21 +155,21 @@
                         <record id="customer_statement_age_30" model="account.report.expression">
                             <field name="label">age_30</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(1, 30)</field>
                             <field name="date_scope">from_beginning</field>
                         </record>
                         <record id="customer_statement_age_60" model="account.report.expression">
                             <field name="label">age_60</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">aged(31, 60)</field>
                             <field name="date_scope">from_beginning</field>
                         </record>
                         <record id="customer_statement_age_90" model="account.report.expression">
                             <field name="label">age_90</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <!-- Dernière tranche ouverte : au-delà de soixante
                                  jours, la distinction entre quatre-vingt-dix et
                                  cent-vingt n'intéresse plus personne. -->

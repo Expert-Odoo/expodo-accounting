@@ -334,8 +334,11 @@ class AccountReportLine(models.Model):
 
         for formula, group in by_domain.items():
             try:
-                domain = self.env["account.report.expression"]._expodo_resolve_tokens(
-                    ast.literal_eval(formula) if formula.strip() else [])
+                expressions = self.env["account.report.expression"]
+                domain = expressions._expodo_resolve_tokens(
+                    ast.literal_eval(formula) if formula.strip() else [],
+                    expressions._expodo_tokens_a_la_date(
+                        report, options, column_group_key, group[0].date_scope))
             except (ValueError, SyntaxError) as error:
                 raise ValidationError(
                     self.env._(

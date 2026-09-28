@@ -3511,3 +3511,128 @@ class TestMasquageDesLignesNulles(TransactionCase):
         self.assertIn(
             "EXEC_ACTIVITE", codes,
             "Les intitulés de rubrique restent, ils ne portent pas de chiffre")
+
+
+@tagged("post_install", "-at_install")
+class TestEcrituresOuvertesAUneDatePassee(TransactionCase):
+    """Ce qui était ouvert à la date d'arrêté, et non ce qui l'est aujourd'hui.
+
+    Les écritures ouvertes et le relevé client retenaient les lignes non
+    lettrées, sans regarder **quand** le lettrage a eu lieu. Une facture de
+    décembre réglée en mars disparaissait donc de l'état arrêté au
+    31 décembre, alors qu'elle y était bien due.
+
+    L'état sert précisément à justifier le poste client d'un bilan arrêté :
+    imprimé en mars, il ne correspondait plus au bilan de décembre, et l'écart
+    grandissait à mesure que les règlements rentraient. Personne ne peut
+    deviner cette cause en regardant l'écran : les deux états paraissent
+    normaux, chacun de son côté.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.societe = self.env.company
+        self.journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", self.societe.id)], limit=1)
+        comptes = self.env["account.account"]
+        self.client_ = comptes.search(
+            [("account_type", "=", "asset_receivable"), ("reconcile", "=", True),
+             ("company_ids", "in", self.societe.id)], limit=1, order="code")
+        self.vente = comptes.search(
+            [("account_type", "=", "income"),
+             ("company_ids", "in", self.societe.id)], limit=1, order="code")
+        self.banque = comptes.search(
+            [("account_type", "=", "asset_cash"),
+             ("company_ids", "in", self.societe.id)], limit=1, order="code")
+        self.tiers = self.env["res.partner"].create({"name": "Client d'arrêté"})
+
+    def _ecrire(self, jour, compte_debit, compte_credit, montant):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour,
+            "line_ids": [
+                Command.create({
+                    "name": "x", "account_id": compte_debit.id,
+                    "partner_id": self.tiers.id, "date_maturity": jour,
+                    "debit": montant, "credit": 0.0}),
+                Command.create({
+                    "name": "x", "account_id": compte_credit.id,
+                    "partner_id": self.tiers.id,
+                    "debit": 0.0, "credit": montant}),
+            ]})
+        ecriture.action_post()
+        return ecriture
+
+    def _ouvertes(self, xmlid, code):
+        rapport = self.env.ref("expodo_account_reports." + xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2036, 1, 1), "date_to": date(2036, 12, 31)}})
+        return round(rapport._expodo_compute_values(
+            options, "main").get((code, "balance"), 0.0), 2)
+
+    def _facture_reglee_l_annee_suivante(self):
+        facture = self._ecrire(date(2036, 3, 1), self.client_, self.vente, 1000.0)
+        reglement = self._ecrire(date(2037, 2, 1), self.banque, self.client_, 1000.0)
+        lignes = (facture.line_ids + reglement.line_ids).filtered(
+            lambda l: l.account_id == self.client_)
+        lignes.reconcile()
+        self.assertTrue(
+            lignes[0].full_reconcile_id,
+            "Le scénario suppose un lettrage effectif")
+
+    def test_une_facture_lettree_plus_tard_reste_ouverte_a_l_arrete(self):
+        avant = self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES")
+        self._facture_reglee_l_annee_suivante()
+        apres = self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES")
+        self.assertAlmostEqual(
+            apres - avant, 1000.0, places=2,
+            msg="Au 31 décembre, cette facture était due : le règlement de "
+                "février suivant ne peut pas l'effacer rétroactivement")
+
+    def test_le_releve_client_suit_la_meme_regle(self):
+        avant = self._ouvertes("report_customer_statement", "STATEMENT_CUSTOMERS")
+        self._facture_reglee_l_annee_suivante()
+        apres = self._ouvertes("report_customer_statement", "STATEMENT_CUSTOMERS")
+        self.assertAlmostEqual(
+            apres - avant, 1000.0, places=2,
+            msg="Le relevé envoyé au client doit dire ce qu'il devait à la "
+                "date d'arrêté")
+
+    def test_les_ecritures_ouvertes_justifient_le_poste_client_du_bilan(self):
+        """Les deux états doivent bouger du même montant.
+
+        C'est la raison d'être de l'état : justifier le solde du bilan tiers
+        par tiers. Deux écrans qui se contredisent sont pires qu'un écran
+        manquant.
+        """
+        bilan = self.env.ref("expodo_account_reports.report_balance_sheet")
+
+        def creances():
+            options = bilan._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2036, 1, 1), "date_to": date(2036, 12, 31)}})
+            return round(bilan._expodo_compute_values(
+                options, "main").get(("BS_RECEIVABLE", "balance"), 0.0), 2)
+
+        creances_avant = creances()
+        ouvertes_avant = self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES")
+        self._facture_reglee_l_annee_suivante()
+        self.assertAlmostEqual(
+            creances() - creances_avant,
+            self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES")
+            - ouvertes_avant,
+            places=2,
+            msg="Le bilan et les écritures ouvertes doivent varier ensemble")
+
+    def test_une_facture_lettree_avant_l_arrete_ne_figure_pas(self):
+        """La correction ne doit pas faire réapparaître ce qui était soldé."""
+        avant = self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES")
+        facture = self._ecrire(date(2036, 3, 1), self.client_, self.vente, 700.0)
+        reglement = self._ecrire(date(2036, 6, 1), self.banque, self.client_, 700.0)
+        lignes = (facture.line_ids + reglement.line_ids).filtered(
+            lambda l: l.account_id == self.client_)
+        lignes.reconcile()
+        self.assertAlmostEqual(
+            self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES") - avant,
+            0.0, places=2,
+            msg="Réglée en juin, la facture n'est plus ouverte au 31 décembre")

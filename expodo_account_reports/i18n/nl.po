@@ -366,6 +366,16 @@ msgid "Notes"
 msgstr "Notities"
 
 #. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_expression.py:0
+msgid ""
+"Invalid formula for expression '%(label)s' of line '%(line)s': "
+"%(formula)s"
+msgstr ""
+"Ongeldige formule voor expressie '%(label)s' van regel '%(line)s': "
+"%(formula)s"
+
+#. module: expodo_account_reports
 #. odoo-javascript
 #: code:addons/expodo_account_reports/static/src/js/report_action.js:0
 msgid "All journals"

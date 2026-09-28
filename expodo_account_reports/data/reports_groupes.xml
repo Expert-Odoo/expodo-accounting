@@ -748,7 +748,7 @@
                         <record id="expr_open_solde" model="account.report.expression">
                             <field name="label">balance</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">sum</field>
                                                     <!--
                                 Lecture depuis l'origine.
@@ -764,7 +764,7 @@
                         <record id="expr_open_nb" model="account.report.expression">
                             <field name="label">nb</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), ('full_reconcile_id', '=', False)]</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable')), '|', ('full_reconcile_id', '=', False), ('full_reconcile_id.partial_reconcile_ids.max_date', '&gt;', '__date_to__')]</field>
                             <field name="subformula">count_moves</field>
                                                     <!--
                                 Lecture depuis l'origine.
