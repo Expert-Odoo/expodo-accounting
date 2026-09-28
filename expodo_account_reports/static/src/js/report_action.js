@@ -83,6 +83,14 @@ export class ExpodoAccountReport extends Component {
         const previouslyUnfolded = keepUnfolded
             ? this.state.lines.filter((l) => l.unfolded && !l.parent_id).map((l) => l.id)
             : [];
+        // Numéro de chargement : un champ date émet plusieurs changements
+        // valides pendant la frappe (le jour, puis le mois, puis l'année).
+        // Les chargements se chevauchent alors, et chacun re-déplie les
+        // lignes : les enfants d'un chargement périmé s'inséraient dans la
+        // liste du suivant, et le grand livre affichait ses comptes en
+        // double ou en triple. Seul le dernier chargement a le droit
+        // d'écrire dans l'état.
+        const seq = (this.loadSeq = (this.loadSeq || 0) + 1);
         this.state.loading = true;
         try {
             const data = await this.orm.call(
@@ -90,6 +98,9 @@ export class ExpodoAccountReport extends Component {
                 "expodo_get_report_data",
                 [[this.reportId], previousOptions]
             );
+            if (seq !== this.loadSeq) {
+                return;
+            }
             Object.assign(this.state, {
                 report: data.report,
                 options: data.options,
@@ -109,10 +120,15 @@ export class ExpodoAccountReport extends Component {
             });
             throw error;
         } finally {
-            this.state.loading = false;
+            if (seq === this.loadSeq) {
+                this.state.loading = false;
+            }
         }
 
         for (const id of previouslyUnfolded) {
+            if (seq !== this.loadSeq) {
+                return;
+            }
             const line = this.state.lines.find((l) => l.id === id);
             if (line && line.unfoldable) {
                 await this.onToggleLine(line);
@@ -240,6 +256,7 @@ export class ExpodoAccountReport extends Component {
             return;
         }
         line.loading = true;
+        const seq = this.loadSeq;
 
         let children;
         try {
@@ -258,11 +275,16 @@ export class ExpodoAccountReport extends Component {
             line.loading = false;
         }
 
-        // Nouvelle vérification après l'attente : l'état a pu changer.
-        if (line.unfolded) {
+        // Nouvelle vérification après l'attente : l'état a pu changer, ou
+        // un rechargement a remplacé les lignes entre-temps. Les enfants
+        // calculés sur les anciennes options n'ont alors plus leur place.
+        if (line.unfolded || seq !== this.loadSeq) {
             return;
         }
         const index = this.state.lines.findIndex((l) => l.id === line.id);
+        if (index < 0) {
+            return;
+        }
         for (const child of children) {
             child.parent_id = line.id;
         }
