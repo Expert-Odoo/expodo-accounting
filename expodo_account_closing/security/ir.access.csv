@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_year_closing,expodo.year.closing,expodo.year.closing,account.group_account_manager,crud,

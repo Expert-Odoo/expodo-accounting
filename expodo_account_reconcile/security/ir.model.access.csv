@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_expodo_reconcile_wizard,expodo.reconcile.wizard,model_expodo_reconcile_wizard,account.group_account_user,1,1,1,1
-access_expodo_auto_reconcile,expodo.auto.reconcile.wizard,model_expodo_auto_reconcile_wizard,account.group_account_user,1,1,1,1
-access_expodo_reconcile_wizard_manager,expodo.reconcile.wizard,model_expodo_reconcile_wizard,account.group_account_manager,1,1,1,1
-access_expodo_auto_reconcile_manager,expodo.auto.reconcile.wizard,model_expodo_auto_reconcile_wizard,account.group_account_manager,1,1,1,1

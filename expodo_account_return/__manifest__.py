@@ -63,9 +63,8 @@ Built and maintained by Expodo — https://expodo.fr
     "support": "support@expodo.fr",
     "depends": ["account", "mail"],
     "data": [
-        "security/ir.model.access.csv",
-        "security/expodo_account_return_rules.xml",
         "views/return_views.xml",
+        'security/ir.access.csv',
     ],
     "installable": True,
     "application": False,

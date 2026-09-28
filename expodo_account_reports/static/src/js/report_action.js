@@ -14,10 +14,12 @@
  */
 
 import { _t } from "@web/core/l10n/translation";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 
 export class ExpodoAccountReport extends Component {
     static template = "expodo_account_reports.ReportAction";
@@ -25,8 +27,8 @@ export class ExpodoAccountReport extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
-        this.notification = useService("notification");
+        this.action = usePlugin(ActionManagerPlugin);
+        this.notification = usePlugin(NotificationPlugin);
 
         this.reportId =
             this.props.action.context.report_id ||
@@ -37,7 +39,7 @@ export class ExpodoAccountReport extends Component {
         // localisations sans en coder aucune.
         this.reportKind = this.props.action.context.report_kind;
 
-        this.state = useState({
+        this.state = proxy({
             notice: false,
             loading: true,
             report: {},

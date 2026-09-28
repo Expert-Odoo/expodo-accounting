@@ -77,8 +77,9 @@ Built and maintained by Expodo — https://expodo.fr
     "depends": ["account"],
 
     "data": [
-        "security/ir.model.access.csv",
         "wizard/fec_export_views.xml",
+
+        'security/ir.access.csv',
     ],
 
     "installable": True,

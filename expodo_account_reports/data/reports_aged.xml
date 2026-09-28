@@ -141,7 +141,6 @@
                     <field name="name@pt_BR">Clientes</field>
                     <field name="code">AGEDR</field>
                     <field name="groupby">partner_id,id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_agedr_t0" model="account.report.expression">
                             <field name="label">t0</field><field name="engine">domain</field>
@@ -396,7 +395,6 @@
                     <field name="name@pt_BR">Fornecedores</field>
                     <field name="code">AGEDP</field>
                     <field name="groupby">partner_id,id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_agedp_t0" model="account.report.expression">
                             <field name="label">t0</field><field name="engine">domain</field>
@@ -592,7 +590,6 @@
                     <field name="name@pt_BR">Diários de banco</field>
                     <field name="code">LB_BANQUE</field>
                     <field name="groupby">journal_id,id</field>
-                    <field name="foldable" eval="True"/>
                                         <!--
                         Seules les lignes du compte de banque.
 
@@ -709,7 +706,6 @@
                     <field name="name@pt_BR">Diários de caixa</field>
                     <field name="code">LC_CAISSE</field>
                     <field name="groupby">journal_id,id</field>
-                    <field name="foldable" eval="True"/>
                                         <!--
                         Seules les lignes du compte de caisse.
 

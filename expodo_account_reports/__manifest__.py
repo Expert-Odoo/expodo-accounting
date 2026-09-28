@@ -122,7 +122,6 @@ Built and maintained by Expodo — https://expodo.fr
     ],
 
     "data": [
-        "security/ir.model.access.csv",
         "data/reports_universal.xml",
         "data/report_cash_flow.xml",
         "data/report_cash_flow_direct.xml",

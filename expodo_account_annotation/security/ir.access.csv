@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_report_annotation_readonly,expodo.report.annotation.readonly,expodo.report.annotation,account.group_account_readonly,r,
+access_expodo_report_annotation_basic,expodo.report.annotation.basic,expodo.report.annotation,account.group_account_basic,r,
+access_expodo_report_annotation_user,expodo.report.annotation.user,expodo.report.annotation,account.group_account_user,cru,
+access_expodo_report_annotation_manager,expodo.report.annotation.manager,expodo.report.annotation,account.group_account_manager,crud,
+rule_expodo_report_annotation_company,Report annotation: multi-company,expodo.report.annotation,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "

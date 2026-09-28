@@ -246,7 +246,6 @@
                     <!-- Deux niveaux : compte, puis écriture. Le second n'est
                          calculé qu'au dépliage du premier. -->
                     <field name="groupby">account_id,id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_gl_date" model="account.report.expression">
                             <field name="label">line_date</field>
@@ -347,7 +346,6 @@
                     <field name="name@pt_BR">Parceiros</field>
                     <field name="code">AUX_PARTENAIRES</field>
                     <field name="groupby">partner_id,id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_aux_debit" model="account.report.expression">
                             <field name="label">debit</field>
@@ -435,7 +433,6 @@
                     <field name="name@pt_BR">Diários</field>
                     <field name="code">JRN_JOURNAUX</field>
                     <field name="groupby">journal_id,move_id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_jrn_debit" model="account.report.expression">
                             <field name="label">debit</field>
@@ -529,7 +526,6 @@
                     <field name="name@pt_BR">Parceiros</field>
                     <field name="code">OPEN_PARTENAIRES</field>
                     <field name="groupby">partner_id,id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_open_solde" model="account.report.expression">
                             <field name="label">balance</field>

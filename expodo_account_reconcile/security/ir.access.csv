@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_reconcile_wizard,expodo.reconcile.wizard,expodo.reconcile.wizard,account.group_account_user,crud,
+access_expodo_reconcile_wizard_manager,expodo.reconcile.wizard,expodo.reconcile.wizard,account.group_account_manager,crud,
+access_expodo_auto_reconcile,expodo.auto.reconcile.wizard,expodo.auto.reconcile.wizard,account.group_account_user,crud,
+access_expodo_auto_reconcile_manager,expodo.auto.reconcile.wizard,expodo.auto.reconcile.wizard,account.group_account_manager,crud,

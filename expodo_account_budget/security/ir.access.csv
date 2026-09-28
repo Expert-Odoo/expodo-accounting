@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_budget_user,expodo.budget.user,expodo.budget,account.group_account_user,r,
+access_expodo_budget_manager,expodo.budget.manager,expodo.budget,account.group_account_manager,crud,
+rule_expodo_budget_company,Budget: multi-company,expodo.budget,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "
+access_expodo_budget_line_user,expodo.budget.line.user,expodo.budget.line,account.group_account_user,r,
+access_expodo_budget_line_manager,expodo.budget.line.manager,expodo.budget.line,account.group_account_manager,crud,
+rule_expodo_budget_line_company,Budget line: multi-company,expodo.budget.line,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "

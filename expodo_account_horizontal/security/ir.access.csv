@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_hgroup_user,expodo.report.horizontal.group.user,expodo.report.horizontal.group,account.group_account_user,r,
+access_expodo_hgroup_manager,expodo.report.horizontal.group.manager,expodo.report.horizontal.group,account.group_account_manager,crud,
+rule_expodo_report_horizontal_group_company,Horizontal group: multi-company,expodo.report.horizontal.group,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "
+access_expodo_hgroup_rule_user,expodo.report.horizontal.group.rule.user,expodo.report.horizontal.group.rule,account.group_account_user,r,
+access_expodo_hgroup_rule_manager,expodo.report.horizontal.group.rule.manager,expodo.report.horizontal.group.rule,account.group_account_manager,crud,

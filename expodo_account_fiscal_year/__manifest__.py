@@ -50,9 +50,8 @@ Built and maintained by Expodo — https://expodo.fr
     "support": "support@expodo.fr",
     "depends": ["account"],
     "data": [
-        "security/ir.model.access.csv",
-        "security/expodo_account_fiscal_year_rules.xml",
         "views/fiscal_year_views.xml",
+        'security/ir.access.csv',
     ],
     "installable": True,
     "application": False,

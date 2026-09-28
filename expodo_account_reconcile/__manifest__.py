@@ -53,8 +53,8 @@ Built and maintained by Expodo — https://expodo.fr
     "support": "support@expodo.fr",
     "depends": ["account"],
     "data": [
-        "security/ir.model.access.csv",
         "wizard/reconcile_wizard_views.xml",
+        'security/ir.access.csv',
     ],
     "installable": True,
     "application": False,

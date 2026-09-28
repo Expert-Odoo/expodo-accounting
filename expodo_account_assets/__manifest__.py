@@ -73,13 +73,13 @@ Built and maintained by Expodo — https://expodo.fr
     ],
 
     "data": [
-        "security/ir.model.access.csv",
-        "security/expodo_asset_rules.xml",
         # L'assistant en premier : la vue formulaire des immobilisations
         # référence son action par `%(xmlid)d`, qui doit donc déjà exister.
         "wizard/expodo_asset_disposal_views.xml",
         "views/expodo_asset_views.xml",
         "views/menus.xml",
+
+        'security/ir.access.csv',
     ],
 
     # Une seule fiche sur l'App Store : seul le module qui embarque la

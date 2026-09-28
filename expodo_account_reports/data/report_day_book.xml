@@ -81,7 +81,6 @@
                     <!-- La date d'abord : c'est ce qui fait le caractère
                          chronologique exigé du livre-journal. -->
                     <field name="groupby">date,move_id</field>
-                    <field name="foldable" eval="True"/>
                     <field name="expression_ids">
                         <record id="expr_db_debit" model="account.report.expression">
                             <field name="label">debit</field>

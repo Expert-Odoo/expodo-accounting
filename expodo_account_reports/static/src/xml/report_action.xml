@@ -11,18 +11,18 @@
                     sur la grande majorité des rapports. Il remplace alors le
                     titre, qu'il répéterait mot pour mot.
                 -->
-                <t t-if="state.report.variants and state.report.variants.length &gt; 1">
+                <t t-if="this.state.report.variants and this.state.report.variants.length &gt; 1">
                     <select class="form-select form-select-sm w-auto me-auto fw-bold"
-                            t-att-title="labels.variant"
-                            t-on-change="onVariantChange">
-                        <t t-foreach="state.report.variants" t-as="variant" t-key="variant.id">
+                            t-att-title="this.labels.variant"
+                            t-on-change="this.onVariantChange">
+                        <t t-foreach="this.state.report.variants" t-as="variant" t-key="variant.id">
                             <option t-att-value="variant.id"
-                                    t-att-selected="variant.id === state.report.id"
-                                    t-esc="variant.name"/>
+                                    t-att-selected="variant.id === this.state.report.id"
+                                    t-out="variant.name"/>
                         </t>
                     </select>
                 </t>
-                <h5 t-else="" class="mb-0 me-auto" t-esc="state.report.name"/>
+                <h5 t-else="" class="mb-0 me-auto" t-out="this.state.report.name"/>
 
                 <!--
                     Un état arrêté à une date n'affiche que sa clôture. Lui
@@ -36,26 +36,26 @@
                     alors sans aucune date.
                 -->
                 <div class="d-flex align-items-center gap-1">
-                    <t t-if="state.report.filter_date_range">
-                        <span class="text-muted small text-nowrap" t-esc="labels.from"/>
+                    <t t-if="this.state.report.filter_date_range">
+                        <span class="text-muted small text-nowrap" t-out="this.labels.from"/>
                         <input type="date" class="form-control form-control-sm"
-                               t-att-value="state.options.date and state.options.date.date_from"
+                               t-att-value="this.state.options.date and this.state.options.date.date_from"
                                t-on-change="(ev) => this.onDateChange('date_from', ev)"/>
-                        <span class="text-muted small text-nowrap" t-esc="labels.to"/>
+                        <span class="text-muted small text-nowrap" t-out="this.labels.to"/>
                     </t>
-                    <span t-else="" class="text-muted small text-nowrap" t-esc="labels.asOf"/>
+                    <span t-else="" class="text-muted small text-nowrap" t-out="this.labels.asOf"/>
                     <input type="date" class="form-control form-control-sm"
-                           t-att-value="state.options.date and state.options.date.date_to"
+                           t-att-value="this.state.options.date and this.state.options.date.date_to"
                            t-on-change="(ev) => this.onDateChange('date_to', ev)"/>
                 </div>
 
-                <select class="form-select form-select-sm w-auto" t-on-change="onComparisonChange">
-                    <option value="no_comparison" t-esc="labels.noComparison"
-                            t-att-selected="!state.options.comparison or state.options.comparison.filter === 'no_comparison'"/>
-                    <option value="previous_period" t-esc="labels.previousPeriod"
-                            t-att-selected="state.options.comparison and state.options.comparison.filter === 'previous_period'"/>
-                    <option value="same_last_year" t-esc="labels.previousYear"
-                            t-att-selected="state.options.comparison and state.options.comparison.filter === 'same_last_year'"/>
+                <select class="form-select form-select-sm w-auto" t-on-change="this.onComparisonChange">
+                    <option value="no_comparison" t-out="this.labels.noComparison"
+                            t-att-selected="!this.state.options.comparison or this.state.options.comparison.filter === 'no_comparison'"/>
+                    <option value="previous_period" t-out="this.labels.previousPeriod"
+                            t-att-selected="this.state.options.comparison and this.state.options.comparison.filter === 'previous_period'"/>
+                    <option value="same_last_year" t-out="this.labels.previousYear"
+                            t-att-selected="this.state.options.comparison and this.state.options.comparison.filter === 'same_last_year'"/>
                 </select>
 
                 <!--
@@ -63,34 +63,34 @@
                     déclare et que la société en porte plusieurs, sinon la
                     liste n'offrirait aucun choix.
                 -->
-                <select t-if="state.report.filter_journals and state.report.journals and state.report.journals.length &gt; 1"
+                <select t-if="this.state.report.filter_journals and this.state.report.journals and this.state.report.journals.length &gt; 1"
                         class="form-select form-select-sm w-auto"
-                        t-on-change="onJournalChange">
-                    <option value="" t-esc="labels.allJournals"/>
-                    <t t-foreach="state.report.journals" t-as="journal" t-key="journal.id">
+                        t-on-change="this.onJournalChange">
+                    <option value="" t-out="this.labels.allJournals"/>
+                    <t t-foreach="this.state.report.journals" t-as="journal" t-key="journal.id">
                         <option t-att-value="journal.id"
-                                t-att-selected="state.options.journal_ids and state.options.journal_ids.includes(journal.id)"
-                                t-esc="journal.code ? journal.code + ' — ' + journal.name : journal.name"/>
+                                t-att-selected="this.state.options.journal_ids and this.state.options.journal_ids.includes(journal.id)"
+                                t-out="journal.code ? journal.code + ' — ' + journal.name : journal.name"/>
                     </t>
                 </select>
 
-                <t t-if="state.report.filter_show_draft">
+                <t t-if="this.state.report.filter_show_draft">
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input" type="checkbox"
-                               t-att-checked="state.options.all_entries"
-                               t-on-change="onToggleDraft"/>
-                        <label class="form-check-label small" t-esc="labels.includeDrafts"/>
+                               t-att-checked="this.state.options.all_entries"
+                               t-on-change="this.onToggleDraft"/>
+                        <label class="form-check-label small" t-out="this.labels.includeDrafts"/>
                     </div>
                 </t>
 
-                <button t-if="state.report.filter_unfold_all"
+                <button t-if="this.state.report.filter_unfold_all"
                         class="btn btn-sm btn-secondary"
-                        t-on-click="onUnfoldAll" t-esc="labels.unfoldAll"/>
+                        t-on-click="this.onUnfoldAll" t-out="this.labels.unfoldAll"/>
 
-                <t t-if="state.report.search_bar">
+                <t t-if="this.state.report.search_bar">
                     <input type="search" class="form-control form-control-sm w-auto"
-                           t-att-placeholder="labels.search"
-                           t-att-value="state.search" t-on-input="onSearchInput"/>
+                           t-att-placeholder="this.labels.search"
+                           t-att-value="this.state.search" t-on-input="this.onSearchInput"/>
                 </t>
 
                 <div class="btn-group btn-group-sm">
@@ -100,9 +100,9 @@
             </div>
 
             <div class="flex-grow-1 overflow-auto">
-                <t t-if="state.loading">
+                <t t-if="this.state.loading">
                     <div class="d-flex justify-content-center p-5 text-muted">
-                        <span t-esc="labels.computing"/>
+                        <span t-out="this.labels.computing"/>
                     </div>
                 </t>
                 <t t-else="">
@@ -116,19 +116,19 @@
                                 tableau débordait. Il occupe désormais une
                                 ligne à lui, une cellule fusionnée par groupe.
                             -->
-                            <tr t-if="state.columnGroups.length &gt; 1">
+                            <tr t-if="this.state.columnGroups.length &gt; 1">
                                 <th class="border-0"/>
-                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
+                                <t t-foreach="this.state.columnGroups" t-as="group" t-key="group.key">
                                     <th class="text-center text-muted fw-normal small border-bottom"
-                                        t-att-colspan="state.columns.length"
-                                        t-esc="group.label"/>
+                                        t-att-colspan="this.state.columns.length"
+                                        t-out="group.label"/>
                                 </t>
                             </tr>
                             <tr>
-                                <th class="text-start" t-esc="labels.label"/>
-                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
-                                    <t t-foreach="state.columns" t-as="column" t-key="column.label">
-                                        <th class="text-end text-nowrap" t-esc="column.name"/>
+                                <th class="text-start" t-out="this.labels.label"/>
+                                <t t-foreach="this.state.columnGroups" t-as="group" t-key="group.key">
+                                    <t t-foreach="this.state.columns" t-as="column" t-key="column.label">
+                                        <th class="text-end text-nowrap" t-out="column.name"/>
                                     </t>
                                 </t>
                             </tr>
@@ -140,26 +140,26 @@
                                 un tableau vide sans savoir s'il manquait des
                                 écritures ou le rapport lui-même.
                             -->
-                            <tr t-if="state.notice">
+                            <tr t-if="this.state.notice">
                                 <td class="text-muted fst-italic p-3"
-                                    t-att-colspan="1 + state.columns.length * state.columnGroups.length"
-                                    t-esc="state.notice"/>
+                                    t-att-colspan="1 + this.state.columns.length * this.state.columnGroups.length"
+                                    t-out="this.state.notice"/>
                             </tr>
-                            <tr t-foreach="visibleLines" t-as="line" t-key="line.id"
+                            <tr t-foreach="this.visibleLines" t-as="line" t-key="line.id"
                                 t-att-class="line.level === 0 ? 'fw-bold o_expodo_level_0' : ''">
-                                <td t-att-style="indentStyle(line)">
+                                <td t-att-style="this.indentStyle(line)">
                                     <span t-if="line.unfoldable" class="o_expodo_caret me-1 user-select-none"
                                           t-on-click="() => this.onToggleLine(line)"
-                                          t-esc="line.unfolded ? '-' : '+'"/>
+                                          t-out="line.unfolded ? '-' : '+'"/>
                                     <span t-att-class="line.unfoldable ? 'o_expodo_clickable' : ''"
-                                          t-on-click="() => this.onToggleLine(line)" t-esc="line.name"/>
+                                          t-on-click="() => this.onToggleLine(line)" t-out="line.name"/>
                                 </td>
-                                <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
+                                <t t-foreach="this.state.columnGroups" t-as="group" t-key="group.key">
                                     <t t-foreach="line.columns" t-as="column" t-key="column.label">
                                         <td class="text-end text-nowrap"
                                             t-att-class="column.auditable ? 'o_expodo_auditable' : ''"
                                             t-on-click="() => this.onCellClick(line, column)"
-                                            t-esc="column.values[group.key]"/>
+                                            t-out="column.values[group.key]"/>
                                     </t>
                                 </t>
                             </tr>

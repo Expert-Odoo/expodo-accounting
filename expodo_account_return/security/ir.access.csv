@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_return_type_user,expodo.return.type.user,expodo.return.type,account.group_account_user,r,
+access_expodo_return_type_manager,expodo.return.type.manager,expodo.return.type,account.group_account_manager,crud,
+rule_expodo_return_type_company,Return type: multi-company,expodo.return.type,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "
+access_expodo_return_user,expodo.return.user,expodo.return,account.group_account_user,r,
+access_expodo_return_manager,expodo.return.manager,expodo.return,account.group_account_manager,crud,
+rule_expodo_return_company,Tax return: multi-company,expodo.return,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "

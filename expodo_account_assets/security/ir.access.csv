@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_expodo_asset_readonly,expodo.asset readonly,expodo.asset,account.group_account_readonly,r,
+access_expodo_asset_invoice,expodo.asset invoice,expodo.asset,account.group_account_invoice,r,
+access_expodo_asset_user,expodo.asset user,expodo.asset,account.group_account_user,cru,
+access_expodo_asset_manager,expodo.asset manager,expodo.asset,account.group_account_manager,crud,
+rule_expodo_asset_company,Fixed asset: multi-company,expodo.asset,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "
+access_expodo_asset_line_readonly,expodo.asset.line readonly,expodo.asset.line,account.group_account_readonly,r,
+access_expodo_asset_line_invoice,expodo.asset.line invoice,expodo.asset.line,account.group_account_invoice,r,
+access_expodo_asset_line_user,expodo.asset.line user,expodo.asset.line,account.group_account_user,cru,
+access_expodo_asset_line_manager,expodo.asset.line manager,expodo.asset.line,account.group_account_manager,crud,
+rule_expodo_asset_line_company,Depreciation board line: multi-company,expodo.asset.line,,crud,"
+                ['|', ('company_id', '=', False),
+                      ('company_id', 'in', company_ids)]
+            "
+access_expodo_asset_disposal_user,expodo.asset.disposal user,expodo.asset.disposal,account.group_account_user,crud,
+access_expodo_asset_disposal_manager,expodo.asset.disposal manager,expodo.asset.disposal,account.group_account_manager,crud,
