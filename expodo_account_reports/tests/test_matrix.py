@@ -860,9 +860,11 @@ class TestResumeGeneral(TransactionCase):
             self.skipTest("État indisponible")
         self.assertAlmostEqual(
             v["EXEC_BFR"],
-            v["EXEC_CREANCES"] + v["EXEC_STOCKS"] - v["EXEC_DETTES"],
+            v["EXEC_CREANCES"] + v["EXEC_STOCKS"] - v["EXEC_DETTES"]
+            - v.get("EXEC_AUTRES_DETTES", 0.0),
             places=2,
-            msg="Besoin en fonds de roulement = créances + stocks − dettes")
+            msg="Besoin en fonds de roulement = créances + stocks et autres "
+                "créances − dettes fournisseurs − autres dettes courantes")
 
     def test_les_soldes_de_bilan_sont_lus_depuis_l_origine(self):
         """Une trésorerie est un solde, pas un flux.
@@ -876,7 +878,7 @@ class TestResumeGeneral(TransactionCase):
             donnees._xmlid_to_res_id(
                 "expodo_account_reports.report_executive_summary"))
         for code in ("EXEC_DISPO", "EXEC_CREANCES", "EXEC_DETTES",
-                     "EXEC_STOCKS", "EXEC_CAPITAUX"):
+                     "EXEC_STOCKS", "EXEC_AUTRES_DETTES", "EXEC_CAPITAUX"):
             ligne = rapport.line_ids.filtered(lambda l: l.code == code)
             if not ligne:
                 continue

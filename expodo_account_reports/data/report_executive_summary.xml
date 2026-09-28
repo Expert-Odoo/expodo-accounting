@@ -178,7 +178,7 @@
                     <field name="name@pt_BR">CAPITAL DE GIRO</field>
                     <field name="code">EXEC_BFR</field>
                     <field name="hierarchy_level" eval="0"/>
-                    <field name="aggregation_formula">EXEC_CREANCES.balance + EXEC_STOCKS.balance - EXEC_DETTES.balance</field>
+                    <field name="aggregation_formula">EXEC_CREANCES.balance + EXEC_STOCKS.balance - EXEC_DETTES.balance - EXEC_AUTRES_DETTES.balance</field>
                     <field name="children_ids">
 
                         <record id="exec_summary_creances" model="account.report.line">
@@ -205,13 +205,18 @@
 
                         <record id="exec_summary_stocks" model="account.report.line">
                             <field name="sequence" eval="90"/>
-                            <field name="name">Inventory</field>
-                            <field name="name@fr">Stocks</field>
-                            <field name="name@es">Existencias</field>
-                            <field name="name@de">Vorräte</field>
-                            <field name="name@nl">Voorraden</field>
-                            <field name="name@it">Rimanenze</field>
-                            <field name="name@pt_BR">Estoques</field>
+                            <!-- Le type `asset_current` ne se limite pas aux
+                                 stocks : TVA déductible, charges constatées
+                                 d'avance, autres créances. Le libellé
+                                 « Stocks » affichait la TVA déductible sous
+                                 ce nom (constaté au port 20.0). -->
+                            <field name="name">Inventory and other current assets</field>
+                            <field name="name@fr">Stocks et autres créances</field>
+                            <field name="name@es">Existencias y otros deudores</field>
+                            <field name="name@de">Vorräte und sonstige Forderungen</field>
+                            <field name="name@nl">Voorraden en overige vorderingen</field>
+                            <field name="name@it">Rimanenze e altri crediti</field>
+                            <field name="name@pt_BR">Estoques e outros créditos</field>
                             <field name="code">EXEC_STOCKS</field>
                             <field name="hierarchy_level" eval="2"/>
                             <field name="expression_ids">
@@ -241,6 +246,33 @@
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
                                     <field name="formula">[('account_id.account_type', '=', 'liability_payable')]</field>
+                                    <field name="subformula">-sum</field>
+                                    <field name="date_scope">from_beginning</field>
+                                </record>
+                            </field>
+                        </record>
+
+                        <!-- Dettes fiscales et sociales, autres dettes
+                             courantes. Le besoin en fonds de roulement
+                             comptait la TVA déductible (actif courant) sans
+                             la TVA collectée ni les salaires à payer (passif
+                             courant) : il était surévalué d'autant. -->
+                        <record id="exec_summary_autres_dettes" model="account.report.line">
+                            <field name="sequence" eval="105"/>
+                            <field name="name">Other current liabilities</field>
+                            <field name="name@fr">Dettes fiscales, sociales et autres</field>
+                            <field name="name@es">Otros acreedores a corto plazo</field>
+                            <field name="name@de">Sonstige kurzfristige Verbindlichkeiten</field>
+                            <field name="name@nl">Overige kortlopende schulden</field>
+                            <field name="name@it">Altri debiti a breve</field>
+                            <field name="name@pt_BR">Outras obrigações circulantes</field>
+                            <field name="code">EXEC_AUTRES_DETTES</field>
+                            <field name="hierarchy_level" eval="2"/>
+                            <field name="expression_ids">
+                                <record id="exec_summary_autres_dettes_balance" model="account.report.expression">
+                                    <field name="label">balance</field>
+                                    <field name="engine">domain</field>
+                                    <field name="formula">[('account_id.account_type', '=', 'liability_current')]</field>
                                     <field name="subformula">-sum</field>
                                     <field name="date_scope">from_beginning</field>
                                 </record>

@@ -3020,6 +3020,45 @@ class TestFluxDeTresorerieAffectation(TransactionCase):
         }).action_post()
         self.assertAlmostEqual(capitaux() - avant, 1000.0, places=2)
 
+    def test_le_bfr_de_la_synthese_integre_tva_et_dettes_sociales(self):
+        """Une facture de vente taxée ne crée pas de besoin en fonds de
+        roulement au titre de sa TVA : la TVA collectée (passif courant)
+        compense la part TVA de la créance. Le BFR comptait l'actif courant
+        sans le passif courant, et la TVA déductible s'affichait sous le
+        libellé « Stocks » (constaté au port 20.0)."""
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        client = comptes.search([("account_type", "=", "asset_receivable"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        produit = comptes.search([("account_type", "=", "income"),
+                                  ("company_ids", "in", societe.id)], limit=1)
+        tva = comptes.search([("account_type", "=", "liability_current"),
+                              ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_executive_summary")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2033, 1, 1), "date_to": date(2033, 12, 31)}})
+            v = rapport._expodo_compute_values(options, "main")
+            return {c: v[(c, "balance")] for c in ("EXEC_BFR", "EXEC_AUTRES_DETTES")}
+
+        avant = valeurs()
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2033, 3, 31),
+            "line_ids": [
+                Command.create({"name": "V", "account_id": client.id, "debit": 1200.0}),
+                Command.create({"name": "V", "account_id": produit.id, "credit": 1000.0}),
+                Command.create({"name": "V", "account_id": tva.id, "credit": 200.0}),
+            ],
+        }).action_post()
+        apres = valeurs()
+        self.assertAlmostEqual(apres["EXEC_AUTRES_DETTES"] - avant["EXEC_AUTRES_DETTES"], 200.0, places=2)
+        self.assertAlmostEqual(apres["EXEC_BFR"] - avant["EXEC_BFR"], 1000.0, places=2,
+                               msg="Seul le hors-taxe de la créance est un besoin de financement")
+
     def test_une_dotation_aux_amortissements_est_un_element_sans_effet_de_tresorerie(self):
         """Une dotation n'est pas un décaissement.
 
