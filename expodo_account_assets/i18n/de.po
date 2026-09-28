@@ -914,15 +914,9 @@ msgstr "Die Dauer muss mindestens einen Monat betragen."
 #. odoo-python
 #: code:addons/expodo_account_assets/models/expodo_asset.py:0
 msgid ""
-"The expense account %(account)s is typed “%(type)s” rather than "
-"“Depreciation”. Depreciation will still be posted correctly, but the cash "
-"flow statement will report it inside the net result instead of adding it "
-"back separately."
+"Neither the expense account %(account)s (typed “%(type)s”) nor the depreciation account is typed as depreciation or fixed asset. Depreciation will still be posted correctly, but the cash flow statement will report it inside the net result instead of adding it back separately."
 msgstr ""
-"Das Aufwandskonto %(account)s ist als „%(type)s“ und nicht als "
-"„Abschreibung“ typisiert. Die Abschreibungen werden korrekt gebucht, aber "
-"die Kapitalflussrechnung führt sie im Jahresergebnis statt sie gesondert "
-"hinzuzurechnen."
+"Weder das Aufwandskonto %(account)s (typisiert als „%(type)s“) noch das Abschreibungskonto sind als Abschreibung oder Anlagevermögen typisiert. Die Abschreibungen werden korrekt gebucht, aber die Kapitalflussrechnung führt sie im Jahresergebnis statt sie gesondert hinzuzurechnen."
 
 #. module: expodo_account_assets
 #: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form
