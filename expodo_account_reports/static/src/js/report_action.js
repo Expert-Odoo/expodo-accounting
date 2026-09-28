@@ -68,7 +68,17 @@ export class ExpodoAccountReport extends Component {
                     [this.reportKind]
                 );
             }
-            await this.load();
+            // Une action peut imposer la période : la déclaration de TVA de
+            // septembre ouvre l'état sur septembre. Les paramètres étaient
+            // transmis mais jamais lus, et l'état s'ouvrait sur sa période
+            // par défaut, le mois précédent pour une déclaration (constaté
+            // au port 20.0).
+            const params = this.props.action.params || {};
+            const initiales = params.date_from && params.date_to
+                ? { date: { date_from: params.date_from, date_to: params.date_to,
+                            filter: "custom", mode: "range" } }
+                : null;
+            await this.load(initiales);
         });
     }
 
