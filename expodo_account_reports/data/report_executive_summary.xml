@@ -278,7 +278,18 @@
                                 <record id="exec_summary_capitaux_balance" model="account.report.expression">
                                     <field name="label">balance</field>
                                     <field name="engine">domain</field>
-                                    <field name="formula">[('account_id.internal_group', '=', 'equity')]</field>
+                                    <!--
+                                        Le type `equity`, pas le groupe interne.
+
+                                        Le groupe `equity` englobe le compte de
+                                        résultat non affecté, par lequel Odoo
+                                        passe les affectations. Une affectation
+                                        créditait les réserves et débitait ce
+                                        compte : les deux se compensaient, les
+                                        capitaux propres paraissaient inchangés
+                                        alors qu'ils venaient d'augmenter.
+                                    -->
+                                    <field name="formula">[('account_id.account_type', '=', 'equity')]</field>
                                     <field name="subformula">-sum</field>
                                     <field name="date_scope">from_beginning</field>
                                 </record>

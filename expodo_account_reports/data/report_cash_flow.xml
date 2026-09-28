@@ -143,7 +143,29 @@
                                 tout appel de fonction — et c'est une bonne chose, un
                                 domaine ne doit pas pouvoir exécuter de code.
                             -->
-                            <field name="domain_formula" eval="&quot;sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <!--
+                                Deux corrections au domaine d'origine, trouvées
+                                en comparant avec l'édition Enterprise.
+
+                                Le compte de résultat non affecté est écarté.
+                                Odoo l'étiquette « Investing », si bien qu'une
+                                affectation du résultat se lisait comme un
+                                élément sans effet de trésorerie : elle ajoutait
+                                son montant à l'exploitation et le retirait à
+                                l'investissement. Le total restait juste, la
+                                ventilation non, et c'est la ventilation que
+                                lit le banquier.
+
+                                Les charges et produits des écritures qui
+                                touchent une immobilisation sont réintégrés.
+                                Le plan français type la dotation 6811 en
+                                `expense_other`, que ni l'étiquette ni le type
+                                `expense_depreciation` n'attrapent : la dotation
+                                passait pour un décaissement d'exploitation.
+                                C'est l'écriture, et non le compte, qui dit
+                                qu'elle concerne une immobilisation.
+                            -->
+                            <field name="domain_formula" eval="&quot;sum(['&amp;', ('account_id.account_type', '!=', 'equity_unaffected'), '|', '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation'), '&amp;', ('account_id.internal_group', 'in', ('income', 'expense')), ('move_id.line_ids.account_id.account_type', '=', 'asset_fixed')])&quot; % ref('account.account_tag_investing')"/>
                             <field name="groupby">account_id</field>
                         </record>
 
@@ -271,7 +293,29 @@
                                 tout appel de fonction — et c'est une bonne chose, un
                                 domaine ne doit pas pouvoir exécuter de code.
                             -->
-                            <field name="domain_formula" eval="&quot;-sum(['|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation')])&quot; % ref('account.account_tag_investing')"/>
+                            <!--
+                                Deux corrections au domaine d'origine, trouvées
+                                en comparant avec l'édition Enterprise.
+
+                                Le compte de résultat non affecté est écarté.
+                                Odoo l'étiquette « Investing », si bien qu'une
+                                affectation du résultat se lisait comme un
+                                élément sans effet de trésorerie : elle ajoutait
+                                son montant à l'exploitation et le retirait à
+                                l'investissement. Le total restait juste, la
+                                ventilation non, et c'est la ventilation que
+                                lit le banquier.
+
+                                Les charges et produits des écritures qui
+                                touchent une immobilisation sont réintégrés.
+                                Le plan français type la dotation 6811 en
+                                `expense_other`, que ni l'étiquette ni le type
+                                `expense_depreciation` n'attrapent : la dotation
+                                passait pour un décaissement d'exploitation.
+                                C'est l'écriture, et non le compte, qui dit
+                                qu'elle concerne une immobilisation.
+                            -->
+                            <field name="domain_formula" eval="&quot;-sum(['&amp;', ('account_id.account_type', '!=', 'equity_unaffected'), '|', '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', '=', 'expense_depreciation'), '&amp;', ('account_id.internal_group', 'in', ('income', 'expense')), ('move_id.line_ids.account_id.account_type', '=', 'asset_fixed')])&quot; % ref('account.account_tag_investing')"/>
                             <field name="groupby">account_id</field>
                         </record>
                         <record id="cf_non_current" model="account.report.line">

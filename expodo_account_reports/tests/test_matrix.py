@@ -23,7 +23,7 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.tests import HttpCase, TransactionCase, tagged
 
 
@@ -401,8 +401,19 @@ class TestReportTour(HttpCase):
 
     def test_report_tour(self):
         partner = self.env["res.partner"].create({"name": "Client parcours"})
-        for state, amount, day in (("posted", 1000.0, "2026-05-20"),
-                                   ("draft", 500.0, "2026-05-21")):
+        # Les écritures sont datées du jour, jamais en dur.
+        #
+        # Le parcours ouvre la balance générale, qui s'affiche par défaut sur
+        # le mois en cours. Des factures datées de mai 2026 tombaient hors
+        # période dès juin : la ligne racine restait identique avec et sans
+        # les brouillons, et l'étape qui vérifie ce filtre échouait pour une
+        # raison qui n'avait rien à voir avec ce qu'elle teste.
+        #
+        # Le défaut est resté invisible tant que le parcours était sauté faute
+        # de navigateur dans l'image.
+        jour = fields.Date.to_string(fields.Date.context_today(self.env.user))
+        for state, amount, day in (("posted", 1000.0, jour),
+                                   ("draft", 500.0, jour)):
             move = self.env["account.move"].create({
                 "move_type": "out_invoice",
                 "partner_id": partner.id,

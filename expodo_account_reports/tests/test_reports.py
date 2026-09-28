@@ -2825,3 +2825,282 @@ class TestBalanceGeneraleOuverture(TransactionCase):
             self.assertAlmostEqual(
                 apres[("BAL_TOTAL", etiquette)], 0.0, places=2,
                 msg="La balance doit rester équilibrée")
+
+
+
+
+@tagged("post_install", "-at_install")
+class TestGrandsLivresSoldeFinal(TransactionCase):
+    """Solde des grands livres : solde final, et non mouvement de la période.
+
+    Constaté en comparant avec Enterprise (port 20.0, grand livre et grand
+    livre des tiers sur 2026) : notre colonne « Solde » portait le seul
+    mouvement de la période (client : 20 000) quand Enterprise porte le solde
+    final (38 000). Un compte ou un tiers sans mouvement dans la période,
+    mais avec un solde, disparaissait de l'état.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        societe = cls.env.company
+        comptes = cls.env["account.account"]
+        cls.client_ = comptes.search([("account_type", "=", "asset_receivable"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        cls.vente = comptes.search([("account_type", "=", "income"),
+                                    ("company_ids", "in", societe.id)], limit=1)
+        cls.journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        cls.tiers = cls.env["res.partner"].create({"name": "Tiers solde final"})
+        cls.dormant = cls.env["res.partner"].create({"name": "Tiers sans mouvement"})
+
+    def _vente(self, jour, montant, tiers):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour, "ref": "SOLDE",
+            "line_ids": [
+                Command.create({"name": "V", "account_id": self.client_.id,
+                                "partner_id": tiers.id, "debit": montant, "credit": 0.0}),
+                Command.create({"name": "V", "account_id": self.vente.id,
+                                "debit": 0.0, "credit": montant}),
+            ],
+        })
+        ecriture.action_post()
+        return ecriture
+
+    def _lignes(self, xmlid_rapport, xmlid_ligne, champ_cle, cle):
+        rapport = self.env.ref("expodo_account_reports." + xmlid_rapport)
+        ligne = self.env.ref("expodo_account_reports." + xmlid_ligne)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2032, 3, 1), "date_to": date(2032, 3, 31)}})
+        premier = {r["group_id"]: r for r in ligne._expodo_expand(rapport, options, "main")}
+        detail = []
+        if cle in premier:
+            detail = ligne._expodo_expand(
+                rapport, options, "main", level=1,
+                parent_domain=[(champ_cle, "=", cle)])
+        return premier, detail
+
+    def test_le_grand_livre_des_tiers_porte_le_solde_final(self):
+        self._vente(date(2031, 6, 1), 1000.0, self.tiers)
+        self._vente(date(2032, 3, 10), 200.0, self.tiers)
+        self._vente(date(2031, 7, 1), 300.0, self.dormant)
+        premier, detail = self._lignes("report_auxiliaire_fr", "line_aux_fr",
+                                       "partner_id", self.tiers.id)
+        tiers = premier[self.tiers.id]["values"]
+        self.assertAlmostEqual(tiers["debit"], 200.0, places=2)
+        self.assertAlmostEqual(tiers["initial"], 1000.0, places=2)
+        self.assertAlmostEqual(tiers["balance"], 1200.0, places=2,
+                               msg="Le solde est le solde final du tiers")
+        self.assertIn(self.dormant.id, premier,
+                      "Un tiers avec un solde mais sans mouvement doit figurer")
+        self.assertEqual(len(detail), 1,
+                         "Le détail ne liste que les écritures de la période")
+
+    def test_le_grand_livre_porte_le_solde_final_du_compte(self):
+        avant, _d = self._lignes("report_grand_livre_fr", "line_gl_fr",
+                                 "account_id", self.client_.id)
+        a = avant.get(self.client_.id, {"values": {"initial": 0.0, "balance": 0.0}})["values"]
+        self._vente(date(2031, 6, 1), 1000.0, self.tiers)
+        self._vente(date(2032, 3, 10), 200.0, self.tiers)
+        apres, detail = self._lignes("report_grand_livre_fr", "line_gl_fr",
+                                     "account_id", self.client_.id)
+        c = apres[self.client_.id]["values"]
+        self.assertAlmostEqual(c["initial"] - a["initial"], 1000.0, places=2)
+        self.assertAlmostEqual(c["balance"] - a["balance"], 1200.0, places=2)
+        self.assertAlmostEqual(c["balance"], c["initial"] + c["debit"] - c["credit"], places=2)
+        self.assertTrue(detail)
+        self.assertTrue(all(str(r["values"].get("line_date"))[:7] == "2032-03" for r in detail),
+                        "Le détail ne liste que des écritures datées de la période : %s"
+                        % [r["values"].get("line_date") for r in detail])
+
+
+@tagged("post_install", "-at_install")
+class TestLignesMasqueesSiNulles(TransactionCase):
+    """`hide_if_zero` : la ligne et ses filles s'effacent quand tout est nul.
+
+    Le champ était posé sur plusieurs lignes (résultat antérieur, résultats
+    affectés) mais aucun code ne le lisait : les lignes nulles s'affichaient
+    toujours. Constaté au port 20.0, en vérifiant l'écran du bilan.
+    """
+
+    def _codes(self, annee):
+        rapport = self.env.ref("expodo_account_reports.report_balance_fr")
+        donnees = rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 3, 1), "date_to": date(annee, 3, 31)}})
+        return {ligne["code"] for ligne in donnees["lines"]}
+
+    def test_une_ligne_nulle_marquee_s_efface_et_reparait_des_qu_elle_porte_un_montant(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        client = comptes.search([("account_type", "=", "asset_receivable"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        vente = comptes.search([("account_type", "=", "income"),
+                                ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        # Aucun résultat avant 2011 dans une base de test : la ligne est nulle.
+        self.assertNotIn("BAL_ANTERIEUR", self._codes(2011))
+        ecriture = self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2010, 6, 1),
+            "line_ids": [
+                Command.create({"name": "V", "account_id": client.id, "debit": 100.0}),
+                Command.create({"name": "V", "account_id": vente.id, "credit": 100.0}),
+            ],
+        })
+        ecriture.action_post()
+        self.assertIn("BAL_ANTERIEUR", self._codes(2011))
+
+
+
+
+@tagged("post_install", "-at_install")
+class TestFluxDeTresorerieAffectation(TransactionCase):
+    """Une affectation de résultat ne produit aucun flux de trésorerie.
+
+    Constaté en comparant avec Enterprise (port 20.0) : Odoo étiquette le
+    compte de résultat non affecté (999999) « Investing & Extraordinary
+    Activities ». Nos lignes d'éléments sans effet de trésorerie retenaient les
+    comptes de cette étiquette : l'affectation du résultat 2025 ajoutait 8 600
+    aux flux d'exploitation et les retirait des flux d'investissement. Le total
+    restait juste, la ventilation non.
+    """
+
+    def test_l_affectation_ne_deplace_rien_entre_les_flux(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(domaine):
+            return comptes.search(domaine + [("company_ids", "in", societe.id)],
+                                  limit=1, order="code")
+
+        client = compte([("account_type", "=", "asset_receivable")])
+        vente = compte([("account_type", "=", "income")])
+        reserves = compte([("account_type", "=", "equity")])
+        non_affecte = compte([("account_type", "=", "equity_unaffected")])
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_cash_flow")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")
+
+        def ecriture(jour, debit, credit):
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": jour,
+                "line_ids": [
+                    Command.create({"name": "A", "account_id": debit.id, "debit": 1000.0}),
+                    Command.create({"name": "A", "account_id": credit.id, "credit": 1000.0}),
+                ],
+            }).action_post()
+
+        avant = valeurs()
+        ecriture(date(2031, 6, 1), client, vente)
+        ecriture(date(2032, 5, 31), non_affecte, reserves)
+        apres = valeurs()
+        for code in ("CF_OPERATING", "CF_INVESTING", "CF_FINANCING"):
+            self.assertAlmostEqual(
+                apres[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
+                msg="%s ne doit pas bouger : une affectation n'est pas un flux" % code)
+
+    def test_les_capitaux_de_la_synthese_integrent_l_affectation(self):
+        """Même cause, synthèse de direction : le compte non affecté était
+        compté dans les capitaux, et masquait la hausse des réserves."""
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        reserves = comptes.search([("account_type", "=", "equity"),
+                                   ("company_ids", "in", societe.id)], limit=1, order="code")
+        non_affecte = comptes.search([("account_type", "=", "equity_unaffected"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_executive_summary")
+
+        def capitaux():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")[("EXEC_CAPITAUX", "balance")]
+
+        avant = capitaux()
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2032, 5, 31),
+            "line_ids": [
+                Command.create({"name": "A", "account_id": non_affecte.id, "debit": 1000.0}),
+                Command.create({"name": "A", "account_id": reserves.id, "credit": 1000.0}),
+            ],
+        }).action_post()
+        self.assertAlmostEqual(capitaux() - avant, 1000.0, places=2)
+
+    def test_une_dotation_aux_amortissements_est_un_element_sans_effet_de_tresorerie(self):
+        """Une dotation n'est pas un décaissement.
+
+        Le plan comptable français type la dotation 6811 en charge ordinaire
+        (`expense_other`), pas en `expense_depreciation` : elle n'était donc pas
+        réintégrée aux flux d'exploitation, et la variation de l'amortissement
+        cumulé (2818) apparaissait en encaissement d'investissement. Constaté
+        au port 20.0 : exploitation 37 600 contre 40 000 chez Enterprise.
+        """
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        charge = comptes.search([("code", "=like", "6811%"), ("account_type", "!=", "expense_depreciation"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        amortissement = comptes.search([("code", "=like", "281%"),
+                                        ("company_ids", "in", societe.id)], limit=1)
+        if not charge or not amortissement:
+            self.skipTest("Cas du plan comptable français (6811 non typé dotation)")
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        rapport = self.env.ref("expodo_account_reports.report_cash_flow")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")
+
+        avant = valeurs()
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": date(2032, 12, 31),
+            "line_ids": [
+                Command.create({"name": "Dotation", "account_id": charge.id, "debit": 1000.0}),
+                Command.create({"name": "Dotation", "account_id": amortissement.id, "credit": 1000.0}),
+            ],
+        }).action_post()
+        apres = valeurs()
+        for code in ("CF_OPERATING", "CF_INVESTING", "CF_FINANCING"):
+            self.assertAlmostEqual(
+                apres[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
+                msg="%s ne doit pas bouger : une dotation n'est pas un flux" % code)
+
+
+@tagged("post_install", "-at_install")
+class TestBorneDExport(TransactionCase):
+    """Le plafond d'export doit tenir, y compris sur les lignes de tête.
+
+    Il n'était vérifié qu'en descendant dans les lignes dépliées : les lignes
+    de premier niveau s'ajoutaient sans contrôle. Un bilan sortait ses
+    vingt-deux rubriques avec un plafond de trois, et le garde-fou censé
+    protéger la mémoire et le temps de rendu ne protégeait rien.
+    """
+
+    def test_l_export_ne_depasse_jamais_son_plafond(self):
+        rapport = self.env.ref("expodo_account_reports.report_bilan_fr")
+        options = rapport._expodo_serialize_options(
+            rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2026, 1, 1), "date_to": date(2026, 12, 31)}}))
+        for plafond in (3, 5, 10, 25):
+            _donnees, lignes = rapport._expodo_export_rows(options, limite=plafond)
+            self.assertLessEqual(
+                len(lignes), plafond + 1, msg=
+                "Avec un plafond de %d, l'export a produit %d lignes. La "
+                "ligne d'avertissement de troncature est seule tolérée "
+                "au-delà." % (plafond, len(lignes)))
+            self.assertTrue(
+                any(l.get("id") == "expodo_truncated" for l in lignes),
+                "Un export tronqué doit le dire au lecteur")

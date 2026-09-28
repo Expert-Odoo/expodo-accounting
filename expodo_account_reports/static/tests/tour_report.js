@@ -117,7 +117,19 @@ registry.category("web_tour.tours").add("expodo_account_report_tour", {
         {
             content: "Le total change et le dépliage est conservé",
             trigger: ".o_expodo_report_table tbody tr:nth-child(2)",
-            run: () => {
+            // Le déclencheur est satisfait par les lignes déjà à l'écran :
+            // il ne dit rien sur l'arrivée de la réponse au changement de
+            // filtre. L'étape lisait donc les montants d'avant le
+            // rechargement et concluait que le filtre n'avait rien changé.
+            // On attend que les montants bougent, cinq secondes au plus.
+            run: async () => {
+                for (
+                    let i = 0;
+                    i < 50 && firstRowAmounts() === window.__expodo.initialAmounts;
+                    i++
+                ) {
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                }
                 if (firstRowAmounts() === window.__expodo.initialAmounts) {
                     throw new Error(
                         "Le filtre brouillons n'a modifié aucun montant de la " +

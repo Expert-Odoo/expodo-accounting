@@ -187,6 +187,15 @@ class AccountReport(models.Model):
         def developper(ligne, groupe=None, niveau=0):
             """Ajoute la ligne puis, récursivement, tout ce qu'elle contient."""
             nonlocal tronque
+            # Le plafond se vérifie avant d'ajouter, et non seulement en
+            # descendant dans les enfants. Les lignes de premier niveau
+            # étaient ajoutées sans contrôle : un bilan sortait ses vingt-deux
+            # rubriques même avec un plafond de trois. Le garde-fou censé
+            # protéger la mémoire et le temps de rendu ne tenait que sur les
+            # lignes dépliées.
+            if len(rows) >= plafond:
+                tronque = True
+                return
             rows.append(ligne)
             if not ligne.get("unfoldable") or tronque:
                 return
@@ -201,6 +210,8 @@ class AccountReport(models.Model):
                 developper(enfant, enfant.get("group"), niveau + 1)
 
         for line in data["lines"]:
+            if tronque:
+                break
             developper(line)
 
         # Le message expliquant qu'un rapport n'a aucune ligne définie doit

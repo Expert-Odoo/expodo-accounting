@@ -253,8 +253,19 @@ class AccountReportLine(models.Model):
                 rows_by_scope[date_scope].setdefault(cle, {}).update(valeurs)
 
         # Assemblage : un groupe peut n'exister que dans certaines portées.
+        #
+        # Au niveau de l'écriture, seule la portée stricte a le droit d'ouvrir
+        # une ligne. Les portées cumulées existent pour donner au compte son
+        # solde d'ouverture et son solde final : si elles apportaient aussi des
+        # clés, le détail d'un compte listerait toutes ses écritures depuis
+        # l'origine, et le lecteur qui déplie un mois en recevrait dix ans.
+        # Elles continuent de compléter les valeurs des lignes retenues.
+        portees_ouvrantes = rows_by_scope
+        if field_name == "id" and "strict_range" in rows_by_scope:
+            portees_ouvrantes = {"strict_range": rows_by_scope["strict_range"]}
+
         keys = []
-        for rows in rows_by_scope.values():
+        for rows in portees_ouvrantes.values():
             for key in rows:
                 if key not in keys:
                     keys.append(key)

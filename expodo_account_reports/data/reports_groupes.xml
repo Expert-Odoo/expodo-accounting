@@ -311,6 +311,18 @@
                     <field name="figure_type">monetary</field>
                     <field name="sequence" eval="20"/>
                 </record>
+                <record id="col_gl_initial" model="account.report.column">
+                    <field name="name">Opening balance</field>
+                    <field name="name@fr">Solde d'ouverture</field>
+                    <field name="name@es">Saldo inicial</field>
+                    <field name="name@de">Anfangssaldo</field>
+                    <field name="name@nl">Beginsaldo</field>
+                    <field name="name@it">Saldo iniziale</field>
+                    <field name="name@pt_BR">Saldo inicial</field>
+                    <field name="expression_label">initial</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="8"/>
+                </record>
                 <record id="col_gl_solde" model="account.report.column">
                     <field name="name">Balance</field>
                     <field name="name@fr">Solde</field>
@@ -363,11 +375,88 @@
                             <field name="formula">[]</field>
                             <field name="subformula">sum_credit</field>
                         </record>
+                        <record id="expr_gl_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">expodo_opening</field>
+                        </record>
                         <record id="expr_gl_solde" model="account.report.expression">
                             <field name="label">balance</field>
                             <field name="engine">domain</field>
                             <field name="formula">[]</field>
                             <field name="subformula">sum</field>
+                            <!--
+                                Le solde d'un grand livre est le solde **final**,
+                                pas le mouvement de la période.
+
+                                Sur une portée stricte, un compte ouvert à 1 000
+                                et débité de 200 affichait 200 : le lecteur y
+                                lisait un solde de 200. Pire, un compte porteur
+                                d'un solde mais sans mouvement dans la période
+                                disparaissait de l'état, alors que c'est souvent
+                                celui-là qu'on cherche.
+                            -->
+                            <field name="date_scope">expodo_closing</field>
+                        </record>
+                    </field>
+                </record>
+
+                <!--
+                    Ce que l'ouverture retire aux comptes de gestion doit
+                    reparaître, comme à la balance générale. Les six étiquettes
+                    sont obligatoires : une cellule absente vaut `None`, et le
+                    tri des colonnes compare alors `None` à des nombres.
+                -->
+                <record id="line_gl_fr_anterieur" model="account.report.line">
+                    <field name="name">Earlier years' unallocated result</field>
+                    <field name="name@fr">Résultat antérieur non affecté</field>
+                    <field name="name@es">Resultado de ejercicios anteriores no aplicado</field>
+                    <field name="name@de">Nicht zugewiesenes Vorjahresergebnis</field>
+                    <field name="name@nl">Niet toegewezen resultaat vorige jaren</field>
+                    <field name="name@it">Risultato esercizi precedenti non destinato</field>
+                    <field name="name@pt_BR">Resultado de exercícios anteriores não destinado</field>
+                    <field name="code">GL_ANTERIEUR</field>
+                    <field name="hide_if_zero" eval="True"/>
+                    <field name="expression_ids">
+                        <record id="expr_gl_ant_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <record id="expr_gl_ant_balance" model="account.report.expression">
+                            <field name="label">balance</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">sum</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <record id="expr_gl_ant_date" model="account.report.expression">
+                            <field name="label">line_date</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">line_date</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <record id="expr_gl_ant_partner" model="account.report.expression">
+                            <field name="label">line_partner</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))]</field>
+                            <field name="subformula">line_partner</field>
+                            <field name="date_scope">to_beginning_of_fiscalyear</field>
+                        </record>
+                        <record id="expr_gl_ant_debit" model="account.report.expression">
+                            <field name="label">debit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">0</field>
+                        </record>
+                        <record id="expr_gl_ant_credit" model="account.report.expression">
+                            <field name="label">credit</field>
+                            <field name="engine">aggregation</field>
+                            <field name="formula">0</field>
                         </record>
                     </field>
                 </record>
@@ -414,6 +503,18 @@
                     <field name="figure_type">monetary</field>
                     <field name="sequence" eval="20"/>
                 </record>
+                <record id="col_aux_initial" model="account.report.column">
+                    <field name="name">Opening balance</field>
+                    <field name="name@fr">Solde d'ouverture</field>
+                    <field name="name@es">Saldo inicial</field>
+                    <field name="name@de">Anfangssaldo</field>
+                    <field name="name@nl">Beginsaldo</field>
+                    <field name="name@it">Saldo iniziale</field>
+                    <field name="name@pt_BR">Saldo inicial</field>
+                    <field name="expression_label">initial</field>
+                    <field name="figure_type">monetary</field>
+                    <field name="sequence" eval="5"/>
+                </record>
                 <record id="col_aux_solde" model="account.report.column">
                     <field name="name">Balance</field>
                     <field name="name@fr">Solde</field>
@@ -452,11 +553,33 @@
                             <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
                             <field name="subformula">sum_credit</field>
                         </record>
+                        <record id="expr_aux_initial" model="account.report.expression">
+                            <field name="label">initial</field>
+                            <field name="engine">domain</field>
+                            <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
+                            <field name="subformula">sum</field>
+                            <!--
+                                Clients et fournisseurs sont des comptes de
+                                bilan : leur ouverture se cumule depuis
+                                l'origine, sans la règle d'exercice des comptes
+                                de gestion.
+                            -->
+                            <field name="date_scope">to_beginning_of_period</field>
+                        </record>
                         <record id="expr_aux_solde" model="account.report.expression">
                             <field name="label">balance</field>
                             <field name="engine">domain</field>
                             <field name="formula">[('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))]</field>
                             <field name="subformula">sum</field>
+                            <!--
+                                Le solde d'un grand livre des tiers est le solde
+                                **final** du tiers, pas son mouvement de la
+                                période. Un client devant 1 000 depuis l'an
+                                dernier et ayant acheté 200 ce mois-ci affichait
+                                200, et un client devant de l'argent sans
+                                mouvement récent disparaissait de l'état.
+                            -->
+                            <field name="date_scope">from_beginning</field>
                         </record>
                     </field>
                 </record>
