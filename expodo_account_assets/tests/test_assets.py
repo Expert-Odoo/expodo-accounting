@@ -127,6 +127,17 @@ class TestAssets(TransactionCase):
             with self.subTest(**surcharge), self.assertRaises(ValidationError):
                 self._asset(**surcharge)
 
+    def test_expense_account_accepts_other_expenses(self):
+        """Le plan français type les dotations aux amortissements 6811 en
+        `expense_other`. Le domaine du champ les excluait : sur une société
+        française, le compte de dotation ne proposait aucun compte."""
+        domaine = self.env["expodo.asset"]._fields["account_expense_id"].domain
+        if isinstance(domaine, str):
+            from odoo.tools.safe_eval import safe_eval
+            domaine = safe_eval(domaine)
+        comptes = self.acc_expense | self.acc_loss
+        self.assertEqual(comptes.filtered_domain(domaine), comptes)
+
     def test_depreciation_and_expense_accounts_must_differ(self):
         """Sinon l'écriture débiterait et créditerait le même compte : effet nul."""
         with self.assertRaises(ValidationError):

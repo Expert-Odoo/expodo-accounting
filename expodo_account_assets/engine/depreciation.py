@@ -16,8 +16,9 @@ coefficients variables selon la durée et le pays. Le linéaire couvre
 l'essentiel des cas partout, et une règle fausse vaut moins que pas de règle.
 
 **Prorata temporis à la journée.** Un bien acquis le 15 du mois n'est pas
-amorti d'un mois entier. La première et la dernière période sont calculées au
-nombre de jours.
+amorti d'un mois entier. La première période est calculée au nombre de jours,
+et les jours non courus sont amortis sur une échéance finale : chaque mois
+plein vaut base / durée, et la durée totale reste celle déclarée.
 
 **La somme du tableau égale exactement la base amortissable.** Les arrondis
 sont absorbés par la dernière échéance, jamais répartis. Un tableau dont la
@@ -155,6 +156,20 @@ def calculer_tableau(
             poids.append(mois_periode - 1 + jours_courus / jours_mois)
         else:
             poids.append(float(mois_periode))
+
+    # Reliquat de la première période, reporté sur une échéance finale.
+    #
+    # Le linéaire prorata temporis amortit chaque mois plein de base / durée.
+    # Proratiser la première période sans prolonger le tableau revenait à
+    # répartir toute la base sur une durée raccourcie : 1 200 sur 12 mois mis
+    # en service le 28 septembre donnait 108,11 par mois au lieu de 100, et le
+    # bien était amorti un mois trop tôt. Les jours non courus du premier mois
+    # sont amortis le mois qui suit la dernière période pleine, ce qui ramène
+    # la durée totale à celle déclarée (constaté au port 20.0).
+    reliquat = duree_mois - sum(poids)
+    if reliquat > 1e-9:
+        dates.append(_ajouter_mois(date_mise_en_service, duree_mois))
+        poids.append(reliquat)
 
     total_poids = sum(poids)
     lignes: List[Echeance] = []

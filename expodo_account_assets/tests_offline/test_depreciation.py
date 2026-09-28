@@ -67,6 +67,33 @@ class TestTableauLineaire(unittest.TestCase):
             msg="Le prorata ne doit pas modifier le total amorti",
         )
 
+    def test_prorata_reporte_le_reliquat_sur_une_echeance_finale(self):
+        """Linéaire prorata temporis : chaque mois plein vaut base / durée.
+
+        Mis en service le 28 septembre pour 12 mois, 1 200 s'amortissent à
+        100 par mois : 10 pour les 3 jours de septembre, 100 d'octobre à
+        août, et le reliquat de 90 en septembre de l'année suivante. Le
+        moteur ne proratisait que la première période et répartissait le
+        reste sur les 11 suivantes (108,11 par mois) : le bien était amorti
+        en onze mois et un dixième au lieu de douze (constaté au port 20.0).
+        """
+        t = calculer_tableau(1200.0, date(2026, 9, 28), 12)
+        self.assertEqual(len(t), 13)
+        self.assertAlmostEqual(t[0].dotation, 10.0, delta=DELTA)
+        for ligne in t[1:-1]:
+            self.assertAlmostEqual(ligne.dotation, 100.0, delta=DELTA)
+        self.assertEqual(t[-1].date_echeance, date(2027, 9, 30))
+        self.assertAlmostEqual(t[-1].dotation, 90.0, delta=DELTA)
+        self.assertAlmostEqual(t[-1].cumul, 1200.0, delta=DELTA)
+
+    def test_prorata_trimestriel_garde_la_duree(self):
+        t = calculer_tableau(1200.0, date(2026, 9, 28), 12, periodicite="quarterly")
+        # 11 mois et 1/10 sur les quatre trimestres, 9/10 de mois ensuite.
+        self.assertAlmostEqual(sum(l.dotation for l in t), 1200.0, delta=DELTA)
+        self.assertEqual(t[-1].date_echeance, date(2027, 9, 30))
+        self.assertAlmostEqual(t[-1].dotation, 90.0, delta=DELTA)
+        self.assertAlmostEqual(t[1].dotation, 300.0, delta=DELTA)
+
     def test_sans_prorata_sur_demande(self):
         t = calculer_tableau(12000.0, date(2026, 1, 16), 12, prorata=False)
         self.assertAlmostEqual(t[0].dotation, 1000.0, delta=DELTA)

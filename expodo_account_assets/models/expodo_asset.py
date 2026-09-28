@@ -128,7 +128,10 @@ class ExpodoAsset(models.Model):
     )
     account_expense_id = fields.Many2one(
         "account.account", string="Expense account", required=True,
-        domain="[('account_type', 'in', ('expense', 'expense_depreciation'))]",
+        # `expense_other` compris : le plan français type les dotations 6811
+        # en « Other Expenses ». Sans lui, aucun compte de dotation n'était
+        # proposé sur une société française (constaté au port 20.0).
+        domain="[('account_type', 'in', ('expense', 'expense_other', 'expense_depreciation'))]",
         check_company=True,
     )
 
