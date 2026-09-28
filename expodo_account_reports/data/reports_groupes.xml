@@ -98,7 +98,7 @@
                     <field name="name@pt_BR">Contas</field>
                     <field name="code">BAL_COMPTES</field>
                     <field name="groupby">account_id</field>
-                    <field name="foldable" eval="False"/>
+                    <field name="foldability">always_unfolded</field>
                     <field name="expression_ids">
                         <record id="expr_balance_initial" model="account.report.expression">
                             <field name="label">initial</field>

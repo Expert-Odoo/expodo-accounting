@@ -6,7 +6,8 @@
 import json
 
 from odoo import http
-from odoo.http import request, content_disposition
+from odoo.http import request
+from odoo.http.stream import content_disposition
 
 
 class ExpodoAccountReportController(http.Controller):
