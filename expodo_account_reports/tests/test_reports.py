@@ -2735,3 +2735,81 @@ class TestExpodoReports(TransactionCase):
             return
         self.skipTest("Le compte n'apparaît pas sur cette période")
 
+
+
+@tagged("post_install", "-at_install")
+class TestBalanceGeneraleOuverture(TransactionCase):
+    """Solde d'ouverture des comptes de gestion dans la balance générale.
+
+    Constaté en comparant avec Enterprise (port 20.0) : au 01/09 d'un
+    exercice, les comptes de charges et de produits portaient dans leur solde
+    d'ouverture tous les exercices antérieurs. Enterprise les fait repartir du
+    début de l'exercice et présente le résultat antérieur sur une ligne à
+    part ; c'est aussi la règle comptable : un compte de gestion est soldé à
+    chaque clôture.
+
+    Les totaux restaient justes des deux côtés, ce qui rendait l'écart
+    invisible au contrôle d'équilibre.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        societe = cls.env.company
+        comptes = cls.env["account.account"]
+        cls.client_ = comptes.search([("account_type", "=", "asset_receivable"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        cls.vente = comptes.search([("account_type", "=", "income"),
+                                    ("company_ids", "in", societe.id)], limit=1)
+        cls.journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        cls.rapport = cls.env.ref("expodo_account_reports.report_balance_fr")
+
+    def _vente(self, jour, montant):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour, "ref": "OUVERTURE",
+            "line_ids": [
+                Command.create({"name": "V", "account_id": self.client_.id,
+                                "debit": montant, "credit": 0.0}),
+                Command.create({"name": "V", "account_id": self.vente.id,
+                                "debit": 0.0, "credit": montant}),
+            ],
+        })
+        ecriture.action_post()
+
+    def _balance(self, debut, fin):
+        options = self.rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom", "date_from": debut, "date_to": fin}})
+        ligne = self.env.ref("expodo_account_reports.line_balance_fr")
+        lignes = {r["group_id"]: r["values"]
+                  for r in ligne._expodo_expand(self.rapport, options, "main")}
+        return self.rapport._expodo_compute_values(options, "main"), lignes
+
+    def test_un_compte_de_gestion_repart_du_debut_de_l_exercice(self):
+        # Écarts mesurés par rapport à l'état de la base, qui peut déjà porter
+        # des écritures sur ces comptes.
+        _t, avant = self._balance(date(2032, 9, 1), date(2032, 9, 30))
+        self._vente(date(2031, 6, 1), 1000.0)   # exercice précédent
+        self._vente(date(2032, 2, 1), 300.0)    # exercice en cours, avant la période
+        self._vente(date(2032, 9, 10), 50.0)    # dans la période
+        _t, apres = self._balance(date(2032, 9, 1), date(2032, 9, 30))
+        vide = {"initial": 0.0, "balance": 0.0}
+        v0, v1 = avant.get(self.vente.id, vide), apres.get(self.vente.id)
+        self.assertTrue(v1, "Le compte de produits doit figurer dans la balance")
+        self.assertAlmostEqual(v1["initial"] - v0["initial"], -300.0, places=2,
+                               msg="Ouverture : l'exercice en cours seulement")
+        self.assertAlmostEqual(v1["balance"] - v0["balance"], -350.0, places=2,
+                               msg="Clôture : l'exercice en cours seulement")
+        c1 = apres.get(self.client_.id)
+        self.assertAlmostEqual(c1["initial"] - c1["balance"], -50.0, places=2)
+
+    def test_le_resultat_anterieur_garde_la_balance_equilibree(self):
+        avant, _l = self._balance(date(2032, 9, 1), date(2032, 9, 30))
+        self._vente(date(2031, 6, 1), 1000.0)
+        apres, _l = self._balance(date(2032, 9, 1), date(2032, 9, 30))
+        for etiquette in ("initial", "balance"):
+            self.assertAlmostEqual(
+                apres[("BAL_ANTERIEUR", etiquette)] - avant.get(("BAL_ANTERIEUR", etiquette), 0.0),
+                -1000.0, places=2)
+            self.assertAlmostEqual(apres[("BAL_TOTAL", etiquette)], 0.0, places=2,
+                                   msg="La balance doit rester équilibrée")

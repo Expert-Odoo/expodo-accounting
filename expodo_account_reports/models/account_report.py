@@ -34,6 +34,12 @@ CUMULATIVE_SCOPES = ("from_beginning", "from_fiscalyear")
 #: Portées de date qui produisent un solde à une date, sans borne basse.
 POINT_IN_TIME_SCOPES = ("to_beginning_of_period", "to_beginning_of_fiscalyear")
 
+#: Types de compte de gestion : soldés à chaque clôture d'exercice.
+PROFIT_AND_LOSS_TYPES = (
+    "income", "income_other", "expense", "expense_other",
+    "expense_depreciation", "expense_direct_cost",
+)
+
 
 class AccountReport(models.Model):
     _inherit = "account.report"
@@ -383,8 +389,10 @@ class AccountReport(models.Model):
             return None, date_to
         if date_scope == "from_fiscalyear":
             return company.compute_fiscalyear_dates(date_to)["date_from"], date_to
-        if date_scope == "to_beginning_of_period":
+        if date_scope in ("to_beginning_of_period", "expodo_opening"):
             return None, date_from - relativedelta(days=1)
+        if date_scope == "expodo_closing":
+            return None, date_to
         if date_scope == "to_beginning_of_fiscalyear":
             fiscalyear_start = company.compute_fiscalyear_dates(date_to)["date_from"]
             return None, fiscalyear_start - relativedelta(days=1)
@@ -424,6 +432,19 @@ class AccountReport(models.Model):
         ]
         if date_from is not None:
             domain.append(("date", ">=", date_from))
+        if date_scope in ("expodo_opening", "expodo_closing"):
+            # Comptes de bilan depuis l'origine, comptes de gestion depuis le
+            # début de l'exercice. L'exercice de référence est celui de la fin
+            # de période, comme pour `from_fiscalyear` : c'est ce qui garde la
+            # ligne « résultat antérieur » (to_beginning_of_fiscalyear) exacte.
+            group_dates = options["column_groups"][column_group_key]["date"]
+            debut_exercice = self.env.company.compute_fiscalyear_dates(
+                group_dates["date_to"])["date_from"]
+            domain += [
+                "|",
+                ("account_id.account_type", "not in", PROFIT_AND_LOSS_TYPES),
+                ("date", ">=", debut_exercice),
+            ]
 
         if not options.get("all_entries"):
             domain.append(("parent_state", "=", "posted"))

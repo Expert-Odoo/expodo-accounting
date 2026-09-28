@@ -18,7 +18,7 @@ s'effondrerait sur une base volumineuse.
 import ast
 from collections import defaultdict
 
-from odoo import models
+from odoo import fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
@@ -28,6 +28,20 @@ from ..engine.formula import AGED_RE, parse_account_codes_formula
 
 class AccountReportExpression(models.Model):
     _inherit = "account.report.expression"
+
+    # Portées propres aux balances : les comptes de bilan se lisent depuis
+    # l'origine, les comptes de gestion depuis le début de l'exercice. C'est
+    # la règle comptable (un compte de gestion est soldé à chaque clôture) et
+    # celle de l'édition Enterprise. Aucune portée standard ne la porte :
+    # `to_beginning_of_period` et `from_beginning` cumulent tous les
+    # exercices pour tous les comptes.
+    date_scope = fields.Selection(
+        selection_add=[
+            ("expodo_opening", "Opening balance (income and expenses from the fiscal year start)"),
+            ("expodo_closing", "Closing balance (income and expenses from the fiscal year start)"),
+        ],
+        ondelete={"expodo_opening": "set default", "expodo_closing": "set default"},
+    )
 
     # ------------------------------------------------------------------
     # Utilitaires de requêtage

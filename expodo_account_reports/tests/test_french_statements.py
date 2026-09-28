@@ -588,13 +588,17 @@ class TestAffectationDuResultat(TransactionCase):
         self._ecriture(date(2032, 5, 31), self.non_affecte, self.reserves, 1000.0)
 
     def test_le_bilan_francais_reste_equilibre_apres_affectation(self):
+        # Écarts mesurés par rapport à l'état de la base : elle peut déjà
+        # porter des exercices non affectés.
+        avant = self._valeurs("expodo_account_reports.report_bilan_fr", 2032)
         self._scenario()
         valeurs = self._valeurs("expodo_account_reports.report_bilan_fr", 2032)
         self.assertAlmostEqual(valeurs[("BILAN_ECART", "balance")], 0.0, places=2,
                                msg="Le bilan doit rester équilibré après affectation")
-        self.assertAlmostEqual(valeurs[("BILAN_REPORT", "balance")], 0.0, places=2,
-                               msg="Le résultat affecté ne doit plus figurer en report")
-        self.assertAlmostEqual(valeurs[("BILAN_RESULTAT", "balance")], 0.0, places=2)
+        for code in ("BILAN_REPORT", "BILAN_RESULTAT"):
+            self.assertAlmostEqual(
+                valeurs[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
+                msg="Le résultat affecté ne doit plus figurer en %s" % code)
 
     def test_le_bilan_universel_range_l_affectation_dans_le_resultat(self):
         self._scenario()
