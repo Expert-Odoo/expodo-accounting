@@ -606,21 +606,32 @@ class TestAssets(TransactionCase):
             assistant.action_confirm()
 
     def test_expense_account_type_is_flagged(self):
-        """Un compte de dotation mal typé doit être signalé.
+        """Signaler une dotation que le tableau de flux ne reconnaîtrait pas.
 
-        Le tableau de flux réintègre les dotations en s'appuyant sur le type
-        de compte. Typé « charge » plutôt que « dotation », le montant tombe
-        dans le résultat net au lieu d'apparaître à part. Le total reste juste,
-        donc rien d'autre ne le signale — et le plan comptable français type
-        précisément 681120 en charge ordinaire.
+        Le tableau de flux réintègre une charge typée « dotation », ou une
+        charge passée contre une immobilisation (`asset_fixed`). Le cas
+        français — 6811 en charge ordinaire contre 2818 immobilisation — est
+        donc reconnu et ne doit plus rien afficher. Seul un couple où aucun
+        des deux comptes ne l'identifie mérite l'avertissement.
         """
         charge_ordinaire = self.env["account.account"].search([
             ("account_type", "=", "expense")], limit=1)
         self.assertTrue(charge_ordinaire, "Le test suppose un compte de charge")
         asset = self._asset(account_expense_id=charge_ordinaire.id)
+        self.assertEqual(self.acc_depreciation.account_type, "asset_fixed")
+        self.assertFalse(
+            asset.expense_type_warning,
+            "Amortissement cumulé en immobilisation : la dotation est reconnue")
+
+        non_courant = self.env["account.account"].search([
+            ("account_type", "=", "asset_non_current")], limit=1) or \
+            self.env["account.account"].create({
+                "code": "279900", "name": "Test non current",
+                "account_type": "asset_non_current"})
+        asset.account_depreciation_id = non_courant
         self.assertTrue(
             asset.expense_type_warning,
-            "Un compte typé « charge » doit être signalé")
+            "Ni dotation ni immobilisation : le tableau de flux ne la voit pas")
 
         dotation = self.env["account.account"].search([
             ("account_type", "=", "expense_depreciation")], limit=1)
