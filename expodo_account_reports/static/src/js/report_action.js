@@ -17,6 +17,7 @@ import { _t } from "@web/core/l10n/translation";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { useSetupAction } from "@web/search/action_hook";
 import { standardActionServiceProps } from "@web/webclient/actions/action_plugin";
 import { Component, onWillStart, proxy, usePlugin, useProps } from "@odoo/owl";
 
@@ -54,7 +55,33 @@ export class ExpodoAccountReport extends Component {
             search: "",
         });
 
+        // État conservé au travers du fil d'Ariane. Ouvrir les écritures
+        // d'une cellule puis revenir rechargeait l'état sur sa période par
+        // défaut, dépliage perdu : un contrôle ligne à ligne obligeait à
+        // ressaisir la période à chaque retour (constaté au port 20.0).
+        useSetupAction({
+            getLocalState: () => ({
+                expodoReportId: this.reportId,
+                expodoOptions: JSON.parse(JSON.stringify(this.state.options)),
+                expodoUnfolded: this.state.lines
+                    .filter((l) => l.unfolded && !l.parent_id)
+                    .map((l) => l.id),
+            }),
+        });
+
         onWillStart(async () => {
+            const restaure = this.props.state;
+            if (restaure?.expodoOptions && restaure.expodoReportId) {
+                this.reportId = restaure.expodoReportId;
+                await this.load(restaure.expodoOptions, { keepUnfolded: false });
+                for (const id of restaure.expodoUnfolded || []) {
+                    const line = this.state.lines.find((l) => l.id === id);
+                    if (line && line.unfoldable && !line.unfolded) {
+                        await this.onToggleLine(line);
+                    }
+                }
+                return;
+            }
             if (!this.reportId && this.reportKind === "tax") {
                 this.reportId = await this.orm.call(
                     "account.report", "expodo_resolve_tax_report", []
