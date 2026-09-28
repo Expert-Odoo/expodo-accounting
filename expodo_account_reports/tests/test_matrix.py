@@ -23,7 +23,7 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.tests import HttpCase, TransactionCase, tagged
 
 
@@ -385,8 +385,14 @@ class TestReportTour(HttpCase):
 
     def test_report_tour(self):
         partner = self.env["res.partner"].create({"name": "Client parcours"})
-        for state, amount, day in (("posted", 1000.0, "2026-05-20"),
-                                   ("draft", 500.0, "2026-05-21")):
+        # Les écritures doivent tomber dans la période que l'état ouvre par
+        # défaut, le mois en cours. Datées en dur (mai 2026), elles sortaient
+        # de la période dès le mois suivant : la ligne racine restait à zéro
+        # avec ou sans brouillons, et l'étape du filtre échouait sur un
+        # rapport qui fonctionne.
+        jour = fields.Date.to_string(fields.Date.context_today(self.env.user))
+        for state, amount, day in (("posted", 1000.0, jour),
+                                   ("draft", 500.0, jour)):
             move = self.env["account.move"].create({
                 "move_type": "out_invoice",
                 "partner_id": partner.id,
