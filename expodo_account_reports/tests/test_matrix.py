@@ -368,6 +368,25 @@ class TestReportTour(HttpCase):
         HTML, et c'est précisément la forme que prend l'échec.
         """
         rapport = self.env.ref("expodo_account_reports.report_balance_sheet")
+        # La route est en `auth="user"` : sans session, elle répond 303 vers la
+        # page de connexion, donc du HTML, et le contrôle de signature échoue
+        # en accusant l'export alors que seule l'authentification manquait.
+        #
+        # Un utilisateur créé pour l'occasion plutôt que `admin` : le mot de
+        # passe de l'administrateur dépend de la base, et le test doit tourner
+        # aussi bien ici qu'en intégration continue. Il porte les droits que
+        # la route exige, ce qui vérifie du même coup que ces droits suffisent.
+        mot_de_passe = "expodo_export_http"
+        comptable = self.env["res.users"].create({
+            "name": "Comptable export",
+            "login": mot_de_passe,
+            "password": mot_de_passe,
+            "group_ids": [Command.set([
+                self.env.ref("base.group_user").id,
+                self.env.ref("account.group_account_manager").id,
+            ])],
+        })
+        self.authenticate(comptable.login, mot_de_passe)
         for extension, signature in (("pdf", b"%PDF"), ("xlsx", b"PK\x03\x04")):
             reponse = self.url_open(
                 "/expodo_account_reports/export/%s/%s?options={}"

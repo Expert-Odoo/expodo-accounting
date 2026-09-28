@@ -221,7 +221,18 @@
                                     <field name="name@pt_BR">Capital e reservas</field>
                                     <field name="code">BS_CAPITAL</field>
                                     <field name="hierarchy_level" eval="3"/>
-                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('equity', 'equity_unaffected'))])</field>
+                                    <!--
+                                        `equity_unaffected` est exclu : c'est le
+                                        compte par lequel Odoo affecte un
+                                        résultat, pas un compte de capital.
+                                        Rangé ici, il faisait paraître les
+                                        capitaux propres inchangés après une
+                                        affectation, alors que les réserves
+                                        venaient d'augmenter. Les totaux
+                                        restaient justes, seule la lecture ligne
+                                        à ligne le révélait.
+                                    -->
+                                    <field name="domain_formula">-sum([('account_id.account_type', '=', 'equity')])</field>
                                     <field name="groupby">account_id</field>
                                 </record>
                                 <record id="bs_result" model="account.report.line">
@@ -253,7 +264,7 @@
                                         compte de résultat.
                                     -->
                                     <field name="hierarchy_level" eval="3"/>
-                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost'))])</field>
+                                    <field name="domain_formula">-sum([('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_other', 'expense_depreciation', 'expense_direct_cost', 'equity_unaffected'))])</field>
                                 </record>
 
                             </field>

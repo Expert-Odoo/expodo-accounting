@@ -110,6 +110,24 @@ class AccountReport(models.Model):
         """Identifiant stable d'une ligne, y compris pour les sous-groupes."""
         return "|".join(str(part) for part in parts)
 
+    def _expodo_cellules_nulles(self, cells):
+        """Toutes les valeurs d'une ligne sont-elles nulles ?
+
+        Une valeur non numérique — une date, un nom de partenaire — n'est
+        jamais nulle : seules les lignes purement chiffrées peuvent disparaître.
+        """
+        arrondi = self.env.company.currency_id.rounding
+        for cellule in cells:
+            for valeur in cellule["raw"].values():
+                if isinstance(valeur, bool) or valeur is None:
+                    continue
+                if isinstance(valeur, (int, float)):
+                    if not float_is_zero(valeur, precision_rounding=arrondi):
+                        return False
+                elif valeur != "":
+                    return False
+        return True
+
     def _expodo_serialize_report_lines(self, options, values_by_group):
         """Lignes statiques du rapport, à plat, dans l'ordre d'affichage."""
         self.ensure_one()
@@ -138,6 +156,19 @@ class AccountReport(models.Model):
                         # agrégation n'a pas d'écritures sous-jacentes (F-22).
                         "auditable": line._expodo_is_auditable(column["label"]),
                     })
+
+                # `hide_if_zero` était déclaré sur trois lignes et n'était
+                # honoré nulle part : le champ existe dans le coeur, le moteur
+                # ne le lisait pas. Une rubrique qui ne sert qu'à certaines
+                # sociétés — l'affectation du résultat, le résultat antérieur
+                # non affecté — restait donc affichée à zéro sur tous les
+                # bilans, y compris ceux qui ne la concernent pas.
+                #
+                # Une ligne masquée emporte ses filles : les afficher sous un
+                # parent absent les rattacherait visuellement à la rubrique
+                # précédente.
+                if line.hide_if_zero and self._expodo_cellules_nulles(cells):
+                    continue
 
                 serialized.append({
                     "id": self._expodo_line_id("line", line.id),

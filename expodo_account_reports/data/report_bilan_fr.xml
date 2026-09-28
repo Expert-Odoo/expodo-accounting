@@ -184,7 +184,7 @@
                                          cette remise à zéro, une base déjà installée garde
                                          l'ancienne valeur et la mise à jour échoue. -->
                                     <field name="groupby" eval="False"/>
-                                    <field name="aggregation_formula">BILAN_REPORT_COMPTE.balance + BILAN_REPORT_ANTERIEUR.balance</field>
+                                    <field name="aggregation_formula">BILAN_REPORT_COMPTE.balance + BILAN_REPORT_ANTERIEUR.balance + BILAN_REPORT_AFFECTE.balance</field>
                                     <!--
                                         Deux natures se rejoignent sous ce titre.
 
@@ -227,6 +227,38 @@
                                             <field name="hide_if_zero" eval="True"/>
                                             <field name="account_codes_formula">-6 - 7 - 12</field>
                                             <field name="expodo_prior_scope" eval="True"/>
+                                            <field name="groupby">account_id</field>
+                                        </record>
+                                        <!--
+                                            Odoo ne passe pas d'écriture de
+                                            clôture. Pour affecter un résultat,
+                                            l'utilisateur débite le compte de
+                                            type `equity_unaffected` — 999999,
+                                            hors classes 1 à 7 — et crédite les
+                                            réserves. Aucun préfixe de compte ne
+                                            l'atteint, d'où la lecture par type.
+
+                                            Sans cette ligne, l'affectation
+                                            faisait monter les réserves sans rien
+                                            retirer au report à nouveau : le
+                                            bilan était faux du montant affecté.
+
+                                            Aucun drapeau de portée : sur un
+                                            bilan, la ligne se lit depuis
+                                            l'origine.
+                                        -->
+                                        <record id="bilan_fr_report_affecte" model="account.report.line">
+                                            <field name="name">Earlier results allocated</field>
+                                            <field name="name@fr">Résultats antérieurs affectés</field>
+                                            <field name="name@es">Resultados anteriores aplicados</field>
+                                            <field name="name@de">Zugewiesene Vorjahresergebnisse</field>
+                                            <field name="name@nl">Toegewezen resultaten vorige jaren</field>
+                                            <field name="name@it">Risultati precedenti destinati</field>
+                                            <field name="name@pt_BR">Resultados anteriores destinados</field>
+                                            <field name="code">BILAN_REPORT_AFFECTE</field>
+                                            <field name="hierarchy_level" eval="4"/>
+                                            <field name="hide_if_zero" eval="True"/>
+                                            <field name="domain_formula">-sum([('account_id.account_type', '=', 'equity_unaffected')])</field>
                                             <field name="groupby">account_id</field>
                                         </record>
                                     </field>

@@ -518,3 +518,152 @@ class TestSoldesIntermediairesDeGestion(TransactionCase):
             v["SIG_CONSOMMATIONS"], consommations_brutes,
             "Les consommations doivent exclure les achats de marchandises, "
             "déjà portés à la marge commerciale")
+
+
+@tagged("post_install", "-at_install")
+class TestAffectationDuResultat(TransactionCase):
+    """Affectation du résultat par le compte de résultat non affecté d'Odoo.
+
+    Odoo ne passe pas d'écriture de clôture : pour affecter un résultat,
+    l'utilisateur débite le compte de type ``equity_unaffected`` (999999) et
+    crédite les réserves ou le report à nouveau. C'est la méthode standard,
+    celle que suit l'édition Enterprise.
+
+    Défaut trouvé pendant le portage en 20.0, par comparaison avec Enterprise
+    sur un jeu d'écritures identique, et présent à l'identique en 19.0.
+    """
+
+    def setUp(self):
+        super().setUp()
+        pays = (self.env.company.account_fiscal_country_id.code
+                or self.env.company.country_id.code)
+        if pays != "FR":
+            self.skipTest("Contrôles propres au plan comptable français")
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(domaine):
+            trouve = comptes.search(
+                domaine + [("company_ids", "in", societe.id)], limit=1, order="code")
+            if not trouve:
+                self.skipTest("Plan comptable incomplet : %s" % domaine)
+            return trouve
+
+        self.client_ = compte([("code", "=like", "411%")])
+        self.vente = compte([("code", "=like", "706%")])
+        self.reserves = compte([("code", "=like", "1068%")])
+        self.non_affecte = compte([("account_type", "=", "equity_unaffected")])
+        self.journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+
+    def _ecriture(self, jour, debit, credit, montant):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour, "ref": "AFFECTATION",
+            "line_ids": [
+                Command.create({"name": "A", "account_id": debit.id,
+                                "debit": montant, "credit": 0.0}),
+                Command.create({"name": "A", "account_id": credit.id,
+                                "debit": 0.0, "credit": montant}),
+            ],
+        })
+        ecriture.action_post()
+
+    def _valeurs(self, xmlid, annee):
+        rapport = self.env.ref(xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 1, 1), "date_to": date(annee, 12, 31)}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def _scenario(self):
+        """Un bénéfice en 2031, affecté aux réserves en 2032."""
+        self._ecriture(date(2031, 6, 1), self.client_, self.vente, 1000.0)
+        self._ecriture(date(2032, 5, 31), self.non_affecte, self.reserves, 1000.0)
+
+    def test_le_bilan_francais_reste_equilibre_apres_affectation(self):
+        """Le compte non affecté doit être lu, sinon le bilan boite.
+
+        Sans ligne qui lise ``equity_unaffected``, l'affectation gonfle les
+        réserves sans rien retirer au report à nouveau : le bilan est faux du
+        montant affecté, et rien à l'écran ne le signale.
+        """
+        self._scenario()
+        avant = self._valeurs("expodo_account_reports.report_bilan_fr", 2031)
+        apres = self._valeurs("expodo_account_reports.report_bilan_fr", 2032)
+
+        # L'équilibre est le contrôle décisif : c'est lui qui tombait, de
+        # 1 000 exactement, tant qu'aucune ligne ne lisait le compte non
+        # affecté.
+        self.assertAlmostEqual(
+            apres[("BILAN_ECART", "balance")], 0.0, places=2,
+            msg="Le bilan doit rester équilibré après une affectation du résultat")
+
+        # Les variations plutôt que les montants : la base de développement
+        # porte d'autres écritures, et un contrôle en valeur absolue y mesure
+        # l'historique de la base au lieu de mesurer l'affectation.
+        def variation(code):
+            return apres[(code, "balance")] - avant[(code, "balance")]
+
+        self.assertAlmostEqual(
+            variation("BILAN_CAPITAL"), 1000.0, places=2,
+            msg="Les réserves reçoivent le résultat affecté")
+        self.assertAlmostEqual(
+            variation("BILAN_REPORT"), 0.0, places=2,
+            msg="Le report à nouveau accueille le résultat antérieur puis le "
+                "rend à l'affectation : au net il ne bouge pas")
+        self.assertAlmostEqual(
+            variation("BILAN_RESULTAT"), -1000.0, places=2,
+            msg="Le résultat de l'exercice ne porte plus le bénéfice de 2031")
+
+
+    def test_une_rubrique_sans_objet_ne_s_affiche_pas(self):
+        """`hide_if_zero` doit effacer la ligne, pas seulement la déclarer.
+
+        Le champ existe dans le coeur d'Odoo et trois lignes du module s'en
+        servaient, mais le moteur ne le lisait pas : l'affectation du résultat
+        restait affichée à zéro sur le bilan des sociétés qui n'affectent
+        jamais par ce compte, c'est-à-dire la plupart.
+        """
+        rapport = self.env.ref("expodo_account_reports.report_bilan_fr")
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2031, 1, 1), "date_to": date(2031, 12, 31)}})
+        lignes = rapport._expodo_serialize_report_lines(
+            options, {"main": rapport._expodo_compute_values(options, "main")})
+        codes = [l["code"] for l in lignes]
+        self.assertNotIn(
+            "BILAN_REPORT_AFFECTE", codes,
+            "Sans aucune affectation, la rubrique n'a rien à dire et ne doit "
+            "pas occuper une ligne du bilan")
+
+        self._scenario()
+        lignes = rapport._expodo_serialize_report_lines(
+            options, {"main": rapport._expodo_compute_values(options, "main")})
+        options_2032 = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+        lignes_2032 = rapport._expodo_serialize_report_lines(
+            options_2032,
+            {"main": rapport._expodo_compute_values(options_2032, "main")})
+        self.assertIn(
+            "BILAN_REPORT_AFFECTE", [l["code"] for l in lignes_2032],
+            "Dès qu'une affectation existe, la rubrique doit reparaître")
+
+    def test_le_bilan_universel_range_l_affectation_dans_le_resultat(self):
+        """``equity_unaffected`` appartient au résultat, pas au capital.
+
+        Rangé dans le capital, il fait paraître les réserves inchangées après
+        une affectation et laisse le résultat gonflé du même montant. Les
+        totaux restent justes, donc seule la lecture ligne à ligne le révèle.
+        """
+        self._scenario()
+        avant = self._valeurs("expodo_account_reports.report_balance_sheet", 2031)
+        apres = self._valeurs("expodo_account_reports.report_balance_sheet", 2032)
+        self.assertAlmostEqual(
+            apres[("BS_CAPITAL", "balance")] - avant[("BS_CAPITAL", "balance")],
+            1000.0, places=2,
+            msg="L'affectation doit se voir dans les capitaux propres")
+        self.assertAlmostEqual(
+            apres[("BS_RESULT", "balance")] - avant[("BS_RESULT", "balance")],
+            -1000.0, places=2,
+            msg="et retirer d'autant le résultat non affecté")
