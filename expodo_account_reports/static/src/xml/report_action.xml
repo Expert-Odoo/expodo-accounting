@@ -49,7 +49,14 @@
                            t-on-change="(ev) => this.onDateChange('date_to', ev)"/>
                 </div>
 
-                <select class="form-select form-select-sm w-auto" t-on-change="onComparisonChange">
+                <!--
+                    Comparaison : seulement quand l'état la déclare. Elle
+                    était proposée partout, y compris sur les états qui ne la
+                    déclarent pas — un relevé client comparé à l'an dernier
+                    n'a pas de sens, et la colonne qui en sortait non plus.
+                -->
+                <select t-if="state.report.filter_period_comparison"
+                        class="form-select form-select-sm w-auto" t-on-change="onComparisonChange">
                     <option value="no_comparison" t-esc="labels.noComparison"
                             t-att-selected="!state.options.comparison or state.options.comparison.filter === 'no_comparison'"/>
                     <option value="previous_period" t-esc="labels.previousPeriod"
@@ -73,6 +80,20 @@
                                 t-esc="journal.code ? journal.code + ' — ' + journal.name : journal.name"/>
                     </t>
                 </select>
+
+                <!--
+                    Masquer les lignes à zéro, quand l'état l'offre. Le champ
+                    était posé sur deux états et lu nulle part : ils
+                    annonçaient un filtre qui n'existait pas.
+                -->
+                <t t-if="state.report.filter_hide_0_lines and state.report.filter_hide_0_lines !== 'never'">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox"
+                               t-att-checked="state.options.hide_0_lines"
+                               t-on-change="onToggleHideZero"/>
+                        <label class="form-check-label small" t-esc="labels.hideZero"/>
+                    </div>
+                </t>
 
                 <t t-if="state.report.filter_show_draft">
                     <div class="form-check form-switch mb-0">

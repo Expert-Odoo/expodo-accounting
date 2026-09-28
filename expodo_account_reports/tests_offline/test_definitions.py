@@ -663,3 +663,65 @@ class TestScriptsDeMigration(unittest.TestCase):
                     [int(x) for x in version.split(".")],
                     "Le module doit porter au moins la version du script, "
                     "sinon Odoo ne l'exécute pas")
+
+
+class TestChampsPosesEtJamaisLus(unittest.TestCase):
+    """Un champ posé dans les données et que rien ne lit ne fait rien.
+
+    C'est le défaut le plus fréquent de ce module, et le plus silencieux :
+    la définition annonce un comportement, le moteur l'ignore, et l'écran
+    paraît normal. ``hide_if_zero`` a vécu ainsi jusqu'à ce qu'un contrôle à
+    l'écran le révèle, et les bornes de date d'une déclaration de taxes
+    voyageaient de la même façon sans être lues à l'arrivée.
+
+    Ce test le dit mécaniquement : tout champ renseigné dans les définitions
+    doit apparaître ailleurs dans le module, ou figurer dans la liste
+    ci-dessous avec sa raison.
+    """
+
+    #: Champs du cœur d'Odoo qu'aucun code du module ne lit, sciemment.
+    #: Une entrée ici est une décision, pas un oubli : elle se justifie.
+    ADMIS = {
+        # Les chiffres suivent les sociétés actives du sélecteur d'Odoo, qui
+        # remplit `company_ids` dans les options. Un second sélecteur propre à
+        # l'état ferait double emploi, et deux filtres qui se contredisent
+        # valent moins qu'un seul.
+        "filter_multi_company",
+        # Le cœur s'en sert pour déplier une ligne d'emblée. Ici tout est
+        # replié au premier rendu et se déplie au clic : sur un grand livre
+        # de plusieurs milliers de comptes, un dépliage intégral rendrait
+        # l'état inutilisable. Le champ est donc honoré par construction.
+        "foldable",
+    }
+
+    def test_aucun_champ_pose_n_est_ignore(self):
+        racine = os.path.dirname(RACINE)
+        poses = set()
+        for nom in sorted(os.listdir(RACINE)):
+            if not nom.endswith(".xml"):
+                continue
+            with open(os.path.join(RACINE, nom), encoding="utf-8") as fichier:
+                poses |= set(re.findall(r'<field name="([a-z0-9_]+)"', fichier.read()))
+
+        code = []
+        for dossier, _sous, fichiers in os.walk(racine):
+            if "__pycache__" in dossier or dossier.endswith("data"):
+                continue
+            if os.sep + "i18n" in dossier:
+                continue
+            for nom in fichiers:
+                if nom.endswith((".py", ".js", ".xml")):
+                    with open(os.path.join(dossier, nom), encoding="utf-8",
+                              errors="ignore") as fichier:
+                        code.append(fichier.read())
+        code = "\n".join(code)
+
+        ignores = sorted(
+            champ for champ in poses
+            if champ not in self.ADMIS
+            and not re.search(r"\b%s\b" % re.escape(champ), code))
+        self.assertFalse(
+            ignores,
+            "Ces champs sont renseignés dans les définitions et lus nulle "
+            "part : %s. Soit le moteur doit les honorer, soit ils n'ont rien "
+            "à faire dans les données." % ignores)

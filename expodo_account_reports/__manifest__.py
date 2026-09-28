@@ -106,7 +106,7 @@ limit read beforehand:
 Built and maintained by Expodo — https://expodo.fr
     """,
 
-    "version": "19.0.1.0.8",
+    "version": "19.0.1.0.9",
     "category": "Accounting/Accounting",
     "license": "LGPL-3",
     "author": "Expodo",

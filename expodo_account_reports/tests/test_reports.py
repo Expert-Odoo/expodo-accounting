@@ -3447,3 +3447,67 @@ class TestPositionNetteDeTresorerie(TransactionCase):
             self._position(v), attendu, places=2,
             msg="Disponibilités plus besoin en fonds de roulement, et non "
                 "moins : le besoin est déjà un solde net")
+
+
+@tagged("post_install", "-at_install")
+class TestMasquageDesLignesNulles(TransactionCase):
+    """Le filtre que deux états annonçaient sans l'offrir.
+
+    ``filter_hide_0_lines`` était posé sur le relevé client et sur le relevé
+    intracommunautaire, et lu nulle part. Les deux états promettaient de
+    masquer les lignes à zéro et montraient chaque tiers sans mouvement.
+    C'est le même défaut que ``hide_if_zero``, sur un autre champ : une
+    déclaration que le moteur ignore.
+    """
+
+    def _rapport(self):
+        return self.env.ref("expodo_account_reports.report_ec_sales_list")
+
+    def test_l_etat_declare_le_filtre(self):
+        self.assertIn(
+            self._rapport().filter_hide_0_lines, ("optional", "by_default"),
+            "Le relevé intracommunautaire annonce ce filtre")
+
+    def test_le_filtre_arrive_dans_les_options(self):
+        rapport = self._rapport()
+        options = rapport._expodo_get_options({})
+        self.assertIn(
+            "hide_0_lines", options,
+            "Un filtre absent des options ne peut être ni lu ni transmis")
+
+    def test_le_navigateur_recoit_de_quoi_afficher_le_filtre(self):
+        donnees = self._rapport().expodo_get_report_data({})
+        self.assertIn("filter_hide_0_lines", donnees["report"])
+        self.assertIn("filter_period_comparison", donnees["report"])
+
+    def test_une_ligne_nulle_disparait_quand_le_filtre_est_actif(self):
+        """Sur un état dont toutes les lignes sont à zéro, plus rien ne reste.
+
+        La période est choisie loin des écritures de la base : ce qui est
+        mesuré est l'effet du filtre, pas le contenu de la base.
+        """
+        rapport = self.env.ref(
+            "expodo_account_reports.report_executive_summary")
+        periode = {"date": {"mode": "range", "filter": "custom",
+                            "date_from": date(2034, 1, 1),
+                            "date_to": date(2034, 1, 31)}}
+        sans = rapport.expodo_get_report_data(periode)
+        avec = rapport.expodo_get_report_data(
+            dict(periode, hide_0_lines=True))
+        self.assertGreater(
+            len(sans["lines"]), len(avec["lines"]),
+            "Le filtre doit retirer des lignes, sinon il ne sert à rien")
+
+    def test_le_filtre_ne_masque_pas_les_intitules(self):
+        """Un titre de rubrique ne porte aucune valeur : le masquer ferait
+        disparaître l'en-tête au-dessus de ses lignes."""
+        rapport = self.env.ref(
+            "expodo_account_reports.report_executive_summary")
+        lignes = rapport.expodo_get_report_data({
+            "date": {"mode": "range", "filter": "custom",
+                     "date_from": date(2034, 1, 1), "date_to": date(2034, 1, 31)},
+            "hide_0_lines": True})["lines"]
+        codes = [l.get("code") for l in lignes]
+        self.assertIn(
+            "EXEC_ACTIVITE", codes,
+            "Les intitulés de rubrique restent, ils ne portent pas de chiffre")

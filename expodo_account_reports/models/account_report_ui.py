@@ -169,6 +169,20 @@ class AccountReport(models.Model):
                 # précédente.
                 if line.hide_if_zero and self._expodo_cellules_nulles(cells):
                     continue
+                # Le filtre que l'utilisateur coche, quand l'état l'offre.
+                #
+                # Trois lignes en sont exemptées. L'intitulé de rubrique ne
+                # porte aucune expression : ses cellules sont vides par
+                # nature, et le masquer ferait disparaître le titre au-dessus
+                # de ses filles. Une ligne à développer peut cacher des
+                # comptes mouvementés derrière un total nul. Une ligne mère
+                # laisserait ses filles orphelines.
+                if (options.get("hide_0_lines")
+                        and line.expression_ids
+                        and not line.children_ids
+                        and not has_groupby
+                        and self._expodo_cellules_nulles(cells)):
+                    continue
 
                 serialized.append({
                     "id": self._expodo_line_id("line", line.id),
@@ -352,6 +366,8 @@ class AccountReport(models.Model):
                 "filter_partner": self.filter_partner,
                 "filter_show_draft": self.filter_show_draft,
                 "filter_unfold_all": self.filter_unfold_all,
+                "filter_period_comparison": self.filter_period_comparison,
+                "filter_hide_0_lines": self.filter_hide_0_lines,
                 "search_bar": self.search_bar,
             },
             "options": self._expodo_serialize_options(options),

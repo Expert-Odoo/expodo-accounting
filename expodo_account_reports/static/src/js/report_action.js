@@ -273,6 +273,12 @@ export class ExpodoAccountReport extends Component {
         await this.load({ ...options, date_preset: preset });
     }
 
+    async onToggleHideZero() {
+        const options = JSON.parse(JSON.stringify(this.state.options));
+        options.hide_0_lines = !options.hide_0_lines;
+        await this.load(options);
+    }
+
     async onToggleDraft() {
         const options = JSON.parse(JSON.stringify(this.state.options));
         options.all_entries = !options.all_entries;
@@ -511,6 +517,7 @@ export class ExpodoAccountReport extends Component {
             variant: _t("Presentation"),
             allJournals: _t("All journals"),
             unfoldAll: _t("Unfold all"),
+            hideZero: _t("Hide lines at zero"),
         };
     }
 

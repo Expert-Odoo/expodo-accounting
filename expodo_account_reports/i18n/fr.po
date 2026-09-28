@@ -374,6 +374,12 @@ msgstr "Tous les journaux"
 #. module: expodo_account_reports
 #. odoo-javascript
 #: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Hide lines at zero"
+msgstr "Masquer les lignes à zéro"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
 msgid "Unfold all"
 msgstr "Tout déplier"
 

@@ -312,6 +312,13 @@ class AccountReport(models.Model):
             "company_ids": previous_options.get("company_ids")
                            or self.env.companies.ids,
             "unfolded_lines": previous_options.get("unfolded_lines", []),
+            # Masquage des lignes à zéro. L'état déclare s'il l'offre, et
+            # s'il le veut coché d'emblée : un relevé client ou un relevé
+            # intracommunautaire n'a rien à dire d'un tiers sans mouvement.
+            "hide_0_lines": (
+                previous_options["hide_0_lines"]
+                if "hide_0_lines" in previous_options
+                else self.filter_hide_0_lines == "by_default"),
             "column_groups": {},
         }
 
