@@ -100,6 +100,56 @@ class TestRelances(TransactionCase):
         self.client.invalidate_recordset()
         self.assertAlmostEqual(self.client.followup_amount_due, 0.0, places=2)
 
+    def test_un_reglement_non_lettre_sans_echeance_vient_en_deduction(self):
+        """Un règlement saisi sans échéance et pas encore lettré était ignoré :
+        le client qui avait payé restait relancé du montant de sa facture."""
+        self._facture(montant=1000.0)
+        # Journal de banque : en 20.0, les lignes d'un journal d'opérations
+        # diverses naissent « sans relance » (no_followup).
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        reglement = self.env["account.move"].create({
+            "journal_id": banque.id,
+            "date": fields.Date.context_today(self.env.user),
+            "line_ids": [
+                Command.create({
+                    "name": "Règlement", "account_id": self.compte_client.id,
+                    "partner_id": self.client.id, "date_maturity": False,
+                    "debit": 0.0, "credit": 1000.0}),
+                Command.create({
+                    "name": "Règlement", "account_id": self.compte_vente.id,
+                    "debit": 1000.0, "credit": 0.0}),
+            ],
+        })
+        reglement.action_post()
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(self.client.followup_amount_due, 0.0, places=2)
+        self.assertFalse(self.client.followup_level_id)
+        self.assertNotIn(self.client, self.env["res.partner"].search(
+            [("followup_amount_due", ">", 0)]))
+
+    def test_un_acompte_partiel_reduit_le_montant_relance(self):
+        self._facture(montant=1000.0)
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        acompte = self.env["account.move"].create({
+            "journal_id": banque.id,
+            "date": fields.Date.context_today(self.env.user),
+            "line_ids": [
+                Command.create({
+                    "name": "Acompte", "account_id": self.compte_client.id,
+                    "partner_id": self.client.id,
+                    "debit": 0.0, "credit": 400.0}),
+                Command.create({
+                    "name": "Acompte", "account_id": self.compte_vente.id,
+                    "debit": 400.0, "credit": 0.0}),
+            ],
+        })
+        acompte.action_post()
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(self.client.followup_amount_due, 600.0, places=2)
+        self.assertTrue(self.client.followup_level_id)
+
     def test_une_ligne_marquee_non_relancable_est_respectee(self):
         """Elle a été marquée pour une raison, saisie une fois."""
         self._facture(exclue=True)

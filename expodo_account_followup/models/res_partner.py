@@ -60,7 +60,11 @@ class Partenaire(models.Model):
             ("account_id.account_type", "=", "asset_receivable"),
             ("full_reconcile_id", "=", False),
             ("no_followup", "=", False),
-            ("date_maturity", "<", aujourd_hui),
+            # Un avoir ou un règlement non lettré vient en déduction, quelle
+            # que soit son échéance : un règlement saisi sans échéance était
+            # ignoré, et le client qui avait payé restait relancé du montant
+            # de sa facture (constaté au port 20.0).
+            "|", ("date_maturity", "<", aujourd_hui), ("amount_residual", "<", 0.0),
             ("amount_residual", "!=", 0.0),
         ])
 
@@ -72,7 +76,8 @@ class Partenaire(models.Model):
 
         for partenaire in self:
             lignes = partenaire._lignes_echues()
-            if not lignes:
+            echues = lignes.filtered(lambda l: l.amount_residual > 0)
+            if not echues or sum(lignes.mapped("amount_residual")) <= 0:
                 partenaire.followup_amount_due = 0.0
                 partenaire.followup_oldest_due = False
                 partenaire.followup_days_overdue = 0
@@ -80,7 +85,7 @@ class Partenaire(models.Model):
                 continue
 
             partenaire.followup_amount_due = sum(lignes.mapped("amount_residual"))
-            plus_ancienne = min(lignes.mapped("date_maturity"))
+            plus_ancienne = min(echues.mapped("date_maturity"))
             partenaire.followup_oldest_due = plus_ancienne
             retard = (aujourd_hui - plus_ancienne).days
             partenaire.followup_days_overdue = retard
@@ -101,7 +106,11 @@ class Partenaire(models.Model):
             ("account_id.account_type", "=", "asset_receivable"),
             ("full_reconcile_id", "=", False),
             ("no_followup", "=", False),
-            ("date_maturity", "<", aujourd_hui),
+            # Un avoir ou un règlement non lettré vient en déduction, quelle
+            # que soit son échéance : un règlement saisi sans échéance était
+            # ignoré, et le client qui avait payé restait relancé du montant
+            # de sa facture (constaté au port 20.0).
+            "|", ("date_maturity", "<", aujourd_hui), ("amount_residual", "<", 0.0),
             ("amount_residual", "!=", 0.0),
         ])
         totaux = {}
