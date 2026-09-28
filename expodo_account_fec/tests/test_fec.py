@@ -277,13 +277,16 @@ class TestConformiteFec(TransactionCase):
     # ------------------------------------------------------------------
 
     def test_le_nom_suit_la_nomenclature_reglementaire(self):
-        self.societe.company_registry = "12345678900017"
+        # Odoo 20 valide le SIRET (cle de Luhn) a l'ecriture : le numero
+        # d'exemple doit etre reel dans sa forme.
+        self.societe.partner_id.additional_identifiers = {
+            "FR_SIRET": "73282932000074"}
         nom = self.generateur.nom_fichier(self.societe, date(2026, 12, 31))
-        self.assertEqual(nom, "123456789FEC20261231.txt")
+        self.assertEqual(nom, "732829320FEC20261231.txt")
 
     def test_le_siren_est_extrait_d_un_numero_de_tva(self):
         """Un numéro de TVA français porte le SIREN en fin de chaîne."""
-        self.societe.company_registry = False
+        self.societe.partner_id.additional_identifiers = {}
         self.societe.vat = "FR40123456824"
         nom = self.generateur.nom_fichier(self.societe, date(2026, 12, 31))
         self.assertTrue(
@@ -296,7 +299,7 @@ class TestConformiteFec(TransactionCase):
         L'assistant signale le cas plutôt que de bloquer : une entreprise qui
         doit remettre son FEC sous quinze jours a besoin du fichier.
         """
-        self.societe.company_registry = False
+        self.societe.partner_id.additional_identifiers = {}
         self.societe.vat = False
         nom = self.generateur.nom_fichier(self.societe, date(2026, 12, 31))
         self.assertEqual(nom, "000000000FEC20261231.txt")
@@ -306,7 +309,6 @@ class TestConformiteFec(TransactionCase):
     # ------------------------------------------------------------------
 
     def test_l_assistant_produit_un_fichier_telechargeable(self):
-        import base64
         assistant = self.env["expodo.fec.export"].create({
             "company_id": self.societe.id,
             "date_from": date(2026, 1, 1),
@@ -315,7 +317,7 @@ class TestConformiteFec(TransactionCase):
         assistant.action_generate()
         self.assertTrue(assistant.file_data, "Le fichier doit être produit")
         self.assertTrue(assistant.file_name.endswith(".txt"))
-        contenu = base64.b64decode(assistant.file_data).decode("utf-8")
+        contenu = assistant.file_data.content.decode("utf-8")
         self.assertEqual(
             contenu.split("\r\n")[0].split(SEPARATEUR), list(CHAMPS_FEC))
         self.assertGreater(assistant.line_count, 0)

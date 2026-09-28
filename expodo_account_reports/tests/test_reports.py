@@ -2373,7 +2373,6 @@ class TestExpodoReports(TransactionCase):
             return compte
 
         for groupe in ("account.group_account_readonly",
-                       "account.group_account_basic",
                        "account.group_account_user",
                        "account.group_account_manager"):
             compte = utilisateur(groupe.split("_")[-1], groupe)
@@ -2389,8 +2388,7 @@ class TestExpodoReports(TransactionCase):
         # d'autres modeles. Les annotations, notamment, sont relues a chaque
         # export, et leur absence de droit en lecture faisait echouer les
         # vingt-deux exports pour ces deux roles.
-        for groupe in ("account.group_account_readonly",
-                       "account.group_account_basic"):
+        for groupe in ("account.group_account_readonly",):
             compte = utilisateur("parcours_" + groupe.split("_")[-1], groupe)
             for xmlid in ("report_bilan_fr", "report_balance_fr",
                           "report_grand_livre_fr"):
@@ -2413,6 +2411,14 @@ class TestExpodoReports(TransactionCase):
                     raise AssertionError(
                         "%s ne peut pas parcourir %s : %s"
                         % (groupe, xmlid, erreur)) from erreur
+
+        # Odoo 20 retire au groupe basique la lecture de `account.report`.
+        # On suit le coeur : le basique ne voit plus les menus des etats, et
+        # s'il appelle le point d'entree par RPC il recoit notre message, pas
+        # l'erreur brute de l'ORM.
+        basique = utilisateur("basic", "account.group_account_basic")
+        with self.assertRaisesRegex(AccessError, "accounting access right"):
+            rapports[0].with_user(basique).expodo_get_report_data(None)
 
         simple = self.env["res.users"].create({
             "name": "Sans comptabilite", "login": "sans_compta_droits"})

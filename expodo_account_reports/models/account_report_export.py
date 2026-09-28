@@ -426,7 +426,12 @@ class AccountReport(models.Model):
                 "sens_lecture": self._expodo_sens_lecture(),
             },
         )
-        return self.env["ir.actions.report"]._run_wkhtmltopdf(
+        # Odoo 20 : le moteur PDF est enfichable (wkhtmltopdf n'est plus
+        # qu'une implémentation parmi d'autres, dans base_report_wkhtmltox).
+        # On passe par le moteur configuré sur la base plutôt que de le nommer.
+        rapport = self.env["ir.actions.report"]
+        return rapport._run_pdf_engine_without_processing(
+            rapport._get_pdf_engine(),
             [html],
             landscape=len(data["columns"]) * len(data["column_groups"]) > 4,
             specific_paperformat_args={

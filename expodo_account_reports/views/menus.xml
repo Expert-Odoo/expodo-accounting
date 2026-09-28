@@ -44,7 +44,7 @@
                   name="Expodo Reports"
                   parent="account.menu_finance"
                   sequence="90"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
 
@@ -62,7 +62,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_balance_sheet"
                   sequence="10"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_profit_loss" model="ir.actions.client">
             <field name="name">Profit and Loss</field>
@@ -75,7 +75,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_profit_loss"
                   sequence="20"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_cash_flow" model="ir.actions.client">
             <field name="name">Cash Flow Statement</field>
@@ -88,7 +88,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_cash_flow"
                   sequence="25"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_balance" model="ir.actions.client">
             <field name="name">Trial Balance</field>
@@ -102,7 +102,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_balance"
                   sequence="30"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_grand_livre" model="ir.actions.client">
@@ -117,7 +117,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_grand_livre"
                   sequence="40"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_auxiliaire" model="ir.actions.client">
@@ -132,7 +132,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_auxiliaire"
                   sequence="50"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_open_items" model="ir.actions.client">
@@ -147,7 +147,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_open_items"
                   sequence="60"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_aged_recv" model="ir.actions.client">
@@ -162,7 +162,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_aged_recv"
                   sequence="70"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_aged_pay" model="ir.actions.client">
@@ -177,7 +177,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_aged_pay"
                   sequence="80"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_day_book" model="ir.actions.client">
@@ -191,7 +191,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_day_book"
                   sequence="88"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_journaux" model="ir.actions.client">
             <field name="name">Journals</field>
@@ -205,7 +205,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_journaux"
                   sequence="90"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_livre_banque" model="ir.actions.client">
@@ -220,7 +220,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_livre_banque"
                   sequence="100"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <record id="action_livre_caisse" model="ir.actions.client">
@@ -235,7 +235,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_livre_caisse"
                   sequence="110"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
 
         <!--
@@ -259,7 +259,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_executive_summary"
                   sequence="8"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_customer_statement" model="ir.actions.client">
             <field name="name">Customer Statement</field>
@@ -273,7 +273,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_customer_statement"
                   sequence="55"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <record id="action_ec_sales_list" model="ir.actions.client">
             <field name="name">EC Sales List</field>
@@ -287,7 +287,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_ec_sales_list"
                   sequence="7"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
         <!--
             Déclaration de taxes de la localisation installée, quelle qu'elle
@@ -308,7 +308,7 @@
                   parent="menu_expodo_reports_root"
                   action="action_tax_report"
                   sequence="5"
-                  groups="account.group_account_basic,account.group_account_readonly,account.group_account_manager"/>
+                  groups="account.group_account_readonly,account.group_account_manager"/>
 
     </data>
 </odoo>

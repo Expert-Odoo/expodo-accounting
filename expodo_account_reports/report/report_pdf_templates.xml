@@ -89,23 +89,23 @@
 </style>
                 </head>
                 <body>
-                    <h1 t-esc="header['report_name']"/>
+                    <h1 t-out="header['report_name']"/>
                     <div class="meta">
-                        <div t-esc="header['company_name']"/>
-                        <div t-esc="header['period']"/>
-                        <div t-esc="' - '.join(header['filters'])"/>
+                        <div t-out="header['company_name']"/>
+                        <div t-out="header['period']"/>
+                        <div t-out="' - '.join(header['filters'])"/>
                     </div>
 
                     <table>
                         <thead>
                             <tr>
-                                <th t-att-style="'text-align:%s;' % ('right' if sens_lecture == 'rtl' else 'left')"><t t-esc="labels['label']"/></th>
+                                <th t-att-style="'text-align:%s;' % ('right' if sens_lecture == 'rtl' else 'left')"><t t-out="labels['label']"/></th>
                                 <t t-foreach="column_groups" t-as="group">
                                     <t t-foreach="columns" t-as="column">
                                         <th class="num">
-                                            <t t-esc="column['name']"/>
+                                            <t t-out="column['name']"/>
                                             <div t-if="len(column_groups) &gt; 1"
-                                                 class="grp" t-esc="group['label']"/>
+                                                 class="grp" t-out="group['label']"/>
                                         </th>
                                     </t>
                                 </t>
@@ -115,7 +115,7 @@
                             <tr t-foreach="lines" t-as="line"
                                 t-att-class="'total' if not line.get('level') else ''">
                                 <td t-att-style="'padding-left:%dpx;' % (6 + (line.get('level') or 0) * 12)">
-                                    <span t-esc="line['name']"/>
+                                    <span t-out="line['name']"/>
                                     <!--
                                         Les annotations s'impriment sous le
                                         libellé qu'elles commentent. Elles
@@ -126,12 +126,12 @@
                                     -->
                                     <div t-if="line.get('annotations')" class="note">
                                         <div t-foreach="line['annotations']" t-as="note"
-                                             t-esc="note"/>
+                                             t-out="note"/>
                                     </div>
                                 </td>
                                 <t t-foreach="column_groups" t-as="group">
                                     <t t-foreach="line['columns']" t-as="cell">
-                                        <td class="num" t-esc="cell['values'].get(group['key'], '')"/>
+                                        <td class="num" t-out="cell['values'].get(group['key'], '')"/>
                                     </t>
                                 </t>
                             </tr>

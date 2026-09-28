@@ -368,6 +368,9 @@ class TestReportTour(HttpCase):
         HTML, et c'est précisément la forme que prend l'échec.
         """
         rapport = self.env.ref("expodo_account_reports.report_balance_sheet")
+        # La route est en `auth="user"` : sans session, elle redirige vers la
+        # page de connexion (303) et le corps renvoye est du HTML.
+        self.authenticate("admin", "admin")
         for extension, signature in (("pdf", b"%PDF"), ("xlsx", b"PK\x03\x04")):
             reponse = self.url_open(
                 "/expodo_account_reports/export/%s/%s?options={}"
@@ -1203,8 +1206,13 @@ class TestAccessibiliteDepuisLesMenus(TransactionCase):
                 continue
             if not ({"company_id", "company_ids"} & set(M._fields)):
                 continue
-            if not self.env["ir.rule"].sudo().search_count(
-                    [("model_id", "=", modele.id)]):
+            # Odoo 20 : `ir.rule` est fondu dans `ir.access`. Une règle
+            # globale y devient une restriction, c'est-à-dire un accès sans
+            # groupe portant un domaine.
+            if not self.env["ir.access"].sudo().search_count([
+                    ("model_id", "=", modele.id),
+                    ("group_id", "=", False),
+                    ("domain", "!=", False)]):
                 nus.append(modele.model)
         self.assertEqual(
             nus, [],
@@ -1280,7 +1288,10 @@ class TestAccessibiliteDepuisLesMenus(TransactionCase):
             self.env.ref("account.group_account_%s" % nom).id
             for nom in ("basic", "readonly", "user", "manager")
         ])
-        acces = self.env["ir.model.access"].sudo()
+        # Odoo 20 : `ir.model.access` est fondu dans `ir.access`. Un droit
+        # de lecture accordé à un groupe y devient une permission (accès avec
+        # groupe) dont l'opération contient la lecture.
+        acces = self.env["ir.access"].sudo()
         ecarts = []
         for module in self.env["ir.module.module"].search([
                 ("name", "=like", "expodo_account%"),
@@ -1304,7 +1315,8 @@ class TestAccessibiliteDepuisLesMenus(TransactionCase):
 
                 lecteurs = acces.search([
                     ("model_id", "=", self.env["ir.model"]._get(modele).id),
-                    ("perm_read", "=", True),
+                    ("group_id", "!=", False),
+                    ("for_read", "=", True),
                 ]).mapped("group_id")
                 if not lecteurs:
                     continue  # accessible à tous : rien à comparer

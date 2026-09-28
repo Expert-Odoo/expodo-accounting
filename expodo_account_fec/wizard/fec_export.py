@@ -3,10 +3,9 @@
 # License LGPL-3
 """Assistant de production du FEC."""
 
-import base64
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.binary import BinaryBytes
 
 
 class ExportFec(models.TransientModel):
@@ -82,7 +81,9 @@ class ExportFec(models.TransientModel):
 
         self.write({
             "file_name": nom,
-            "file_data": base64.b64encode(octets),
+            # Odoo 20 : un champ binaire recoit le contenu brut enveloppe
+            # dans `BinaryBytes`, et non plus du base64 en octets.
+            "file_data": BinaryBytes(octets, filename=nom),
             # Le nombre de lignes exclut l'en-tête.
             "line_count": contenu.count("\r\n") - 1,
             "warning": "\n".join(avertissements) or False,

@@ -314,7 +314,14 @@ class GenerateurFec(models.AbstractModel):
         alors qu'un export refusé la veille d'une remise ne sert à rien.
         L'assistant signale le cas à l'utilisateur.
         """
-        registre = (societe.company_registry or societe.vat or "").strip()
+        # Odoo 20 : `res.company.company_registry` n'existe plus. Les
+        # identifiants legaux vivent sur le partenaire (`additional_identifiers`),
+        # et `_get_all_identifiers(enrich=True)` deduit le SIREN d'un SIRET.
+        identifiants = societe.partner_id._get_all_identifiers(enrich=True)
+        registre = str(
+            identifiants.get("FR_SIREN") or identifiants.get("FR_SIRET")
+            or societe.vat or ""
+        ).strip()
         chiffres = "".join(c for c in registre if c.isdigit())
         # Le SIRET comporte quatorze chiffres dont les neuf premiers forment
         # le SIREN ; un numéro de TVA français porte le SIREN en fin de chaîne.

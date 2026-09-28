@@ -33,14 +33,15 @@ class AccountReport(models.Model):
     #: Groupes autorises a ouvrir un rapport.
     #:
     #: La liste reproduit exactement celle que le coeur d'Odoo applique au
-    #: modele `account.report` : administrateur, lecture seule et basique.
+    #: modele `account.report`. En v20, le coeur a retire la lecture au
+    #: groupe basique : il reste administrateur et lecture seule (le
+    #: comptable implique la lecture seule).
     #: Elle portait `group_account_invoice`, que le coeur refuse : un
     #: utilisateur de facturation passait notre controle puis se heurtait a
     #: l'erreur brute de l'ORM, laquelle enumere des noms de groupes internes
     #: au lieu de dire ce qui manque.
     EXPODO_REPORT_GROUPS = (
         "account.group_account_readonly",
-        "account.group_account_basic",
         "account.group_account_user",
         "account.group_account_manager",
     )
