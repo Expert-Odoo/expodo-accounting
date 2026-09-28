@@ -17,17 +17,21 @@ import { _t } from "@web/core/l10n/translation";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
-import { standardActionServiceProps } from "@web/webclient/actions/action_service";
-import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
+import { standardActionServiceProps } from "@web/webclient/actions/action_plugin";
+import { Component, onWillStart, proxy, usePlugin, useProps } from "@odoo/owl";
 
 export class ExpodoAccountReport extends Component {
     static template = "expodo_account_reports.ReportAction";
-    static props = { ...standardActionServiceProps };
+    // Odoo 20 / OWL 3 : les props se declarent par `useProps`, et
+    // `standardActionServiceProps` vit dans action_plugin (action_service.js
+    // n'existe plus). Le script officiel owl3-migration proposait un
+    // `ActionManagerPlugin` absent du nightly : le service "action" reste
+    // l'API employee par le coeur pour les actions client.
+    props = useProps(standardActionServiceProps);
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = useService("action");
         this.notification = usePlugin(NotificationPlugin);
 
         this.reportId =
