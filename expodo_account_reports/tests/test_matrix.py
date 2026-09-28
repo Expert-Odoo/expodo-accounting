@@ -1585,3 +1585,67 @@ class TestDroitsDUnComptable(TransactionCase):
             ouverts,
             "Ces opérations devraient être réservées au gestionnaire : %s"
             % ", ".join(ouverts))
+
+
+@tagged("post_install", "-at_install")
+class TestLignesDeControle(TransactionCase):
+    """Les états qui se contrôlent eux-mêmes doivent être écoutés.
+
+    Neuf états livrés portent une ligne dont le libellé dit « doit être
+    nul » : écart actif-passif du bilan, écart entre le résultat du bilan et
+    celui du compte de résultat, écart entre les flux classés et le mouvement
+    réel de trésorerie. Ces lignes sont le meilleur détecteur du module,
+    puisqu'elles comparent deux chemins de calcul indépendants.
+
+    Aucune ne l'était : le contrôle s'affichait à l'écran et personne ne le
+    lisait. Une définition fausse pouvait donc rendre un bilan boiteux sans
+    faire rougir la suite, ce qui est arrivé avec l'affectation du résultat.
+
+    Le test est général : toute ligne de contrôle ajoutée plus tard est
+    surveillée sans qu'on ait à y penser.
+    """
+
+    def _etats_pertinents(self):
+        """Les états qu'un utilisateur de cette base peut réellement ouvrir.
+
+        Un état national dont le plan comptable n'est pas celui de la société
+        n'est pas proposé, et ses préfixes tomberaient sur d'autres comptes.
+        Le mesurer ici reviendrait à contrôler un état que personne ne voit.
+        """
+        etats = self.env["account.report"]
+        for rapport in self.env["account.report"].search([]):
+            identifiant = rapport.get_external_id().get(rapport.id) or ""
+            if not identifiant.startswith("expodo_account_reports."):
+                continue
+            if rapport.expodo_chart_prefix and not rapport._expodo_chart_matches():
+                continue
+            etats |= rapport
+        return etats
+
+    def test_aucun_controle_ne_signale_d_ecart(self):
+        controles = 0
+        for rapport in self._etats_pertinents():
+            lignes = rapport.line_ids.filtered(
+                lambda l: "must be zero"
+                in (l.with_context(lang="en_US").name or ""))
+            for ligne in lignes:
+                controles += 1
+                for annee in (2026, 2027):
+                    options = rapport._expodo_get_options({"date": {
+                        "mode": "range", "filter": "custom",
+                        "date_from": date(annee, 1, 1),
+                        "date_to": date(annee, 12, 31)}})
+                    valeur = rapport._expodo_compute_values(
+                        options, "main").get((ligne.code, "balance"), 0.0)
+                    with self.subTest(etat=rapport.name, ligne=ligne.code,
+                                      exercice=annee):
+                        self.assertAlmostEqual(
+                            valeur, 0.0, places=2,
+                            msg="L'état se déclare lui-même en écart : "
+                                "deux chemins de calcul ne donnent pas le "
+                                "même chiffre")
+        self.assertGreaterEqual(
+            controles, 5,
+            "Les lignes de contrôle sont repérées par leur libellé anglais "
+            "« must be zero » ; si le compte tombe, c'est la convention qui "
+            "a changé et le test ne contrôle plus rien")
