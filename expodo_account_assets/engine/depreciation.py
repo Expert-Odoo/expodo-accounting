@@ -16,8 +16,11 @@ coefficients variables selon la durée et le pays. Le linéaire couvre
 l'essentiel des cas partout, et une règle fausse vaut moins que pas de règle.
 
 **Prorata temporis à la journée.** Un bien acquis le 15 du mois n'est pas
-amorti d'un mois entier. La première et la dernière période sont calculées au
-nombre de jours.
+amorti d'un mois entier. La première période est calculée au nombre de jours,
+et les jours qu'on lui retire sont amortis au-delà de la dernière échéance
+prévue : une durée de douze mois entamée le 28 septembre court jusqu'au
+30 septembre de l'année suivante. Proratiser la seule première période
+reviendrait à raccourcir la durée du bien.
 
 **La somme du tableau égale exactement la base amortissable.** Les arrondis
 sont absorbés par la dernière échéance, jamais répartis. Un tableau dont la
@@ -96,7 +99,8 @@ def calculer_tableau(
     :param periodicite: ``monthly``, ``quarterly`` ou ``yearly``.
     :param valeur_residuelle: valeur non amortissable, souvent nulle.
     :param deja_amorti: amortissement déjà constaté, pour un bien repris.
-    :param prorata: calcul de la première période au nombre de jours.
+    :param prorata: calcul de la première période au nombre de jours, le
+        reliquat portant une échéance supplémentaire en fin de tableau.
     :param decimales: précision de la devise du bien.
 
     Les décimales sont celles de la devise, pas deux par principe.
@@ -156,7 +160,26 @@ def calculer_tableau(
         else:
             poids.append(float(mois_periode))
 
+    # Le prorata décale la fin, il ne raccourcit pas la durée.
+    #
+    # Les jours retirés à la première période doivent être amortis, et ils le
+    # sont après la dernière échéance prévue. Sans cette échéance de
+    # reliquat, la base entière était répartie sur le nombre de périodes
+    # initial : les jours retirés au premier mois étaient réinjectés dans les
+    # suivants, chaque dotation majorée, et le bien soldé un mois trop tôt.
+    # Sur 1 200 à douze mois mis en service le 28 septembre, onze dotations
+    # de 108,11 au lieu de 100,00, et une fin au 31 août au lieu du
+    # 30 septembre suivant.
+    #
+    # La charge de chaque exercice s'en trouvait majorée, et la durée
+    # effective ne correspondait plus à celle inscrite sur la fiche du bien.
     total_poids = sum(poids)
+    reliquat = duree_mois - total_poids
+    if reliquat > 1e-9:
+        dates.append(_ajouter_mois(date_mise_en_service, duree_mois))
+        poids.append(reliquat)
+        total_poids = float(duree_mois)
+
     lignes: List[Echeance] = []
     cumul = _arrondi(deja_amorti, decimales)
 

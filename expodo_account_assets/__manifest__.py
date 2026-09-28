@@ -61,7 +61,7 @@ your country's tax return. The two modules install independently.
 Built and maintained by Expodo — https://expodo.fr
     """,
 
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Accounting/Accounting",
     "license": "LGPL-3",
     "author": "Expodo",

@@ -102,6 +102,85 @@ class TestTableauLineaire(unittest.TestCase):
             self.assertLess(a.date_echeance, b.date_echeance)
 
 
+class TestProrataDeLaDernierePeriode(unittest.TestCase):
+    """Le prorata décale la fin, il ne raccourcit pas la durée.
+
+    Seule la première période était proratisée, puis toute la base était
+    répartie sur le nombre de périodes prévu : les jours retirés au premier
+    mois étaient réinjectés dans les suivants. Un bien de 1 200 sur douze
+    mois mis en service le 28 septembre donnait onze dotations de 108,11 et
+    s'achevait le 31 août, un mois trop tôt.
+
+    Deux conséquences, l'une comptable et l'autre fiscale : la charge de
+    chaque exercice est majorée, et la durée d'amortissement effective ne
+    correspond plus à celle inscrite sur la fiche du bien.
+    """
+
+    def test_le_mensuel_ajoute_une_echeance_de_reliquat(self):
+        """Trois jours en septembre, puis douze fois le reste."""
+        t = calculer_tableau(1200.0, date(2026, 9, 28), 12)
+        self.assertEqual(
+            len(t), 13,
+            "Douze mois entamés le 28 courent sur treize échéances")
+        self.assertAlmostEqual(t[0].dotation, 10.0, delta=DELTA)
+        for ligne in t[1:-1]:
+            self.assertAlmostEqual(
+                ligne.dotation, 100.0, delta=DELTA,
+                msg="Une dotation de plein mois vaut la base sur la durée")
+        self.assertAlmostEqual(t[-1].dotation, 90.0, delta=DELTA)
+        self.assertEqual(
+            t[-1].date_echeance, date(2027, 9, 30),
+            "Le bien s'amortit jusqu'au douzième mois suivant sa mise en "
+            "service, pas jusqu'au onzième")
+
+    def test_le_trimestriel_suit_la_meme_regle(self):
+        t = calculer_tableau(1200.0, date(2026, 9, 28), 12,
+                             periodicite="quarterly")
+        self.assertAlmostEqual(
+            t[1].dotation, 300.0, delta=DELTA,
+            msg="Un trimestre entier vaut trois mois de dotation")
+        self.assertAlmostEqual(t[-1].dotation, 90.0, delta=DELTA)
+        self.assertEqual(t[-1].date_echeance, date(2027, 9, 30))
+
+    def test_les_invariants_tiennent_sur_le_cas_proratise(self):
+        for periodicite in ("monthly", "quarterly", "yearly"):
+            with self.subTest(periodicite=periodicite):
+                t = calculer_tableau(1200.0, date(2026, 9, 28), 12,
+                                     periodicite=periodicite)
+                controler_tableau(t, 1200.0)
+                self.assertAlmostEqual(
+                    sum(l.dotation for l in t), 1200.0, delta=DELTA)
+
+    def test_une_mise_en_service_en_debut_de_mois_n_ajoute_rien(self):
+        """Sans reliquat, pas d'échéance supplémentaire."""
+        t = calculer_tableau(1200.0, date(2026, 9, 1), 12)
+        self.assertEqual(len(t), 12)
+        self.assertEqual(t[-1].date_echeance, date(2027, 8, 31))
+
+    def test_sans_prorata_la_duree_reste_celle_de_la_fiche(self):
+        t = calculer_tableau(1200.0, date(2026, 9, 28), 12, prorata=False)
+        self.assertEqual(len(t), 12)
+        self.assertAlmostEqual(t[0].dotation, 100.0, delta=DELTA)
+
+    def test_le_balayage_des_jours_de_mise_en_service(self):
+        """Quel que soit le jour, la somme tombe juste et les dates montent.
+
+        Le reliquat vaut de zéro à presque un mois : c'est la plage où une
+        échéance supplémentaire apparaît, disparaît, ou tombe à zéro après
+        arrondi.
+        """
+        for jour in range(1, 29):
+            for duree in (1, 3, 12, 36):
+                for periodicite in ("monthly", "quarterly", "yearly"):
+                    with self.subTest(jour=jour, duree=duree,
+                                      periodicite=periodicite):
+                        t = calculer_tableau(1200.0, date(2026, 2, jour),
+                                             duree, periodicite=periodicite)
+                        controler_tableau(t, 1200.0)
+                        for a, b in zip(t, t[1:]):
+                            self.assertLess(a.date_echeance, b.date_echeance)
+
+
 class TestRepriseAnteriorite(unittest.TestCase):
     """Reprise d'un bien déjà partiellement amorti.
 
