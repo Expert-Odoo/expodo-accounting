@@ -3095,6 +3095,55 @@ class TestFluxDeTresorerieAffectation(TransactionCase):
         ecriture(11, compte("asset_receivable"), compte("income"))
         self.assertAlmostEqual(position() - depart, 0.0, places=2)
 
+    def test_la_position_nette_verifie_son_identite(self):
+        """Position nette = disponibilités + créances + stocks et autres
+        créances − dettes fournisseurs − autres dettes courantes.
+
+        Les scénarios par écriture ne suffisent pas : « une créance après une
+        dette ramène au départ » passait aussi avec la formule fautive, qui
+        inversait les deux signes symétriquement. L'identité, contrôlée avec
+        des composantes toutes non nulles et différentes, ne laisse passer
+        aucune erreur de signe ni d'oubli de terme."""
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(type_):
+            c = comptes.search([("account_type", "=", type_),
+                                ("company_ids", "in", societe.id)], limit=1)
+            self.assertTrue(c, "Aucun compte de type %s" % type_)
+            return c
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        capital = compte("equity")
+        for jour, (type_, montant) in enumerate([
+                ("asset_cash", 7000.0), ("asset_receivable", 3000.0),
+                ("asset_current", 1100.0), ("liability_payable", -1700.0),
+                ("liability_current", -400.0)], start=1):
+            debit, credit = (compte(type_), capital) if montant > 0 else (capital, compte(type_))
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": date(2035, 2, jour),
+                "line_ids": [
+                    Command.create({"name": "I", "account_id": debit.id, "debit": abs(montant)}),
+                    Command.create({"name": "I", "account_id": credit.id, "credit": abs(montant)}),
+                ],
+            }).action_post()
+        rapport = self.env.ref("expodo_account_reports.report_executive_summary")
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2035, 1, 1), "date_to": date(2035, 12, 31)}})
+        brut = rapport._expodo_compute_values(options, "main")
+        v = {code: brut[(code, "balance")] for code in (
+            "EXEC_DISPO", "EXEC_CREANCES", "EXEC_STOCKS", "EXEC_DETTES",
+            "EXEC_AUTRES_DETTES", "EXEC_POSITION_NETTE")}
+        for code in ("EXEC_DISPO", "EXEC_CREANCES", "EXEC_STOCKS",
+                     "EXEC_DETTES", "EXEC_AUTRES_DETTES"):
+            self.assertNotAlmostEqual(v[code], 0.0, places=2,
+                                      msg="%s doit être non nul pour que l'identité prouve quelque chose" % code)
+        self.assertAlmostEqual(
+            v["EXEC_POSITION_NETTE"],
+            v["EXEC_DISPO"] + v["EXEC_CREANCES"] + v["EXEC_STOCKS"]
+            - v["EXEC_DETTES"] - v["EXEC_AUTRES_DETTES"], places=2)
+
     def test_une_dotation_aux_amortissements_est_un_element_sans_effet_de_tresorerie(self):
         """Une dotation n'est pas un décaissement.
 
