@@ -52,7 +52,7 @@ installed chart names none, and which is also excluded from the FEC.
 
 Built and maintained by Expodo — https://expodo.fr
     """,
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting/Accounting",
     "license": "LGPL-3",
     "author": "Expodo",
