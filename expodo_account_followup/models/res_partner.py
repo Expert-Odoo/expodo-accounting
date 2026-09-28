@@ -49,20 +49,37 @@ class Partenaire(models.Model):
         help="What was agreed with this customer. A payment plan or a dispute "
              "lives here, not in someone's memory.")
 
-    def _lignes_echues(self):
-        """Lignes clientes échues, non lettrées, non exclues."""
-        self.ensure_one()
+    def _domaine_a_relancer(self):
+        """Lignes clientes qui entrent dans le calcul de la relance.
+
+        Les créances échues, mais aussi **les règlements non lettrés**.
+
+        Le lettrage est un geste, souvent fait plus tard et parfois jamais.
+        Un règlement encaissé ne porte pas d'échéance, ou porte celle du jour
+        où il est arrivé : le filtre sur une échéance passée le faisait sortir
+        du calcul, et le client restait relancé du montant entier d'une
+        facture qu'il venait de payer. C'est l'erreur la plus coûteuse que
+        puisse commettre un module de relance, et elle ne se voit pas d'ici :
+        elle se voit chez le client.
+        """
         aujourd_hui = fields.Date.context_today(self)
-        return self.env["account.move.line"].search([
-            ("partner_id", "=", self.id),
+        return [
             ("company_id", "=", self.env.company.id),
             ("parent_state", "=", "posted"),
             ("account_id.account_type", "=", "asset_receivable"),
             ("full_reconcile_id", "=", False),
             ("no_followup", "=", False),
+            "|",
             ("date_maturity", "<", aujourd_hui),
+            ("amount_residual", "<", 0.0),
             ("amount_residual", "!=", 0.0),
-        ])
+        ]
+
+    def _lignes_echues(self):
+        """Créances échues et règlements non lettrés de ce client."""
+        self.ensure_one()
+        return self.env["account.move.line"].search(
+            self._domaine_a_relancer() + [("partner_id", "=", self.id)])
 
     @api.depends_context("company")
     def _compute_followup(self):
@@ -79,8 +96,25 @@ class Partenaire(models.Model):
                 partenaire.followup_level_id = False
                 continue
 
-            partenaire.followup_amount_due = sum(lignes.mapped("amount_residual"))
-            plus_ancienne = min(lignes.mapped("date_maturity"))
+            du = sum(lignes.mapped("amount_residual"))
+            # Un client qui a versé autant ou plus qu'il ne doit n'est pas un
+            # client en retard : une relance de zéro, ou négative, part quand
+            # même si on ne l'arrête pas ici.
+            echues = lignes.filtered(
+                lambda l: l.amount_residual > 0 and l.date_maturity)
+            if du <= 0 or not echues:
+                partenaire.followup_amount_due = 0.0
+                partenaire.followup_oldest_due = False
+                partenaire.followup_days_overdue = 0
+                partenaire.followup_level_id = False
+                continue
+
+            partenaire.followup_amount_due = du
+            # La plus ancienne échéance se lit sur les seules créances. Prise
+            # sur l'ensemble, un règlement ancien devenait le point de départ
+            # du retard et faisait franchir des niveaux de relance qu'aucune
+            # facture ne justifiait.
+            plus_ancienne = min(echues.mapped("date_maturity"))
             partenaire.followup_oldest_due = plus_ancienne
             retard = (aujourd_hui - plus_ancienne).days
             partenaire.followup_days_overdue = retard
@@ -94,20 +128,14 @@ class Partenaire(models.Model):
         cela, la liste des clients à relancer ne pourrait pas être filtrée, ce
         qui est précisément ce qu'on veut en faire.
         """
-        aujourd_hui = fields.Date.context_today(self)
-        lignes = self.env["account.move.line"].search([
-            ("company_id", "=", self.env.company.id),
-            ("parent_state", "=", "posted"),
-            ("account_id.account_type", "=", "asset_receivable"),
-            ("full_reconcile_id", "=", False),
-            ("no_followup", "=", False),
-            ("date_maturity", "<", aujourd_hui),
-            ("amount_residual", "!=", 0.0),
-        ])
+        lignes = self.env["account.move.line"].search(self._domaine_a_relancer())
+        # Le même domaine que la fiche, et le même plancher : sans cela, la
+        # liste des retards affiche des clients dont la fiche annonce zéro.
         totaux = {}
         for ligne in lignes:
             totaux.setdefault(ligne.partner_id.id, 0.0)
             totaux[ligne.partner_id.id] += ligne.amount_residual
+        totaux = {pid: total for pid, total in totaux.items() if total > 0}
 
         import operator
         comparaisons = {

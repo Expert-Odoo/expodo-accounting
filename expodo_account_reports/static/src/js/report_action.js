@@ -17,6 +17,7 @@ import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
+import { useSetupAction } from "@web/search/action_hook";
 import { Component, onWillStart, useState } from "@odoo/owl";
 
 export class ExpodoAccountReport extends Component {
@@ -54,7 +55,39 @@ export class ExpodoAccountReport extends Component {
             search: "",
         });
 
+        // Ce qui est rendu au retour par le fil d'Ariane.
+        //
+        // Ouvrir les écritures derrière une cellule puis revenir remontait
+        // l'état sur sa période par défaut, entièrement replié. Sur un grand
+        // livre déplié compte par compte, c'est le travail de contrôle qui
+        // recommence à chaque chiffre vérifié — et le contrôle, c'est
+        // précisément ce que cet écran sert à faire.
+        useSetupAction({
+            getLocalState: () => ({
+                expodoReportId: this.reportId,
+                expodoOptions: JSON.parse(JSON.stringify(this.state.options)),
+                expodoUnfolded: this.state.lines
+                    .filter((l) => l.unfolded && !l.parent_id)
+                    .map((l) => l.id),
+            }),
+        });
+
         onWillStart(async () => {
+            const garde = this.props.state;
+            if (garde && garde.expodoOptions) {
+                if (garde.expodoReportId) {
+                    this.reportId = garde.expodoReportId;
+                }
+                await this.load(garde.expodoOptions, { keepUnfolded: false });
+                for (const id of garde.expodoUnfolded || []) {
+                    const line = this.state.lines.find((l) => l.id === id);
+                    if (line && line.unfoldable) {
+                        await this.onToggleLine(line);
+                    }
+                }
+                return;
+            }
+
             if (!this.reportId && this.reportKind === "tax") {
                 this.reportId = await this.orm.call(
                     "account.report", "expodo_resolve_tax_report", []
@@ -67,6 +100,24 @@ export class ExpodoAccountReport extends Component {
                     "account.report", "expodo_resolve_statutory_report",
                     [this.reportKind]
                 );
+            }
+
+            // Une déclaration de taxes ouvre son état sur **sa** période.
+            //
+            // L'action transmettait les deux bornes, le client ne les lisait
+            // pas : celui qui contrôlait une déclaration de septembre lisait
+            // l'exercice entier, sans que rien ne le signale.
+            const bornes = this.props.action.params || {};
+            if (bornes.date_from && bornes.date_to) {
+                await this.load({
+                    date: {
+                        mode: "range",
+                        filter: "custom",
+                        date_from: bornes.date_from,
+                        date_to: bornes.date_to,
+                    },
+                });
+                return;
             }
             await this.load();
         });

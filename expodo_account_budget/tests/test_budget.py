@@ -205,3 +205,134 @@ class TestBudgets(TransactionCase):
         })
         ligne = self._ligne(self.compte_charge, 10000.0)
         self.assertAlmostEqual(ligne.actual_amount, 0.0, places=2)
+
+
+@tagged("post_install", "-at_install")
+class TestBudgetMixte(TransactionCase):
+    """Un budget qui mêle produits et charges.
+
+    Les deux natures se saisissent en positif, pour ne pas demander un
+    nombre négatif à celui qui prévoit vingt mille de ventes. Les additionner
+    revient alors à ajouter des euros gagnés à des euros dépensés : le total
+    n'a aucun sens, et il est d'autant plus trompeur qu'il paraît juste.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.societe = cls.env.company
+        comptes = cls.env["account.account"]
+        cls.charge = comptes.search(
+            [("account_type", "=", "expense"),
+             ("company_ids", "in", cls.societe.id)], limit=1, order="code")
+        cls.produit = comptes.search(
+            [("account_type", "=", "income"),
+             ("company_ids", "in", cls.societe.id)], limit=1, order="code")
+        cls.journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", cls.societe.id)],
+            limit=1)
+        cls.contrepartie = comptes.search(
+            [("account_type", "=", "asset_receivable"),
+             ("company_ids", "in", cls.societe.id)], limit=1, order="code")
+
+    def _ecrire(self, compte, debit, credit):
+        self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": date(2033, 6, 15),
+            "line_ids": [
+                Command.create({"name": "b", "account_id": compte.id,
+                                "debit": debit, "credit": credit}),
+                Command.create({"name": "b", "account_id": self.contrepartie.id,
+                                "debit": credit, "credit": debit}),
+            ]}).action_post()
+
+    def _budget(self):
+        return self.env["expodo.budget"].create({
+            "name": "Budget mixte", "company_id": self.societe.id,
+            "date_from": date(2033, 1, 1), "date_to": date(2033, 12, 31),
+            "line_ids": [
+                Command.create({
+                    "account_id": self.charge.id, "planned_amount": 1000.0,
+                    "date_from": date(2033, 1, 1), "date_to": date(2033, 12, 31)}),
+                Command.create({
+                    "account_id": self.produit.id, "planned_amount": 20000.0,
+                    "date_from": date(2033, 1, 1), "date_to": date(2033, 12, 31)}),
+            ]})
+
+    def test_un_budget_de_deux_natures_se_signale(self):
+        budget = self._budget()
+        self.assertTrue(
+            budget.mixed_natures,
+            "Un budget qui porte des produits et des charges doit le dire, "
+            "sinon ses totaux se lisent comme s'ils avaient un sens")
+
+    def test_l_effet_sur_le_resultat_porte_le_signe_de_la_nature(self):
+        """Mille de charge en trop et sept mille de vente en moins pèsent
+        tous deux sur le résultat."""
+        self._ecrire(self.charge, 6500.0, 0.0)
+        self._ecrire(self.produit, 0.0, 13000.0)
+        budget = self._budget()
+        self.assertAlmostEqual(
+            budget.total_impact, -12500.0, places=2,
+            msg="Une charge dépassée et un produit manqué se cumulent, ils ne "
+                "se compensent pas")
+
+    def test_un_budget_d_une_seule_nature_garde_ses_totaux(self):
+        budget = self.env["expodo.budget"].create({
+            "name": "Budget de charges", "company_id": self.societe.id,
+            "date_from": date(2033, 1, 1), "date_to": date(2033, 12, 31),
+            "line_ids": [Command.create({
+                "account_id": self.charge.id, "planned_amount": 1000.0,
+                "date_from": date(2033, 1, 1),
+                "date_to": date(2033, 12, 31)})]})
+        self.assertFalse(budget.mixed_natures)
+        self.assertAlmostEqual(budget.total_planned, 1000.0, places=2)
+
+    def test_la_nature_du_compte_est_lisible_sur_la_ligne(self):
+        """Une décoration de liste n'évalue pas un chemin pointé.
+
+        ``account_id.internal_group`` ne vaut rien côté navigateur : les
+        lignes en dépassement ne se coloraient pas, et la seule lecture
+        immédiate du tableau était perdue.
+        """
+        budget = self._budget()
+        ligne = budget.line_ids[0]
+        self.assertIn("account_internal_group", ligne._fields)
+        self.assertEqual(
+            ligne.account_internal_group, ligne.account_id.internal_group)
+
+
+@tagged("post_install", "-at_install")
+class TestVuesBudget(TransactionCase):
+    """Ce que la vue déclare, et que seul un utilisateur voyait."""
+
+    def _arch(self, xmlid):
+        return self.env.ref("expodo_account_budget." + xmlid).arch
+
+    def test_le_taux_de_realisation_n_est_pas_multiplie_deux_fois(self):
+        """``achievement`` est déjà un pourcentage.
+
+        Le widget ``percentage`` multiplie par cent ce qu'il reçoit : un
+        réalisé de 127,5 % s'affichait 12 750 %.
+        """
+        self.assertNotIn(
+            'name="achievement" widget="percentage"',
+            self._arch("view_expodo_budget_line_list"),
+            "Le champ vaut déjà des pour cent, le widget les multiplie encore")
+
+    def test_les_decorations_n_empruntent_aucun_chemin_pointe(self):
+        arch = self._arch("view_expodo_budget_line_list")
+        for decoration in ("decoration-danger", "decoration-success"):
+            debut = arch.find(decoration)
+            if debut < 0:
+                continue
+            fin = arch.find('"', arch.find('"', debut) + 1)
+            expression = arch[debut:fin]
+            self.assertNotIn(
+                "account_id.", expression,
+                "Une décoration s'évalue côté navigateur, sur les seuls "
+                "champs présents dans la vue")
+
+    def test_les_totaux_de_deux_natures_sont_masques(self):
+        arch = self._arch("view_expodo_budget_form")
+        self.assertIn("mixed_natures", arch)
+        self.assertIn("total_impact", arch)

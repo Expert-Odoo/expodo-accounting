@@ -53,6 +53,43 @@ class TestAnnotations(TransactionCase):
     # Affichage
     # ------------------------------------------------------------------
 
+    def test_une_note_est_visible_a_l_ecran(self):
+        """Une note qu'on ne voit qu'en exportant est une note perdue.
+
+        Les annotations n'étaient ajoutées qu'aux lignes d'export : elles
+        figuraient dans le PDF et dans le classeur, et nulle part à l'écran.
+        Or on annote pour expliquer un chiffre à celui qui le regarde, et
+        c'est à l'écran qu'on le regarde. Personne n'exporte un état pour
+        relire son propre commentaire.
+        """
+        self._annoter(texte="Litige fournisseur en cours")
+        donnees = self.rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2026, 1, 1), "date_to": date(2026, 12, 31)}})
+        notes = []
+        for ligne in donnees["lines"]:
+            if ligne.get("line_id") == self.ligne.id:
+                notes = ligne.get("annotations") or []
+        self.assertIn(
+            "Litige fournisseur en cours", notes,
+            "La note doit accompagner la ligne dans ce que reçoit le "
+            "navigateur, pas seulement dans les exports")
+
+    def test_une_note_hors_periode_ne_s_affiche_pas_a_l_ecran(self):
+        """L'écran suit la même règle de période que les exports.
+
+        Une explication périmée présentée comme actuelle est pire qu'une
+        absence d'explication.
+        """
+        self._annoter(texte="Note de 2025", debut=date(2025, 1, 1),
+                      fin=date(2025, 12, 31))
+        donnees = self.rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2026, 1, 1), "date_to": date(2026, 12, 31)}})
+        for ligne in donnees["lines"]:
+            self.assertNotIn(
+                "Note de 2025", ligne.get("annotations") or [])
+
     def test_une_note_arrive_dans_les_deux_exports(self):
         """Une note que personne ne peut lire n'est pas une note.
 

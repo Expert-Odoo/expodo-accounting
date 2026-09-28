@@ -6,17 +6,25 @@
             <field name="name">expodo.budget.line.list</field>
             <field name="model">expodo.budget.line</field>
             <field name="arch" type="xml">
+                <!--
+                    Les colonnes ne portent pas de `sum` : un budget peut
+                    mêler produits et charges, saisis l'un et l'autre en
+                    positif, et leur addition n'a pas de sens. Le budget
+                    porte à la place un effet sur le résultat, qui lui
+                    s'additionne toujours.
+                -->
                 <list string="Budget lines" editable="bottom"
-                      decoration-danger="variance &gt; 0 and account_id.internal_group == 'expense'"
-                      decoration-success="variance &gt; 0 and account_id.internal_group == 'income'">
+                      decoration-danger="variance &gt; 0 and account_internal_group == 'expense' or variance &lt; 0 and account_internal_group == 'income'"
+                      decoration-success="variance &lt; 0 and account_internal_group == 'expense' or variance &gt; 0 and account_internal_group == 'income'">
                     <field name="account_id"/>
+                    <field name="account_internal_group" column_invisible="1"/>
                     <field name="date_from"/>
                     <field name="date_to"/>
-                    <field name="planned_amount" sum="Planned"/>
-                    <field name="prorated_amount" sum="To date"/>
-                    <field name="actual_amount" sum="Actual"/>
-                    <field name="variance" sum="Variance"/>
-                    <field name="achievement" widget="percentage" optional="show"/>
+                    <field name="planned_amount"/>
+                    <field name="prorated_amount"/>
+                    <field name="actual_amount"/>
+                    <field name="variance"/>
+                    <field name="achievement" optional="show"/>
                     <field name="currency_id" column_invisible="1"/>
                     <button name="action_open_entries" type="object"
                             icon="fa-search" title="Open the entries"/>
@@ -50,9 +58,11 @@
                                 <field name="currency_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="total_planned"/>
-                                <field name="total_actual"/>
-                                <field name="total_variance"/>
+                                <field name="mixed_natures" invisible="1"/>
+                                <field name="total_planned" invisible="mixed_natures"/>
+                                <field name="total_actual" invisible="mixed_natures"/>
+                                <field name="total_variance" invisible="mixed_natures"/>
+                                <field name="total_impact"/>
                             </group>
                         </group>
                         <notebook>
@@ -85,6 +95,7 @@
                     <field name="total_planned"/>
                     <field name="total_actual"/>
                     <field name="total_variance"/>
+                    <field name="total_impact"/>
                     <field name="currency_id" column_invisible="1"/>
                     <field name="state" widget="badge"
                            decoration-success="state == 'confirmed'"

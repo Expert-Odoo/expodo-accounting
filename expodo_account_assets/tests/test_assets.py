@@ -603,21 +603,42 @@ class TestAssets(TransactionCase):
         donc rien d'autre ne le signale — et le plan comptable français type
         précisément 681120 en charge ordinaire.
         """
-        charge_ordinaire = self.env["account.account"].search([
-            ("account_type", "=", "expense")], limit=1)
+        comptes = self.env["account.account"]
+        charge_ordinaire = comptes.search(
+            [("account_type", "=", "expense")], limit=1)
         self.assertTrue(charge_ordinaire, "Le test suppose un compte de charge")
-        asset = self._asset(account_expense_id=charge_ordinaire.id)
-        self.assertTrue(
-            asset.expense_type_warning,
-            "Un compte typé « charge » doit être signalé")
+        amortissement = comptes.search(
+            [("account_type", "=", "asset_fixed")], limit=1)
+        self.assertTrue(amortissement, "Le test suppose un compte d'actif")
 
-        dotation = self.env["account.account"].search([
-            ("account_type", "=", "expense_depreciation")], limit=1)
+        # Le tableau de flux réintègre aussi les charges des écritures qui
+        # touchent un compte d'immobilisation. Une dotation passée contre un
+        # compte 28 typé « immobilisations » est donc bien lue, quel que soit
+        # le type du compte de charge : avertir ici reviendrait à réclamer un
+        # retypage du plan comptable pour rien.
+        asset = self._asset(account_expense_id=charge_ordinaire.id,
+                            account_depreciation_id=amortissement.id)
+        self.assertFalse(
+            asset.expense_type_warning,
+            "Une dotation passée contre un compte d'immobilisation est "
+            "réintégrée par le tableau de flux : rien à signaler")
+
+        autre = comptes.search(
+            [("account_type", "=", "asset_non_current")], limit=1)
+        if autre:
+            asset.account_depreciation_id = autre
+            self.assertTrue(
+                asset.expense_type_warning,
+                "Ni le compte de charge ni le compte d'amortissement ne "
+                "portent un type que le tableau de flux reconnaît")
+
+        dotation = comptes.search(
+            [("account_type", "=", "expense_depreciation")], limit=1)
         if dotation:
             asset.account_expense_id = dotation
             self.assertFalse(
                 asset.expense_type_warning,
-                "Un compte correctement typé ne doit rien signaler")
+                "Un compte de charge correctement typé suffit à lui seul")
 
     def test_asset_with_posted_entries_cannot_be_deleted(self):
         """Régression : supprimer un bien laissait ses écritures orphelines.

@@ -912,15 +912,19 @@ msgstr "La durata deve essere di almeno un mese."
 #. odoo-python
 #: code:addons/expodo_account_assets/models/expodo_asset.py:0
 msgid ""
-"The expense account %(account)s is typed “%(type)s” rather than "
-"“Depreciation”. Depreciation will still be posted correctly, but the cash "
-"flow statement will report it inside the net result instead of adding it "
-"back separately."
+"Neither the expense account %(expense)s nor the depreciation account "
+"%(depreciation)s carries a type the cash flow statement recognises. "
+"Depreciation will still be posted correctly, but it will be reported "
+"inside the net result instead of being added back separately. Type the "
+"expense account as “Depreciation”, or the depreciation account as "
+"“Fixed Assets”."
 msgstr ""
-"Il conto di costo %(account)s è tipizzato «%(type)s» anziché «Ammortamento»."
-" Gli ammortamenti saranno registrati correttamente, ma il rendiconto "
-"finanziario li includerà nel risultato netto invece di riprenderli "
-"separatamente."
+"Né il conto di costo %(expense)s né il conto di ammortamento "
+"%(depreciation)s ha un tipo riconosciuto dal rendiconto finanziario. "
+"L’ammortamento sarà registrato correttamente, ma comparirà nel "
+"risultato netto anziché essere riaggiunto separatamente. Tipizzare il "
+"conto di costo come «ammortamento» o il conto di ammortamento come "
+"«immobilizzazioni»."
 
 #. module: expodo_account_assets
 #: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form

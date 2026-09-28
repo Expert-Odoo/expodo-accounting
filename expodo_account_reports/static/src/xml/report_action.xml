@@ -153,6 +153,18 @@
                                           t-esc="line.unfolded ? '-' : '+'"/>
                                     <span t-att-class="line.unfoldable ? 'o_expodo_clickable' : ''"
                                           t-on-click="() => this.onToggleLine(line)" t-esc="line.name"/>
+                                    <!--
+                                        Les annotations, quand le module qui
+                                        les porte est installé. Elles
+                                        expliquent un chiffre à celui qui le
+                                        regarde : leur place est sous le
+                                        libellé, pas seulement dans le PDF.
+                                    -->
+                                    <div t-if="line.annotations and line.annotations.length"
+                                         class="small text-muted fst-italic">
+                                        <div t-foreach="line.annotations" t-as="note"
+                                             t-key="note_index" t-esc="note"/>
+                                    </div>
                                 </td>
                                 <t t-foreach="state.columnGroups" t-as="group" t-key="group.key">
                                     <t t-foreach="line.columns" t-as="column" t-key="column.label">

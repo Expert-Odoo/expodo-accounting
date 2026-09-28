@@ -912,15 +912,19 @@ msgstr "La duración debe ser de al menos un mes."
 #. odoo-python
 #: code:addons/expodo_account_assets/models/expodo_asset.py:0
 msgid ""
-"The expense account %(account)s is typed “%(type)s” rather than "
-"“Depreciation”. Depreciation will still be posted correctly, but the cash "
-"flow statement will report it inside the net result instead of adding it "
-"back separately."
+"Neither the expense account %(expense)s nor the depreciation account "
+"%(depreciation)s carries a type the cash flow statement recognises. "
+"Depreciation will still be posted correctly, but it will be reported "
+"inside the net result instead of being added back separately. Type the "
+"expense account as “Depreciation”, or the depreciation account as "
+"“Fixed Assets”."
 msgstr ""
-"La cuenta de gasto %(account)s está tipificada como «%(type)s» y no como "
-"«Amortización». Las dotaciones se contabilizarán correctamente, pero el "
-"estado de flujos las incluirá en el resultado neto en vez de añadirlas por "
-"separado."
+"Ni la cuenta de gasto %(expense)s ni la cuenta de amortización "
+"%(depreciation)s tienen un tipo que el estado de flujos de efectivo "
+"reconozca. La amortización se contabilizará correctamente, pero "
+"figurará dentro del resultado neto en lugar de añadirse por separado. "
+"Tipifique la cuenta de gasto como «amortización» o la cuenta de "
+"amortización como «inmovilizado»."
 
 #. module: expodo_account_assets
 #: model_terms:ir.ui.view,arch_db:expodo_account_assets.view_expodo_asset_disposal_form

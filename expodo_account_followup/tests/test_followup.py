@@ -69,6 +69,106 @@ class TestRelances(TransactionCase):
     # Ce qui n'est pas relancé
     # ------------------------------------------------------------------
 
+    def _reglement(self, montant=1000.0, jours=0, echeance=None,
+                   partenaire=None):
+        """Un règlement encaissé, non lettré.
+
+        Passé au journal de banque, comme le fait l'enregistrement d'un
+        paiement : la ligne client est créditrice, et son échéance est celle
+        du jour de l'encaissement, quand elle en porte une.
+        """
+        partenaire = partenaire or self.client
+        jour = fields.Date.context_today(self.env.user) - relativedelta(days=jours)
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        ecriture = self.env["account.move"].create({
+            "journal_id": (banque or self.journal).id,
+            "date": jour,
+            "line_ids": [
+                Command.create({
+                    "name": "Règlement", "account_id": self.compte_client.id,
+                    "partner_id": partenaire.id,
+                    "date_maturity": echeance,
+                    "debit": 0.0, "credit": montant}),
+                Command.create({
+                    "name": "Règlement",
+                    "account_id": (banque.default_account_id
+                                   or self.compte_vente).id,
+                    "debit": montant, "credit": 0.0}),
+            ],
+        })
+        ecriture.action_post()
+        return ecriture
+
+    def test_un_reglement_non_lettre_eteint_la_relance(self):
+        """Le lettrage est un geste, souvent fait plus tard, parfois jamais.
+
+        Les lignes retenues étaient celles dont l'échéance est passée. Un
+        règlement n'en porte pas, ou porte celle du jour où il a été encaissé :
+        il sortait du calcul, et le client restait relancé du montant entier
+        d'une facture qu'il venait de payer. C'est l'erreur la plus coûteuse
+        que puisse commettre un module de relance.
+        """
+        self._facture(montant=1000.0, jours_de_retard=45)
+        self._reglement(montant=1000.0)
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(
+            self.client.followup_amount_due, 0.0, places=2,
+            msg="Un règlement encaissé éteint la créance, lettré ou non")
+        self.assertFalse(
+            self.client.followup_level_id,
+            "Un client à jour n'atteint aucun niveau de relance")
+
+    def test_un_acompte_du_jour_reduit_le_montant_relance(self):
+        """Un acompte partiel réduit la relance, il ne la laisse pas entière."""
+        self._facture(montant=1000.0, jours_de_retard=45)
+        self._reglement(montant=400.0)
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(
+            self.client.followup_amount_due, 600.0, places=2,
+            msg="On relance le solde, pas la facture d'origine")
+
+    def test_le_retard_ne_se_compte_pas_sur_un_reglement(self):
+        """La plus ancienne échéance est celle d'une facture, pas d'un règlement.
+
+        Un règlement daté d'aujourd'hui ne doit pas ramener le retard à zéro,
+        ni un règlement ancien l'allonger.
+        """
+        self._facture(montant=1000.0, jours_de_retard=45)
+        self._reglement(montant=200.0, jours=200,
+                        echeance=fields.Date.context_today(self.env.user)
+                        - relativedelta(days=200))
+        self.client.invalidate_recordset()
+        self.assertEqual(
+            self.client.followup_days_overdue, 45,
+            "Le retard se compte sur la facture la plus ancienne restée due")
+
+    def test_un_client_en_avance_n_est_pas_relance(self):
+        """Un acompte supérieur au dû ne produit pas une relance négative."""
+        self._facture(montant=1000.0, jours_de_retard=45)
+        self._reglement(montant=1500.0)
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(
+            self.client.followup_amount_due, 0.0, places=2,
+            msg="Un client qui a trop versé n'est pas un client en retard")
+        self.assertFalse(self.client.followup_level_id)
+
+    def test_la_recherche_suit_le_meme_calcul(self):
+        """La liste des clients à relancer doit dire la même chose que la fiche.
+
+        Le filtre de la vue liste refaisait le calcul de son côté. Les deux
+        doivent se tenir, sans quoi un client apparaît dans la liste des
+        retards avec un montant dû nul.
+        """
+        self._facture(montant=1000.0, jours_de_retard=45)
+        self._reglement(montant=1000.0)
+        self.client.invalidate_recordset()
+        trouves = self.env["res.partner"].search([
+            ("followup_amount_due", ">", 0.0), ("id", "=", self.client.id)])
+        self.assertFalse(
+            trouves, "Un client à jour n'a rien à faire dans la liste des "
+                     "relances")
+
     def test_une_facture_non_echue_ne_declenche_rien(self):
         """Relancer avant l'échéance abîme la relation sans rien rapporter."""
         self._facture(jours_de_retard=-15)

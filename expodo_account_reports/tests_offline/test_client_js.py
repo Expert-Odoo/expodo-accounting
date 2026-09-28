@@ -33,10 +33,13 @@ SOURCE = os.path.join(RACINE, "static", "src", "js", "report_action.js")
 PREAMBULE = """
 const _t = (texte) => texte;
 const registry = { category: () => ({ add: () => {} }) };
-const useService = () => ({});
+const useService = (nom) => (globalThis.__services || {})[nom] || {};
 const standardActionServiceProps = {};
 class Component {}
-const onWillStart = () => {};
+// Les crochets d'OWL et du service d'action sont retenus plutôt qu'exécutés :
+// le scénario les déclenche lui-même, dans l'ordre où le fait le client.
+const onWillStart = (rappel) => { globalThis.__onWillStart = rappel; };
+const useSetupAction = (descripteur) => { globalThis.__setupAction = descripteur; };
 const useState = (etat) => etat;
 """
 
@@ -175,3 +178,145 @@ class TestChargementsConcurrents(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+SCENARIO_PERIODE = r"""
+const appels = [];
+const orm = {
+    async call(modele, methode, args) {
+        appels.push({methode, options: args[1]});
+        if (methode === "expodo_get_report_data") {
+            return {report: {}, options: args[1] || {}, columns: [],
+                    column_groups: [], notice: false, lines: []};
+        }
+        return [];
+    },
+};
+globalThis.__services = {orm, action: {}, notification: {add() {}}};
+
+const vue = Object.create(ExpodoAccountReport.prototype);
+vue.props = {action: {context: {}, params: {
+    report_id: 7, date_from: "2026-09-01", date_to: "2026-09-30"}}};
+vue.setup();
+globalThis.__onWillStart().then(() => {
+    console.log(JSON.stringify(appels));
+});
+"""
+
+SCENARIO_RETOUR = r"""
+const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+const appels = [];
+
+const lignes = () => ([
+    {id: "line|1", line_id: 1, name: "Comptes", unfoldable: true,
+     unfolded: false, level: 0, columns: []},
+]);
+const enfants = () => ([
+    {id: "grp|1|0|account_id|10", line_id: 1, name: "600000",
+     unfoldable: false, columns: []},
+]);
+
+const orm = {
+    async call(modele, methode, args) {
+        appels.push({methode, options: args[1]});
+        await attendre(2);
+        if (methode === "expodo_get_report_data") {
+            return {report: {}, options: args[1] || {}, columns: [],
+                    column_groups: [], notice: false, lines: lignes()};
+        }
+        return enfants();
+    },
+};
+globalThis.__services = {orm, action: {}, notification: {add() {}}};
+
+const optionsGardees = {date: {mode: "range", filter: "custom",
+                               date_from: "2026-01-01", date_to: "2026-09-30"}};
+const vue = Object.create(ExpodoAccountReport.prototype);
+vue.props = {
+    action: {context: {}, params: {}},
+    // Ce que le service d'action rend au retour par le fil d'Ariane.
+    state: {expodoReportId: 12, expodoOptions: optionsGardees,
+            expodoUnfolded: ["line|1"]},
+};
+vue.setup();
+globalThis.__onWillStart().then(async () => {
+    await attendre(30);
+    const garde = globalThis.__setupAction
+        ? globalThis.__setupAction.getLocalState()
+        : null;
+    console.log(JSON.stringify({
+        appels,
+        lignes: vue.state.lines.map((l) => l.id),
+        garde: garde && {
+            rapport: garde.expodoReportId,
+            deplie: garde.expodoUnfolded,
+            periode: garde.expodoOptions && garde.expodoOptions.date,
+        },
+    }));
+});
+"""
+
+
+class _ScenarioNode:
+    """Exécute un scénario contre le fichier de production, sous Node."""
+
+    def _executer(self, scenario):
+        with tempfile.TemporaryDirectory() as dossier:
+            chemin = os.path.join(dossier, "scenario.mjs")
+            with open(chemin, "w", encoding="utf-8") as fichier:
+                fichier.write(source_javascript() + scenario)
+            resultat = subprocess.run(
+                [shutil.which("node"), chemin],
+                capture_output=True, text=True, timeout=60)
+        self.assertEqual(resultat.returncode, 0, resultat.stderr[-800:])
+        return json.loads(resultat.stdout.strip().splitlines()[-1])
+
+
+@unittest.skipUnless(shutil.which("node"), "Node absent de cette image")
+class TestPeriodeTransmise(_ScenarioNode, unittest.TestCase):
+    """Une déclaration ouvre son état sur sa propre période.
+
+    L'action transmettait ``date_from`` et ``date_to``, le client ne les
+    lisait pas : l'état s'ouvrait sur sa période par défaut. L'utilisateur
+    qui contrôle une déclaration de septembre lisait donc l'exercice entier,
+    sans que rien ne le signale.
+    """
+
+    def test_la_periode_de_l_action_est_celle_du_premier_chargement(self):
+        appels = self._executer(SCENARIO_PERIODE)
+        self.assertTrue(appels, "Le rapport doit être chargé au montage")
+        options = appels[0]["options"] or {}
+        self.assertEqual(
+            (options.get("date") or {}).get("date_from"), "2026-09-01")
+        self.assertEqual(
+            (options.get("date") or {}).get("date_to"), "2026-09-30")
+        self.assertEqual((options.get("date") or {}).get("filter"), "custom")
+
+
+@unittest.skipUnless(shutil.which("node"), "Node absent de cette image")
+class TestRetourParLeFilDAriane(_ScenarioNode, unittest.TestCase):
+    """Revenir sur ses pas ne doit pas défaire ce qu'on avait posé.
+
+    Après avoir ouvert les écritures d'une cellule, le retour rechargeait
+    l'état sur sa période par défaut et repliait tout. Sur un grand livre
+    déplié compte par compte, c'est un quart d'heure de travail perdu à
+    chaque aller-retour, c'est-à-dire à chaque contrôle d'un chiffre.
+    """
+
+    def test_la_periode_et_le_depliage_sont_rendus(self):
+        vu = self._executer(SCENARIO_RETOUR)
+        premier = (vu["appels"][0]["options"] or {}).get("date") or {}
+        self.assertEqual(
+            premier.get("date_from"), "2026-01-01",
+            "Le retour recharge la période quittée, pas celle par défaut")
+        self.assertIn(
+            "grp|1|0|account_id|10", vu["lignes"],
+            "Les lignes dépliées avant le départ doivent l'être au retour")
+
+    def test_l_etat_est_confie_au_service_d_action(self):
+        vu = self._executer(SCENARIO_RETOUR)
+        self.assertIsNotNone(
+            vu["garde"], "Sans getLocalState, rien n'est rendu au retour")
+        self.assertEqual(vu["garde"]["deplie"], ["line|1"])
+        self.assertEqual(
+            (vu["garde"]["periode"] or {}).get("date_from"), "2026-01-01")

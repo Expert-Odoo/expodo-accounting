@@ -60,13 +60,42 @@ class Budget(models.Model):
         string="Actual", compute="_compute_totals", currency_field="currency_id")
     total_variance = fields.Monetary(
         string="Variance", compute="_compute_totals", currency_field="currency_id")
+    mixed_natures = fields.Boolean(
+        string="Mixed natures", compute="_compute_totals",
+        help="True when the budget holds both income and expense accounts. "
+             "Their totals cannot be added: both are entered as positive "
+             "figures, so the sum adds money earned to money spent.")
+    total_impact = fields.Monetary(
+        string="Impact on profit", compute="_compute_totals",
+        currency_field="currency_id",
+        help="What the variances do to the result: an expense over its plan "
+             "and income under its plan both weigh negatively.")
 
-    @api.depends("line_ids.planned_amount", "line_ids.actual_amount")
+    @api.depends("line_ids.planned_amount", "line_ids.actual_amount",
+                 "line_ids.variance", "line_ids.account_internal_group")
     def _compute_totals(self):
+        """Les trois totaux, et ce qui les remplace quand ils n'ont pas de sens.
+
+        Produits et charges se saisissent l'un et l'autre en positif : ne pas
+        demander un nombre négatif à qui prévoit vingt mille de ventes évite
+        une classe entière d'erreurs de signe. Mais les additionner revient à
+        ajouter des euros gagnés à des euros dépensés. Le total obtenu ne veut
+        rien dire, et il est d'autant plus trompeur qu'il a l'air juste.
+
+        L'effet sur le résultat, lui, s'additionne toujours : une charge
+        dépassée et un produit manqué pèsent dans le même sens.
+        """
         for budget in self:
             budget.total_planned = sum(budget.line_ids.mapped("planned_amount"))
             budget.total_actual = sum(budget.line_ids.mapped("actual_amount"))
             budget.total_variance = budget.total_actual - budget.total_planned
+            natures = set(budget.line_ids.mapped("account_internal_group"))
+            budget.mixed_natures = (
+                "income" in natures and "expense" in natures)
+            budget.total_impact = sum(
+                ligne.variance if ligne.account_internal_group == "income"
+                else -ligne.variance
+                for ligne in budget.line_ids)
 
     @api.constrains("date_from", "date_to")
     def _verifier_periode(self):
@@ -101,6 +130,13 @@ class LigneBudgetaire(models.Model):
     account_id = fields.Many2one(
         "account.account", string="Account", required=True,
         help="Account whose movements are compared with the planned amount.")
+    # Une décoration de liste s'évalue dans le navigateur, sur les seuls
+    # champs présents dans la vue : `account_id.internal_group` n'y vaut rien,
+    # et les lignes en dépassement ne se coloraient pas. Le champ lié rend la
+    # nature lisible depuis la vue, en colonne invisible.
+    account_internal_group = fields.Selection(
+        related="account_id.internal_group", string="Account nature",
+        readonly=True)
     date_from = fields.Date(
         string="From", required=True,
         default=lambda self: self.env.context.get("default_date_from"))

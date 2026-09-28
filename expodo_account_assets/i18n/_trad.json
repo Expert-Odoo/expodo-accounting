@@ -1,1 +1,938 @@
-{"Fixed Asset": {"fr": "Immobilisation", "es": "Inmovilizado", "de": "Anlagegut", "nl": "Vast activum", "it": "Cespite", "pt_BR": "Ativo imobilizado"}, "Assets": {"fr": "Immobilisations", "es": "Inmovilizado", "de": "Anlagegüter", "nl": "Vaste activa", "it": "Cespiti", "pt_BR": "Ativos imobilizados"}, "Asset": {"fr": "Immobilisation", "es": "Inmovilizado", "de": "Anlagegut", "nl": "Activum", "it": "Cespite", "pt_BR": "Ativo"}, "Depreciation board": {"fr": "Tableau d'amortissement", "es": "Cuadro de amortización", "de": "Abschreibungsplan", "nl": "Afschrijvingsstaat", "it": "Piano di ammortamento", "pt_BR": "Quadro de depreciação"}, "Depreciation board line": {"fr": "Ligne du tableau d'amortissement", "es": "Línea del cuadro de amortización", "de": "Zeile des Abschreibungsplans", "nl": "Regel afschrijvingsstaat", "it": "Riga del piano di ammortamento", "pt_BR": "Linha do quadro de depreciação"}, "Asset disposal": {"fr": "Cession d'immobilisation", "es": "Baja de inmovilizado", "de": "Anlagenabgang", "nl": "Afstoting van activum", "it": "Dismissione del cespite", "pt_BR": "Baixa de ativo"}, "Dispose of asset": {"fr": "Céder l'immobilisation", "es": "Dar de baja el inmovilizado", "de": "Anlagegut abgehen lassen", "nl": "Activum afstoten", "it": "Dismettere il cespite", "pt_BR": "Dar baixa no ativo"}, "Asset consistency": {"fr": "Cohérence des immobilisations", "es": "Coherencia del inmovilizado", "de": "Konsistenz der Anlagegüter", "nl": "Consistentie vaste activa", "it": "Coerenza dei cespiti", "pt_BR": "Coerência dos ativos"}, "Values": {"fr": "Valeurs", "es": "Valores", "de": "Werte", "nl": "Waarden", "it": "Valori", "pt_BR": "Valores"}, "Accounting": {"fr": "Comptabilité", "es": "Contabilidad", "de": "Buchhaltung", "nl": "Boekhouding", "it": "Contabilità", "pt_BR": "Contabilidade"}, "Name": {"fr": "Nom", "es": "Nombre", "de": "Bezeichnung", "nl": "Naam", "it": "Nome", "pt_BR": "Nome"}, "Acquisition value": {"fr": "Valeur d'acquisition", "es": "Valor de adquisición", "de": "Anschaffungswert", "nl": "Aanschafwaarde", "it": "Valore di acquisizione", "pt_BR": "Valor de aquisição"}, "Salvage value": {"fr": "Valeur résiduelle", "es": "Valor residual", "de": "Restwert", "nl": "Restwaarde", "it": "Valore residuo", "pt_BR": "Valor residual"}, "Already depreciated": {"fr": "Déjà amorti", "es": "Ya amortizado", "de": "Bereits abgeschrieben", "nl": "Reeds afgeschreven", "it": "Già ammortizzato", "pt_BR": "Já depreciado"}, "Depreciated": {"fr": "Amorti", "es": "Amortizado", "de": "Abgeschrieben", "nl": "Afgeschreven", "it": "Ammortizzato", "pt_BR": "Depreciado"}, "Remaining": {"fr": "Restant", "es": "Pendiente", "de": "Restbuchwert", "nl": "Resterend", "it": "Residuo", "pt_BR": "Remanescente"}, "Remaining value": {"fr": "Valeur restante", "es": "Valor pendiente", "de": "Restwert", "nl": "Resterende waarde", "it": "Valore residuo", "pt_BR": "Valor remanescente"}, "Net book value": {"fr": "Valeur nette comptable", "es": "Valor neto contable", "de": "Nettobuchwert", "nl": "Boekwaarde", "it": "Valore contabile netto", "pt_BR": "Valor contábil líquido"}, "In service date": {"fr": "Date de mise en service", "es": "Fecha de puesta en servicio", "de": "Inbetriebnahmedatum", "nl": "Datum ingebruikname", "it": "Data di entrata in funzione", "pt_BR": "Data de entrada em operação"}, "Duration (months)": {"fr": "Durée (mois)", "es": "Duración (meses)", "de": "Dauer (Monate)", "nl": "Looptijd (maanden)", "it": "Durata (mesi)", "pt_BR": "Duração (meses)"}, "Months": {"fr": "Mois", "es": "Meses", "de": "Monate", "nl": "Maanden", "it": "Mesi", "pt_BR": "Meses"}, "Periodicity": {"fr": "Périodicité", "es": "Periodicidad", "de": "Periodizität", "nl": "Periodiciteit", "it": "Periodicità", "pt_BR": "Periodicidade"}, "Monthly": {"fr": "Mensuelle", "es": "Mensual", "de": "Monatlich", "nl": "Maandelijks", "it": "Mensile", "pt_BR": "Mensal"}, "Quarterly": {"fr": "Trimestrielle", "es": "Trimestral", "de": "Vierteljährlich", "nl": "Per kwartaal", "it": "Trimestrale", "pt_BR": "Trimestral"}, "Yearly": {"fr": "Annuelle", "es": "Anual", "de": "Jährlich", "nl": "Jaarlijks", "it": "Annuale", "pt_BR": "Anual"}, "Prorata temporis": {"fr": "Prorata temporis", "es": "Prorata temporis", "de": "Prorata temporis", "nl": "Prorata temporis", "it": "Prorata temporis", "pt_BR": "Prorata temporis"}, "Vendor": {"fr": "Fournisseur", "es": "Proveedor", "de": "Lieferant", "nl": "Leverancier", "it": "Fornitore", "pt_BR": "Fornecedor"}, "Acquisition entry": {"fr": "Écriture d'acquisition", "es": "Asiento de adquisición", "de": "Anschaffungsbuchung", "nl": "Aanschafboeking", "it": "Registrazione di acquisizione", "pt_BR": "Lançamento de aquisição"}, "Journal": {"fr": "Journal", "es": "Diario", "de": "Journal", "nl": "Dagboek", "it": "Registro", "pt_BR": "Diário"}, "Asset account": {"fr": "Compte d'immobilisation", "es": "Cuenta de inmovilizado", "de": "Anlagekonto", "nl": "Activarekening", "it": "Conto cespite", "pt_BR": "Conta do ativo"}, "Depreciation account": {"fr": "Compte d'amortissement", "es": "Cuenta de amortización", "de": "Abschreibungskonto", "nl": "Afschrijvingsrekening", "it": "Conto ammortamento", "pt_BR": "Conta de depreciação"}, "Expense account": {"fr": "Compte de charge", "es": "Cuenta de gasto", "de": "Aufwandskonto", "nl": "Kostenrekening", "it": "Conto di costo", "pt_BR": "Conta de despesa"}, "Net book value account": {"fr": "Compte de valeur nette comptable", "es": "Cuenta de valor neto contable", "de": "Konto für den Nettobuchwert", "nl": "Rekening boekwaarde", "it": "Conto del valore contabile netto", "pt_BR": "Conta do valor contábil líquido"}, "Status": {"fr": "État", "es": "Estado", "de": "Status", "nl": "Status", "it": "Stato", "pt_BR": "Situação"}, "Draft": {"fr": "Brouillon", "es": "Borrador", "de": "Entwurf", "nl": "Concept", "it": "Bozza", "pt_BR": "Rascunho"}, "Running": {"fr": "En cours", "es": "En curso", "de": "Laufend", "nl": "Lopend", "it": "In corso", "pt_BR": "Em andamento"}, "Fully depreciated": {"fr": "Totalement amorti", "es": "Totalmente amortizado", "de": "Vollständig abgeschrieben", "nl": "Volledig afgeschreven", "it": "Completamente ammortizzato", "pt_BR": "Totalmente depreciado"}, "Disposed": {"fr": "Cédé", "es": "Dado de baja", "de": "Abgegangen", "nl": "Afgestoten", "it": "Dismesso", "pt_BR": "Baixado"}, "Posted": {"fr": "Comptabilisé", "es": "Contabilizado", "de": "Gebucht", "nl": "Geboekt", "it": "Confermato", "pt_BR": "Lançado"}, "To post": {"fr": "À comptabiliser", "es": "Por contabilizar", "de": "Zu buchen", "nl": "Te boeken", "it": "Da confermare", "pt_BR": "A lançar"}, "Due": {"fr": "Échu", "es": "Vencido", "de": "Fällig", "nl": "Vervallen", "it": "Scaduto", "pt_BR": "Vencido"}, "No.": {"fr": "N°", "es": "N.º", "de": "Nr.", "nl": "Nr.", "it": "N.", "pt_BR": "N.º"}, "Due date": {"fr": "Date d'échéance", "es": "Fecha de vencimiento", "de": "Fälligkeitsdatum", "nl": "Vervaldatum", "it": "Data di scadenza", "pt_BR": "Data de vencimento"}, "Depreciation": {"fr": "Dotation", "es": "Amortización", "de": "Abschreibung", "nl": "Afschrijving", "it": "Ammortamento", "pt_BR": "Depreciação"}, "Cumulative": {"fr": "Cumul", "es": "Acumulado", "de": "Kumuliert", "nl": "Cumulatief", "it": "Cumulato", "pt_BR": "Acumulado"}, "Journal entry": {"fr": "Écriture comptable", "es": "Asiento contable", "de": "Buchung", "nl": "Boeking", "it": "Registrazione contabile", "pt_BR": "Lançamento contábil"}, "Instalments": {"fr": "Échéances", "es": "Cuotas", "de": "Raten", "nl": "Termijnen", "it": "Rate", "pt_BR": "Parcelas"}, "Instalments to post": {"fr": "Échéances à comptabiliser", "es": "Cuotas por contabilizar", "de": "Zu buchende Raten", "nl": "Te boeken termijnen", "it": "Rate da confermare", "pt_BR": "Parcelas a lançar"}, "Posted Count": {"fr": "Nombre comptabilisé", "es": "Número contabilizado", "de": "Anzahl gebucht", "nl": "Aantal geboekt", "it": "Numero confermate", "pt_BR": "Quantidade lançada"}, "Total": {"fr": "Total", "es": "Total", "de": "Gesamt", "nl": "Totaal", "it": "Totale", "pt_BR": "Total"}, "Compute board": {"fr": "Calculer le tableau", "es": "Calcular el cuadro", "de": "Plan berechnen", "nl": "Staat berekenen", "it": "Calcola il piano", "pt_BR": "Calcular quadro"}, "Validate": {"fr": "Valider", "es": "Validar", "de": "Bestätigen", "nl": "Bevestigen", "it": "Convalida", "pt_BR": "Validar"}, "Set to draft": {"fr": "Remettre en brouillon", "es": "Volver a borrador", "de": "Auf Entwurf setzen", "nl": "Terug naar concept", "it": "Riporta a bozza", "pt_BR": "Voltar para rascunho"}, "Post": {"fr": "Comptabiliser", "es": "Contabilizar", "de": "Buchen", "nl": "Boeken", "it": "Conferma", "pt_BR": "Lançar"}, "Dispose": {"fr": "Céder", "es": "Dar de baja", "de": "Abgang buchen", "nl": "Afstoten", "it": "Dismetti", "pt_BR": "Dar baixa"}, "Cancel": {"fr": "Annuler", "es": "Cancelar", "de": "Abbrechen", "nl": "Annuleren", "it": "Annulla", "pt_BR": "Cancelar"}, "Check consistency": {"fr": "Contrôler la cohérence", "es": "Comprobar la coherencia", "de": "Konsistenz prüfen", "nl": "Consistentie controleren", "it": "Verifica la coerenza", "pt_BR": "Verificar coerência"}, "Disposal date": {"fr": "Date de cession", "es": "Fecha de baja", "de": "Abgangsdatum", "nl": "Datum van afstoting", "it": "Data di dismissione", "pt_BR": "Data da baixa"}, "Disposal entry": {"fr": "Écriture de cession", "es": "Asiento de baja", "de": "Abgangsbuchung", "nl": "Afstotingsboeking", "it": "Registrazione di dismissione", "pt_BR": "Lançamento de baixa"}, "Reason": {"fr": "Motif", "es": "Motivo", "de": "Grund", "nl": "Reden", "it": "Motivo", "pt_BR": "Motivo"}, "Sold": {"fr": "Vendu", "es": "Vendido", "de": "Verkauft", "nl": "Verkocht", "it": "Venduto", "pt_BR": "Vendido"}, "Scrapped": {"fr": "Mis au rebut", "es": "Desguazado", "de": "Verschrottet", "nl": "Afgedankt", "it": "Rottamato", "pt_BR": "Sucateado"}, "Post instalments due first": {"fr": "Comptabiliser d'abord les échéances échues", "es": "Contabilizar antes las cuotas vencidas", "de": "Fällige Raten zuerst buchen", "nl": "Vervallen termijnen eerst boeken", "it": "Confermare prima le rate scadute", "pt_BR": "Lançar primeiro as parcelas vencidas"}, "Acquisition Warning": {"fr": "Avertissement d'acquisition", "es": "Aviso de adquisición", "de": "Anschaffungswarnung", "nl": "Waarschuwing aanschaf", "it": "Avviso di acquisizione", "pt_BR": "Aviso de aquisição"}, "Expense Type Warning": {"fr": "Avertissement sur le type de compte", "es": "Aviso sobre el tipo de cuenta", "de": "Warnung zur Kontoart", "nl": "Waarschuwing rekeningsoort", "it": "Avviso sul tipo di conto", "pt_BR": "Aviso sobre o tipo de conta"}, "With instalments to post": {"fr": "Avec des échéances à comptabiliser", "es": "Con cuotas por contabilizar", "de": "Mit zu buchenden Raten", "nl": "Met te boeken termijnen", "it": "Con rate da confermare", "pt_BR": "Com parcelas a lançar"}, "Record your first asset": {"fr": "Enregistrez votre première immobilisation", "es": "Registre su primer inmovilizado", "de": "Erfassen Sie Ihr erstes Anlagegut", "nl": "Leg uw eerste activum vast", "it": "Registra il tuo primo cespite", "pt_BR": "Registre seu primeiro ativo"}, "e.g. Delivery van": {"fr": "ex. Camionnette de livraison", "es": "p. ej. Furgoneta de reparto", "de": "z. B. Lieferwagen", "nl": "bijv. Bestelwagen", "it": "es. Furgone per consegne", "pt_BR": "ex. Furgão de entrega"}, "Asset fully depreciated.": {"fr": "Immobilisation totalement amortie.", "es": "Inmovilizado totalmente amortizado.", "de": "Anlagegut vollständig abgeschrieben.", "nl": "Activum volledig afgeschreven.", "it": "Cespite completamente ammortizzato.", "pt_BR": "Ativo totalmente depreciado."}, "%(asset)s — disposal": {"fr": "%(asset)s — cession", "es": "%(asset)s — baja", "de": "%(asset)s — Abgang", "nl": "%(asset)s — afstoting", "it": "%(asset)s — dismissione", "pt_BR": "%(asset)s — baixa"}, "fiscal year lock date": {"fr": "date de verrouillage de l'exercice", "es": "fecha de bloqueo del ejercicio", "de": "Sperrdatum des Geschäftsjahres", "nl": "vergrendelingsdatum boekjaar", "it": "data di blocco dell'esercizio", "pt_BR": "data de bloqueio do exercício"}, "hard lock date": {"fr": "date de verrouillage définitif", "es": "fecha de bloqueo definitivo", "de": "endgültiges Sperrdatum", "nl": "definitieve vergrendelingsdatum", "it": "data di blocco definitivo", "pt_BR": "data de bloqueio definitivo"}, "The acquisition value must be positive.": {"fr": "La valeur d'acquisition doit être positive.", "es": "El valor de adquisición debe ser positivo.", "de": "Der Anschaffungswert muss positiv sein.", "nl": "De aanschafwaarde moet positief zijn.", "it": "Il valore di acquisizione deve essere positivo.", "pt_BR": "O valor de aquisição deve ser positivo."}, "The duration must be at least one month.": {"fr": "La durée doit être d'au moins un mois.", "es": "La duración debe ser de al menos un mes.", "de": "Die Dauer muss mindestens einen Monat betragen.", "nl": "De looptijd moet minstens één maand zijn.", "it": "La durata deve essere di almeno un mese.", "pt_BR": "A duração deve ser de pelo menos um mês."}, "The salvage value cannot be negative.": {"fr": "La valeur résiduelle ne peut pas être négative.", "es": "El valor residual no puede ser negativo.", "de": "Der Restwert darf nicht negativ sein.", "nl": "De restwaarde mag niet negatief zijn.", "it": "Il valore residuo non può essere negativo.", "pt_BR": "O valor residual não pode ser negativo."}, "This instalment has not been posted yet.": {"fr": "Cette échéance n'est pas encore comptabilisée.", "es": "Esta cuota aún no se ha contabilizado.", "de": "Diese Rate wurde noch nicht gebucht.", "nl": "Deze termijn is nog niet geboekt.", "it": "Questa rata non è ancora stata confermata.", "pt_BR": "Esta parcela ainda não foi lançada."}, "Only a draft asset can be validated.": {"fr": "Seule une immobilisation en brouillon peut être validée.", "es": "Solo puede validarse un inmovilizado en borrador.", "de": "Nur ein Anlagegut im Entwurf kann bestätigt werden.", "nl": "Alleen een activum in concept kan worden bevestigd.", "it": "Solo un cespite in bozza può essere convalidato.", "pt_BR": "Somente um ativo em rascunho pode ser validado."}, "Accumulated depreciation, credited by each instalment. This is a balance sheet account, never a profit and loss one (28x in the French chart, 281x in the Spanish one).": {"fr": "Amortissements cumulés, crédités par chaque échéance. C'est un compte de bilan, jamais un compte de résultat (28x dans le plan français, 281x dans le plan espagnol).", "es": "Amortización acumulada, abonada por cada cuota. Es una cuenta de balance, nunca de resultados (28x en el plan francés, 281x en el español).", "de": "Kumulierte Abschreibungen, die mit jeder Rate im Haben gebucht werden. Ein Bilanzkonto, niemals ein Erfolgskonto (28x im französischen, 281x im spanischen Kontenplan).", "nl": "Cumulatieve afschrijving, per termijn gecrediteerd. Dit is een balansrekening, nooit een resultatenrekening (28x in het Franse, 281x in het Spaanse schema).", "it": "Fondo ammortamento, accreditato da ogni rata. È un conto patrimoniale, mai economico (28x nel piano francese, 281x in quello spagnolo).", "pt_BR": "Depreciação acumulada, creditada por cada parcela. É uma conta patrimonial, nunca de resultado (28x no plano francês, 281x no espanhol)."}, "Account charged with the remaining net book value. An expense account, distinct from the ongoing depreciation charge (675 in the French chart).": {"fr": "Compte imputé de la valeur nette comptable restante. Un compte de charge, distinct de la dotation courante (675 dans le plan français).", "es": "Cuenta a la que se imputa el valor neto contable pendiente. Una cuenta de gasto, distinta de la dotación corriente (675 en el plan francés).", "de": "Konto, dem der verbleibende Nettobuchwert belastet wird. Ein Aufwandskonto, getrennt von der laufenden Abschreibung (675 im französischen Kontenplan).", "nl": "Rekening waarop de resterende boekwaarde wordt geboekt. Een kostenrekening, los van de lopende afschrijving (675 in het Franse schema).", "it": "Conto addebitato del valore contabile netto residuo. Un conto di costo, distinto dall'ammortamento corrente (675 nel piano francese).", "pt_BR": "Conta debitada pelo valor contábil líquido remanescente. Uma conta de despesa, distinta da depreciação corrente (675 no plano francês)."}, "Journal entry that brought this asset into the books. Optional, but without it nothing guarantees the asset actually exists in the ledger.": {"fr": "Écriture qui a fait entrer cette immobilisation dans les comptes. Facultative, mais sans elle rien ne garantit que le bien existe réellement au grand livre.", "es": "Asiento que dio entrada a este inmovilizado en la contabilidad. Opcional, pero sin él nada garantiza que el bien exista realmente en el libro mayor.", "de": "Buchung, mit der dieses Anlagegut in die Bücher aufgenommen wurde. Optional, aber ohne sie ist nicht gewährleistet, dass das Gut im Hauptbuch tatsächlich existiert.", "nl": "Boeking waarmee dit activum in de administratie is opgenomen. Optioneel, maar zonder deze boeking is niet gegarandeerd dat het activum werkelijk in het grootboek staat.", "it": "Registrazione che ha fatto entrare questo cespite in contabilità. Facoltativa, ma senza di essa nulla garantisce che il bene esista davvero nel mastro.", "pt_BR": "Lançamento que registrou este ativo na contabilidade. Opcional, mas sem ele nada garante que o bem realmente exista no razão."}, "Depreciation already recognised before this asset was recorded here. Used when migrating an existing asset: the amount is excluded from the board without changing the end date.": {"fr": "Amortissement déjà constaté avant l'enregistrement du bien ici. Sert lors d'une reprise d'antériorité : le montant est exclu du tableau sans décaler la date de fin.", "es": "Amortización ya reconocida antes de registrar aquí el inmovilizado. Se usa al migrar un bien existente: el importe se excluye del cuadro sin cambiar la fecha final.", "de": "Bereits vor der Erfassung hier verbuchte Abschreibung. Wird bei der Übernahme eines bestehenden Anlageguts verwendet: der Betrag bleibt aus dem Plan ausgeschlossen, ohne das Enddatum zu verschieben.", "nl": "Afschrijving die al vóór de vastlegging hier is verwerkt. Wordt gebruikt bij migratie van een bestaand activum: het bedrag blijft buiten de staat zonder de einddatum te wijzigen.", "it": "Ammortamento già rilevato prima della registrazione qui. Si usa nel riporto di un cespite esistente: l'importo è escluso dal piano senza spostare la data di fine.", "pt_BR": "Depreciação já reconhecida antes do registro aqui. Usado na migração de um ativo existente: o valor é excluído do quadro sem alterar a data final."}, "Portion of the value that is never depreciated.": {"fr": "Part de la valeur qui n'est jamais amortie.", "es": "Parte del valor que nunca se amortiza.", "de": "Teil des Werts, der nie abgeschrieben wird.", "nl": "Deel van de waarde dat nooit wordt afgeschreven.", "it": "Quota del valore che non viene mai ammortizzata.", "pt_BR": "Parcela do valor que nunca é depreciada."}, "Reduce the first instalment to the number of days actually elapsed. An asset put in service on the 15th is not depreciated for the whole month.": {"fr": "Réduit la première échéance au nombre de jours réellement écoulés. Un bien mis en service le 15 n'est pas amorti sur le mois entier.", "es": "Reduce la primera cuota a los días realmente transcurridos. Un bien puesto en servicio el día 15 no se amortiza por el mes completo.", "de": "Kürzt die erste Rate auf die tatsächlich verstrichenen Tage. Ein am 15. in Betrieb genommenes Gut wird nicht für den ganzen Monat abgeschrieben.", "nl": "Beperkt de eerste termijn tot het werkelijk verstreken aantal dagen. Een activum dat op de 15e in gebruik wordt genomen, wordt niet over de hele maand afgeschreven.", "it": "Riduce la prima rata ai giorni effettivamente trascorsi. Un bene entrato in funzione il 15 non si ammortizza per l'intero mese.", "pt_BR": "Reduz a primeira parcela aos dias efetivamente decorridos. Um bem posto em operação no dia 15 não é depreciado pelo mês inteiro."}, "Post the instalments falling on or before the disposal date, so that depreciation is recognised up to the day the asset leaves the books.": {"fr": "Comptabilise les échéances tombant au plus tard à la date de cession, pour que l'amortissement soit constaté jusqu'au jour où le bien sort des comptes.", "es": "Contabiliza las cuotas con vencimiento igual o anterior a la fecha de baja, para que la amortización se reconozca hasta el día en que el bien sale de la contabilidad.", "de": "Bucht die bis zum Abgangsdatum fälligen Raten, damit die Abschreibung bis zu dem Tag erfasst wird, an dem das Gut die Bücher verlässt.", "nl": "Boekt de termijnen die op of vóór de afstotingsdatum vallen, zodat de afschrijving wordt verwerkt tot de dag waarop het activum uit de administratie gaat.", "it": "Conferma le rate con scadenza pari o anteriore alla data di dismissione, affinché l'ammortamento sia rilevato fino al giorno in cui il bene esce dai libri.", "pt_BR": "Lança as parcelas com vencimento até a data da baixa, para que a depreciação seja reconhecida até o dia em que o bem sai da contabilidade."}, "Set when the asset is not backed by a posted acquisition entry.": {"fr": "Activé lorsque le bien n'est adossé à aucune écriture d'acquisition comptabilisée.", "es": "Se activa cuando el bien no está respaldado por un asiento de adquisición contabilizado.", "de": "Gesetzt, wenn dem Anlagegut keine gebuchte Anschaffungsbuchung zugrunde liegt.", "nl": "Ingesteld wanneer het activum niet is onderbouwd met een geboekte aanschafboeking.", "it": "Attivo quando il cespite non è sostenuto da una registrazione di acquisizione confermata.", "pt_BR": "Definido quando o ativo não está respaldado por um lançamento de aquisição contabilizado."}, "Set when the expense account is not typed as depreciation.": {"fr": "Activé lorsque le compte de charge n'est pas typé « amortissement ».", "es": "Se activa cuando la cuenta de gasto no está tipificada como amortización.", "de": "Gesetzt, wenn das Aufwandskonto nicht als Abschreibung typisiert ist.", "nl": "Ingesteld wanneer de kostenrekening niet als afschrijving is getypeerd.", "it": "Attivo quando il conto di costo non è tipizzato come ammortamento.", "pt_BR": "Definido quando a conta de despesa não está tipificada como depreciação."}, "The salvage value must be lower than the acquisition value.": {"fr": "La valeur résiduelle doit être inférieure à la valeur d'acquisition.", "es": "El valor residual debe ser inferior al valor de adquisición.", "de": "Der Restwert muss unter dem Anschaffungswert liegen.", "nl": "De restwaarde moet lager zijn dan de aanschafwaarde.", "it": "Il valore residuo deve essere inferiore al valore di acquisizione.", "pt_BR": "O valor residual deve ser inferior ao valor de aquisição."}, "A depreciation instalment must be strictly positive.": {"fr": "Une dotation doit être strictement positive.", "es": "Una cuota de amortización debe ser estrictamente positiva.", "de": "Eine Abschreibungsrate muss strikt positiv sein.", "nl": "Een afschrijvingstermijn moet strikt positief zijn.", "it": "Una rata di ammortamento deve essere strettamente positiva.", "pt_BR": "Uma parcela de depreciação deve ser estritamente positiva."}, "The depreciation and expense accounts must be different: an instalment debits one and credits the other.": {"fr": "Les comptes d'amortissement et de charge doivent être différents : une échéance débite l'un et crédite l'autre.", "es": "Las cuentas de amortización y de gasto deben ser distintas: una cuota carga una y abona la otra.", "de": "Abschreibungs- und Aufwandskonto müssen verschieden sein: eine Rate belastet das eine und erkennt dem anderen gut.", "nl": "De afschrijvings- en kostenrekening moeten verschillen: een termijn debiteert de ene en crediteert de andere.", "it": "I conti ammortamento e costo devono essere diversi: una rata addebita l'uno e accredita l'altro.", "pt_BR": "As contas de depreciação e de despesa devem ser diferentes: uma parcela debita uma e credita a outra."}, "%(account)s is a profit and loss account. Accumulated depreciation must be posted to a balance sheet account.": {"fr": "%(account)s est un compte de résultat. Les amortissements cumulés doivent être portés sur un compte de bilan.", "es": "%(account)s es una cuenta de resultados. La amortización acumulada debe registrarse en una cuenta de balance.", "de": "%(account)s ist ein Erfolgskonto. Kumulierte Abschreibungen müssen auf einem Bilanzkonto gebucht werden.", "nl": "%(account)s is een resultatenrekening. Cumulatieve afschrijving moet op een balansrekening worden geboekt.", "it": "%(account)s è un conto economico. Il fondo ammortamento deve essere registrato su un conto patrimoniale.", "pt_BR": "%(account)s é uma conta de resultado. A depreciação acumulada deve ser lançada em uma conta patrimonial."}, "The amount already depreciated (%(done).2f) exceeds the depreciable base (%(base).2f).": {"fr": "Le montant déjà amorti (%(done).2f) dépasse la base amortissable (%(base).2f).", "es": "El importe ya amortizado (%(done).2f) supera la base amortizable (%(base).2f).", "de": "Der bereits abgeschriebene Betrag (%(done).2f) übersteigt die Abschreibungsbasis (%(base).2f).", "nl": "Het reeds afgeschreven bedrag (%(done).2f) overschrijdt de afschrijvingsbasis (%(base).2f).", "it": "L'importo già ammortizzato (%(done).2f) supera la base ammortizzabile (%(base).2f).", "pt_BR": "O valor já depreciado (%(done).2f) excede a base depreciável (%(base).2f)."}, "An asset with posted instalments cannot be set back to draft.": {"fr": "Une immobilisation dont des échéances sont comptabilisées ne peut pas revenir en brouillon.", "es": "Un inmovilizado con cuotas contabilizadas no puede volver a borrador.", "de": "Ein Anlagegut mit gebuchten Raten kann nicht auf Entwurf zurückgesetzt werden.", "nl": "Een activum met geboekte termijnen kan niet terug naar concept.", "it": "Un cespite con rate confermate non può tornare in bozza.", "pt_BR": "Um ativo com parcelas lançadas não pode voltar para rascunho."}, "Only a running or fully depreciated asset can be disposed of.": {"fr": "Seule une immobilisation en cours ou totalement amortie peut être cédée.", "es": "Solo puede darse de baja un inmovilizado en curso o totalmente amortizado.", "de": "Nur ein laufendes oder vollständig abgeschriebenes Anlagegut kann abgehen.", "nl": "Alleen een lopend of volledig afgeschreven activum kan worden afgestoten.", "it": "Solo un cespite in corso o completamente ammortizzato può essere dismesso.", "pt_BR": "Somente um ativo em andamento ou totalmente depreciado pode ser baixado."}, "A posted instalment cannot be deleted. Reverse its journal entry instead, so the ledger keeps a trace.": {"fr": "Une échéance comptabilisée ne peut pas être supprimée. Contrepassez son écriture, pour que le grand livre en garde la trace.", "es": "Una cuota contabilizada no puede eliminarse. Revierta su asiento, para que el libro mayor conserve el rastro.", "de": "Eine gebuchte Rate kann nicht gelöscht werden. Stornieren Sie stattdessen ihre Buchung, damit das Hauptbuch eine Spur behält.", "nl": "Een geboekte termijn kan niet worden verwijderd. Storneer in plaats daarvan de boeking, zodat het grootboek een spoor houdt.", "it": "Una rata confermata non può essere eliminata. Storna invece la sua registrazione, così il mastro ne conserva traccia.", "pt_BR": "Uma parcela lançada não pode ser excluída. Estorne o lançamento, para que o razão mantenha o rastro."}, "%(assets)s cannot be deleted: %(count)d depreciation entries have already been posted, and deleting the asset would leave them in the ledger with nothing to justify them. Dispose of the asset instead — the ledger then keeps a trace of what happened.": {"fr": "%(assets)s ne peut pas être supprimé : %(count)d écritures de dotation sont déjà comptabilisées, et supprimer le bien les laisserait au grand livre sans rien pour les justifier. Cédez plutôt l'immobilisation — le grand livre garde alors la trace de ce qui s'est passé.", "es": "%(assets)s no puede eliminarse: ya hay %(count)d asientos de amortización contabilizados, y borrar el bien los dejaría en el libro mayor sin nada que los justifique. Dé de baja el inmovilizado — así el libro mayor conserva el rastro de lo ocurrido.", "de": "%(assets)s kann nicht gelöscht werden: %(count)d Abschreibungsbuchungen sind bereits gebucht, und das Löschen des Guts würde sie ohne Begründung im Hauptbuch zurücklassen. Lassen Sie das Anlagegut stattdessen abgehen — so bleibt im Hauptbuch nachvollziehbar, was geschehen ist.", "nl": "%(assets)s kan niet worden verwijderd: er zijn al %(count)d afschrijvingsboekingen geboekt, en het verwijderen zou ze zonder onderbouwing in het grootboek achterlaten. Stoot het activum in plaats daarvan af — dan houdt het grootboek een spoor van wat er is gebeurd.", "it": "%(assets)s non può essere eliminato: %(count)d registrazioni di ammortamento sono già confermate, ed eliminare il bene le lascerebbe nel mastro senza nulla a giustificarle. Dismetti invece il cespite — così il mastro conserva traccia di quanto accaduto.", "pt_BR": "%(assets)s não pode ser excluído: %(count)d lançamentos de depreciação já foram contabilizados, e excluir o bem os deixaria no razão sem nada que os justifique. Dê baixa no ativo — assim o razão mantém o rastro do que aconteceu."}, "“%(asset)s” already has %(count)d posted instalment(s). Recomputing the board would desynchronise it from the ledger. Dispose of the asset and record a new one instead.": {"fr": "« %(asset)s » compte déjà %(count)d échéance(s) comptabilisée(s). Recalculer le tableau le désynchroniserait du grand livre. Cédez l'immobilisation et enregistrez-en une nouvelle.", "es": "«%(asset)s» ya tiene %(count)d cuota(s) contabilizada(s). Recalcular el cuadro lo desincronizaría del libro mayor. Dé de baja el inmovilizado y registre uno nuevo.", "de": "„%(asset)s“ hat bereits %(count)d gebuchte Rate(n). Eine Neuberechnung des Plans würde ihn vom Hauptbuch entkoppeln. Lassen Sie das Anlagegut abgehen und erfassen Sie ein neues.", "nl": "“%(asset)s” heeft al %(count)d geboekte termijn(en). De staat opnieuw berekenen zou hem uit de pas laten lopen met het grootboek. Stoot het activum af en leg een nieuw vast.", "it": "«%(asset)s» ha già %(count)d rata/e confermata/e. Ricalcolare il piano lo disallineerebbe dal mastro. Dismetti il cespite e registrane uno nuovo.", "pt_BR": "“%(asset)s” já tem %(count)d parcela(s) lançada(s). Recalcular o quadro o dessincronizaria do razão. Dê baixa no ativo e registre um novo."}, "“%(asset)s” is not running: validate the asset first.": {"fr": "« %(asset)s » n'est pas en cours : validez d'abord l'immobilisation.", "es": "«%(asset)s» no está en curso: valide antes el inmovilizado.", "de": "„%(asset)s“ läuft nicht: bestätigen Sie zuerst das Anlagegut.", "nl": "“%(asset)s” is niet lopend: bevestig eerst het activum.", "it": "«%(asset)s» non è in corso: convalida prima il cespite.", "pt_BR": "“%(asset)s” não está em andamento: valide o ativo primeiro."}, "Instalment %(no)d of “%(asset)s” is already posted.": {"fr": "L'échéance %(no)d de « %(asset)s » est déjà comptabilisée.", "es": "La cuota %(no)d de «%(asset)s» ya está contabilizada.", "de": "Rate %(no)d von „%(asset)s“ ist bereits gebucht.", "nl": "Termijn %(no)d van “%(asset)s” is al geboekt.", "it": "La rata %(no)d di «%(asset)s» è già confermata.", "pt_BR": "A parcela %(no)d de “%(asset)s” já foi lançada."}, "Instalment %(no)d falls due on %(date)s, which is in the future. Depreciation is recognised as it is incurred, not in advance.": {"fr": "L'échéance %(no)d tombe le %(date)s, dans le futur. L'amortissement se constate au fur et à mesure, pas par avance.", "es": "La cuota %(no)d vence el %(date)s, en el futuro. La amortización se reconoce a medida que se devenga, no por anticipado.", "de": "Rate %(no)d wird am %(date)s fällig, also in der Zukunft. Abschreibungen werden erfasst, sobald sie anfallen, nicht im Voraus.", "nl": "Termijn %(no)d vervalt op %(date)s, in de toekomst. Afschrijving wordt verwerkt naarmate zij ontstaat, niet vooraf.", "it": "La rata %(no)d scade il %(date)s, nel futuro. L'ammortamento si rileva man mano che matura, non in anticipo.", "pt_BR": "A parcela %(no)d vence em %(date)s, no futuro. A depreciação é reconhecida conforme incorre, não antecipadamente."}, "Instalment %(no)d falls on %(date)s, which is covered by the %(lock)s (%(lock_date)s). Adjust the lock date or the asset's in-service date.": {"fr": "L'échéance %(no)d tombe le %(date)s, couvert par la %(lock)s (%(lock_date)s). Ajustez la date de verrouillage ou la date de mise en service.", "es": "La cuota %(no)d cae el %(date)s, cubierto por la %(lock)s (%(lock_date)s). Ajuste la fecha de bloqueo o la de puesta en servicio.", "de": "Rate %(no)d fällt auf den %(date)s, der vom %(lock)s (%(lock_date)s) erfasst ist. Passen Sie das Sperrdatum oder das Inbetriebnahmedatum an.", "nl": "Termijn %(no)d valt op %(date)s, dat onder de %(lock)s (%(lock_date)s) valt. Pas de vergrendelingsdatum of de datum van ingebruikname aan.", "it": "La rata %(no)d cade il %(date)s, coperto dalla %(lock)s (%(lock_date)s). Modifica la data di blocco o quella di entrata in funzione.", "pt_BR": "A parcela %(no)d cai em %(date)s, coberto pela %(lock)s (%(lock_date)s). Ajuste a data de bloqueio ou a de entrada em operação."}, "Entry %(move)s has no line on the asset account %(account)s. It cannot be the acquisition entry of “%(asset)s”.": {"fr": "L'écriture %(move)s ne comporte aucune ligne sur le compte d'immobilisation %(account)s. Elle ne peut pas être l'écriture d'acquisition de « %(asset)s ».", "es": "El asiento %(move)s no tiene ninguna línea en la cuenta de inmovilizado %(account)s. No puede ser el asiento de adquisición de «%(asset)s».", "de": "Buchung %(move)s enthält keine Zeile auf dem Anlagekonto %(account)s. Sie kann nicht die Anschaffungsbuchung von „%(asset)s“ sein.", "nl": "Boeking %(move)s heeft geen regel op de activarekening %(account)s. Zij kan niet de aanschafboeking van “%(asset)s” zijn.", "it": "La registrazione %(move)s non ha righe sul conto cespite %(account)s. Non può essere la registrazione di acquisizione di «%(asset)s».", "pt_BR": "O lançamento %(move)s não possui linha na conta do ativo %(account)s. Ele não pode ser o lançamento de aquisição de “%(asset)s”."}, "Entry %(move)s debits only %(debit).2f on the asset account, less than the acquisition value %(value).2f of “%(asset)s”.": {"fr": "L'écriture %(move)s ne débite que %(debit).2f sur le compte d'immobilisation, moins que la valeur d'acquisition %(value).2f de « %(asset)s ».", "es": "El asiento %(move)s solo carga %(debit).2f en la cuenta de inmovilizado, menos que el valor de adquisición %(value).2f de «%(asset)s».", "de": "Buchung %(move)s belastet das Anlagekonto nur mit %(debit).2f, weniger als der Anschaffungswert %(value).2f von „%(asset)s“.", "nl": "Boeking %(move)s debiteert slechts %(debit).2f op de activarekening, minder dan de aanschafwaarde %(value).2f van “%(asset)s”.", "it": "La registrazione %(move)s addebita solo %(debit).2f sul conto cespite, meno del valore di acquisizione %(value).2f di «%(asset)s».", "pt_BR": "O lançamento %(move)s debita apenas %(debit).2f na conta do ativo, menos que o valor de aquisição %(value).2f de “%(asset)s”."}, "Depreciation board for “%(asset)s”: %(error)s": {"fr": "Tableau d'amortissement de « %(asset)s » : %(error)s", "es": "Cuadro de amortización de «%(asset)s»: %(error)s", "de": "Abschreibungsplan für „%(asset)s“: %(error)s", "nl": "Afschrijvingsstaat voor “%(asset)s”: %(error)s", "it": "Piano di ammortamento di «%(asset)s»: %(error)s", "pt_BR": "Quadro de depreciação de “%(asset)s”: %(error)s"}, "No acquisition entry is linked. Nothing guarantees this asset exists in the ledger: it could be depreciated while absent from the balance sheet.": {"fr": "Aucune écriture d'acquisition n'est rattachée. Rien ne garantit que ce bien existe au grand livre : il pourrait être amorti tout en étant absent du bilan.", "es": "No hay ningún asiento de adquisición vinculado. Nada garantiza que este bien exista en el libro mayor: podría amortizarse estando ausente del balance.", "de": "Es ist keine Anschaffungsbuchung verknüpft. Nichts gewährleistet, dass dieses Gut im Hauptbuch existiert: es könnte abgeschrieben werden, obwohl es in der Bilanz fehlt.", "nl": "Er is geen aanschafboeking gekoppeld. Niets garandeert dat dit activum in het grootboek bestaat: het zou kunnen worden afgeschreven terwijl het niet op de balans staat.", "it": "Nessuna registrazione di acquisizione è collegata. Nulla garantisce che questo bene esista nel mastro: potrebbe essere ammortizzato pur essendo assente dal bilancio.", "pt_BR": "Nenhum lançamento de aquisição está vinculado. Nada garante que este bem exista no razão: ele poderia ser depreciado estando ausente do balanço."}, "The expense account %(account)s is typed “%(type)s” rather than “Depreciation”. Depreciation will still be posted correctly, but the cash flow statement will report it inside the net result instead of adding it back separately.": {"fr": "Le compte de charge %(account)s est typé « %(type)s » et non « Amortissement ». Les dotations seront correctement comptabilisées, mais le tableau de flux les inclura dans le résultat net au lieu de les réintégrer séparément.", "es": "La cuenta de gasto %(account)s está tipificada como «%(type)s» y no como «Amortización». Las dotaciones se contabilizarán correctamente, pero el estado de flujos las incluirá en el resultado neto en vez de añadirlas por separado.", "de": "Das Aufwandskonto %(account)s ist als „%(type)s“ und nicht als „Abschreibung“ typisiert. Die Abschreibungen werden korrekt gebucht, aber die Kapitalflussrechnung führt sie im Jahresergebnis statt sie gesondert hinzuzurechnen.", "nl": "De kostenrekening %(account)s is getypeerd als “%(type)s” in plaats van “Afschrijving”. De afschrijvingen worden correct geboekt, maar het kasstroomoverzicht verwerkt ze binnen het nettoresultaat in plaats van ze apart bij te tellen.", "it": "Il conto di costo %(account)s è tipizzato «%(type)s» anziché «Ammortamento». Gli ammortamenti saranno registrati correttamente, ma il rendiconto finanziario li includerà nel risultato netto invece di riprenderli separatamente.", "pt_BR": "A conta de despesa %(account)s está tipificada como “%(type)s” e não como “Depreciação”. As dotações serão lançadas corretamente, mas a demonstração de fluxos as incluirá no resultado líquido em vez de reintegrá-las separadamente."}, "No instalment is due yet. Future instalments are posted when their due date is reached.": {"fr": "Aucune échéance n'est encore échue. Les échéances futures se comptabilisent lorsque leur date est atteinte.", "es": "Todavía no vence ninguna cuota. Las cuotas futuras se contabilizan al llegar su fecha.", "de": "Noch ist keine Rate fällig. Künftige Raten werden gebucht, sobald ihr Fälligkeitsdatum erreicht ist.", "nl": "Nog geen enkele termijn is vervallen. Toekomstige termijnen worden geboekt zodra hun vervaldatum is bereikt.", "it": "Nessuna rata è ancora scaduta. Le rate future si confermano al raggiungimento della loro data.", "pt_BR": "Nenhuma parcela venceu ainda. As parcelas futuras são lançadas quando sua data é atingida."}, "Asset validated. %(count)d instalment(s) to be posted, each requiring confirmation.": {"fr": "Immobilisation validée. %(count)d échéance(s) à comptabiliser, chacune demandant confirmation.", "es": "Inmovilizado validado. %(count)d cuota(s) por contabilizar, cada una requiere confirmación.", "de": "Anlagegut bestätigt. %(count)d zu buchende Rate(n), jede erfordert eine Bestätigung.", "nl": "Activum bevestigd. %(count)d te boeken termijn(en), elk vraagt om bevestiging.", "it": "Cespite convalidato. %(count)d rata/e da confermare, ciascuna richiede conferma.", "pt_BR": "Ativo validado. %(count)d parcela(s) a lançar, cada uma exigindo confirmação."}, "Instalment %(no)d posted: %(amount)s on %(date)s (%(move)s).": {"fr": "Échéance %(no)d comptabilisée : %(amount)s le %(date)s (%(move)s).", "es": "Cuota %(no)d contabilizada: %(amount)s el %(date)s (%(move)s).", "de": "Rate %(no)d gebucht: %(amount)s am %(date)s (%(move)s).", "nl": "Termijn %(no)d geboekt: %(amount)s op %(date)s (%(move)s).", "it": "Rata %(no)d confermata: %(amount)s il %(date)s (%(move)s).", "pt_BR": "Parcela %(no)d lançada: %(amount)s em %(date)s (%(move)s)."}, "%(count)d instalments posted, from %(first)s to %(last)s, totalling %(total)s.": {"fr": "%(count)d échéances comptabilisées, du %(first)s au %(last)s, pour un total de %(total)s.", "es": "%(count)d cuotas contabilizadas, del %(first)s al %(last)s, por un total de %(total)s.", "de": "%(count)d Raten gebucht, vom %(first)s bis %(last)s, insgesamt %(total)s.", "nl": "%(count)d termijnen geboekt, van %(first)s tot %(last)s, in totaal %(total)s.", "it": "%(count)d rate confermate, dal %(first)s al %(last)s, per un totale di %(total)s.", "pt_BR": "%(count)d parcelas lançadas, de %(first)s a %(last)s, totalizando %(total)s."}, "%(asset)s — depreciation %(no)d/%(total)d": {"fr": "%(asset)s — dotation %(no)d/%(total)d", "es": "%(asset)s — amortización %(no)d/%(total)d", "de": "%(asset)s — Abschreibung %(no)d/%(total)d", "nl": "%(asset)s — afschrijving %(no)d/%(total)d", "it": "%(asset)s — ammortamento %(no)d/%(total)d", "pt_BR": "%(asset)s — depreciação %(no)d/%(total)d"}, "Asset disposed of on %(date)s (%(reason)s). Net book value %(value)s charged to %(account)s. Entry %(move)s. %(cancelled)d remaining instalment(s) cancelled.": {"fr": "Immobilisation cédée le %(date)s (%(reason)s). Valeur nette comptable %(value)s imputée à %(account)s. Écriture %(move)s. %(cancelled)d échéance(s) restante(s) annulée(s).", "es": "Inmovilizado dado de baja el %(date)s (%(reason)s). Valor neto contable %(value)s imputado a %(account)s. Asiento %(move)s. %(cancelled)d cuota(s) restante(s) cancelada(s).", "de": "Anlagegut am %(date)s abgegangen (%(reason)s). Nettobuchwert %(value)s auf %(account)s gebucht. Buchung %(move)s. %(cancelled)d verbleibende Rate(n) storniert.", "nl": "Activum afgestoten op %(date)s (%(reason)s). Boekwaarde %(value)s geboekt op %(account)s. Boeking %(move)s. %(cancelled)d resterende termijn(en) geannuleerd.", "it": "Cespite dismesso il %(date)s (%(reason)s). Valore contabile netto %(value)s imputato a %(account)s. Registrazione %(move)s. %(cancelled)d rata/e residua/e annullata/e.", "pt_BR": "Ativo baixado em %(date)s (%(reason)s). Valor contábil líquido %(value)s imputado a %(account)s. Lançamento %(move)s. %(cancelled)d parcela(s) restante(s) cancelada(s)."}, "Every asset account matches the asset cards recorded against it.": {"fr": "Chaque compte d'immobilisation concorde avec les fiches qui y sont rattachées.", "es": "Cada cuenta de inmovilizado concuerda con las fichas registradas en ella.", "de": "Jedes Anlagekonto stimmt mit den darauf erfassten Anlagegütern überein.", "nl": "Elke activarekening komt overeen met de erop vastgelegde activa.", "it": "Ogni conto cespite concorda con le schede registrate su di esso.", "pt_BR": "Cada conta de ativo concorda com as fichas registradas nela."}, "%(count)d asset account(s) do not match:\n\n%(details)s": {"fr": "%(count)d compte(s) d'immobilisation ne concordent pas :\n\n%(details)s", "es": "%(count)d cuenta(s) de inmovilizado no concuerdan:\n\n%(details)s", "de": "%(count)d Anlagekonto/-konten stimmen nicht überein:\n\n%(details)s", "nl": "%(count)d activarekening(en) komen niet overeen:\n\n%(details)s", "it": "%(count)d conto/i cespite non concordano:\n\n%(details)s", "pt_BR": "%(count)d conta(s) de ativo não concordam:\n\n%(details)s"}, "%(account)s: %(cards).2f recorded on asset cards, %(ledger).2f in the ledger (difference %(gap).2f)": {"fr": "%(account)s : %(cards).2f sur les fiches d'immobilisation, %(ledger).2f au grand livre (écart %(gap).2f)", "es": "%(account)s: %(cards).2f en las fichas de inmovilizado, %(ledger).2f en el libro mayor (diferencia %(gap).2f)", "de": "%(account)s: %(cards).2f auf den Anlagenkarten, %(ledger).2f im Hauptbuch (Differenz %(gap).2f)", "nl": "%(account)s: %(cards).2f op de activakaarten, %(ledger).2f in het grootboek (verschil %(gap).2f)", "it": "%(account)s: %(cards).2f sulle schede cespite, %(ledger).2f nel mastro (scostamento %(gap).2f)", "pt_BR": "%(account)s: %(cards).2f nas fichas de ativo, %(ledger).2f no razão (diferença %(gap).2f)"}, "The depreciation board is computed from the acquisition\n                    value, the in-service date and the duration. Nothing is\n                    posted to the ledger until you confirm each instalment.": {"fr": "Le tableau d'amortissement se calcule à partir de la valeur d'acquisition, de la date de mise en service et de la durée. Rien n'est porté au grand livre tant que vous n'avez pas confirmé chaque échéance.", "es": "El cuadro de amortización se calcula a partir del valor de adquisición, la fecha de puesta en servicio y la duración. Nada se registra en el libro mayor hasta que confirme cada cuota.", "de": "Der Abschreibungsplan wird aus Anschaffungswert, Inbetriebnahmedatum und Dauer berechnet. Nichts wird im Hauptbuch gebucht, bevor Sie jede Rate bestätigt haben.", "nl": "De afschrijvingsstaat wordt berekend uit de aanschafwaarde, de datum van ingebruikname en de looptijd. Er wordt niets in het grootboek geboekt totdat u elke termijn bevestigt.", "it": "Il piano di ammortamento si calcola dal valore di acquisizione, dalla data di entrata in funzione e dalla durata. Nulla viene registrato nel mastro finché non confermi ogni rata.", "pt_BR": "O quadro de depreciação é calculado a partir do valor de aquisição, da data de entrada em operação e da duração. Nada é lançado no razão até que você confirme cada parcela."}, "The sale proceeds are not recorded here. Issue the\n                        customer invoice as usual: the gain or loss on disposal\n                        will appear in the profit and loss statement, as the\n                        difference between the proceeds and the net book value\n                        charged by this entry.": {"fr": "Le produit de la vente ne s'enregistre pas ici. Établissez la facture client comme d'habitude : la plus ou moins-value de cession apparaîtra au compte de résultat, comme différence entre le produit et la valeur nette comptable imputée par cette écriture.", "es": "El importe de la venta no se registra aquí. Emita la factura de cliente como de costumbre: el beneficio o la pérdida de la baja aparecerá en la cuenta de resultados, como diferencia entre el importe y el valor neto contable imputado por este asiento.", "de": "Der Verkaufserlös wird hier nicht erfasst. Stellen Sie die Kundenrechnung wie gewohnt aus: der Gewinn oder Verlust aus dem Abgang erscheint in der Gewinn- und Verlustrechnung als Differenz zwischen Erlös und dem mit dieser Buchung belasteten Nettobuchwert.", "nl": "De verkoopopbrengst wordt hier niet vastgelegd. Maak de verkoopfactuur zoals gebruikelijk: de winst of het verlies bij afstoting verschijnt in de winst- en verliesrekening, als verschil tussen de opbrengst en de met deze boeking geboekte boekwaarde.", "it": "Il ricavo della vendita non si registra qui. Emetti la fattura al cliente come di consueto: la plusvalenza o minusvalenza da dismissione comparirà nel conto economico, come differenza tra il ricavo e il valore contabile netto imputato da questa registrazione.", "pt_BR": "O produto da venda não é registrado aqui. Emita a fatura ao cliente normalmente: o ganho ou perda na baixa aparecerá na demonstração de resultados, como diferença entre o produto e o valor contábil líquido imputado por este lançamento."}, "Reminder: the sale proceeds are not recorded here. Issue the customer invoice as usual — the gain or loss on disposal will then appear in the profit and loss statement, as the difference between the proceeds and the net book value just charged.": {"fr": "Rappel : le produit de la vente ne s'enregistre pas ici. Établissez la facture client comme d'habitude — la plus ou moins-value de cession apparaîtra alors au compte de résultat, comme différence entre le produit et la valeur nette comptable qui vient d'être imputée.", "es": "Recordatorio: el importe de la venta no se registra aquí. Emita la factura de cliente como de costumbre — el beneficio o la pérdida de la baja aparecerá entonces en la cuenta de resultados, como diferencia entre el importe y el valor neto contable recién imputado.", "de": "Hinweis: der Verkaufserlös wird hier nicht erfasst. Stellen Sie die Kundenrechnung wie gewohnt aus — der Gewinn oder Verlust aus dem Abgang erscheint dann in der Gewinn- und Verlustrechnung als Differenz zwischen Erlös und dem soeben belasteten Nettobuchwert.", "nl": "Ter herinnering: de verkoopopbrengst wordt hier niet vastgelegd. Maak de verkoopfactuur zoals gebruikelijk — de winst of het verlies bij afstoting verschijnt dan in de winst- en verliesrekening, als verschil tussen de opbrengst en de zojuist geboekte boekwaarde.", "it": "Promemoria: il ricavo della vendita non si registra qui. Emetti la fattura al cliente come di consueto — la plusvalenza o minusvalenza da dismissione comparirà allora nel conto economico, come differenza tra il ricavo e il valore contabile netto appena imputato.", "pt_BR": "Lembrete: o produto da venda não é registrado aqui. Emita a fatura ao cliente normalmente — o ganho ou perda na baixa aparecerá então na demonstração de resultados, como diferença entre o produto e o valor contábil líquido recém-imputado."}}
+{
+  "Fixed Asset": {
+    "fr": "Immobilisation",
+    "es": "Inmovilizado",
+    "de": "Anlagegut",
+    "nl": "Vast activum",
+    "it": "Cespite",
+    "pt_BR": "Ativo imobilizado"
+  },
+  "Assets": {
+    "fr": "Immobilisations",
+    "es": "Inmovilizado",
+    "de": "Anlagegüter",
+    "nl": "Vaste activa",
+    "it": "Cespiti",
+    "pt_BR": "Ativos imobilizados"
+  },
+  "Asset": {
+    "fr": "Immobilisation",
+    "es": "Inmovilizado",
+    "de": "Anlagegut",
+    "nl": "Activum",
+    "it": "Cespite",
+    "pt_BR": "Ativo"
+  },
+  "Depreciation board": {
+    "fr": "Tableau d'amortissement",
+    "es": "Cuadro de amortización",
+    "de": "Abschreibungsplan",
+    "nl": "Afschrijvingsstaat",
+    "it": "Piano di ammortamento",
+    "pt_BR": "Quadro de depreciação"
+  },
+  "Depreciation board line": {
+    "fr": "Ligne du tableau d'amortissement",
+    "es": "Línea del cuadro de amortización",
+    "de": "Zeile des Abschreibungsplans",
+    "nl": "Regel afschrijvingsstaat",
+    "it": "Riga del piano di ammortamento",
+    "pt_BR": "Linha do quadro de depreciação"
+  },
+  "Asset disposal": {
+    "fr": "Cession d'immobilisation",
+    "es": "Baja de inmovilizado",
+    "de": "Anlagenabgang",
+    "nl": "Afstoting van activum",
+    "it": "Dismissione del cespite",
+    "pt_BR": "Baixa de ativo"
+  },
+  "Dispose of asset": {
+    "fr": "Céder l'immobilisation",
+    "es": "Dar de baja el inmovilizado",
+    "de": "Anlagegut abgehen lassen",
+    "nl": "Activum afstoten",
+    "it": "Dismettere il cespite",
+    "pt_BR": "Dar baixa no ativo"
+  },
+  "Asset consistency": {
+    "fr": "Cohérence des immobilisations",
+    "es": "Coherencia del inmovilizado",
+    "de": "Konsistenz der Anlagegüter",
+    "nl": "Consistentie vaste activa",
+    "it": "Coerenza dei cespiti",
+    "pt_BR": "Coerência dos ativos"
+  },
+  "Values": {
+    "fr": "Valeurs",
+    "es": "Valores",
+    "de": "Werte",
+    "nl": "Waarden",
+    "it": "Valori",
+    "pt_BR": "Valores"
+  },
+  "Accounting": {
+    "fr": "Comptabilité",
+    "es": "Contabilidad",
+    "de": "Buchhaltung",
+    "nl": "Boekhouding",
+    "it": "Contabilità",
+    "pt_BR": "Contabilidade"
+  },
+  "Name": {
+    "fr": "Nom",
+    "es": "Nombre",
+    "de": "Bezeichnung",
+    "nl": "Naam",
+    "it": "Nome",
+    "pt_BR": "Nome"
+  },
+  "Acquisition value": {
+    "fr": "Valeur d'acquisition",
+    "es": "Valor de adquisición",
+    "de": "Anschaffungswert",
+    "nl": "Aanschafwaarde",
+    "it": "Valore di acquisizione",
+    "pt_BR": "Valor de aquisição"
+  },
+  "Salvage value": {
+    "fr": "Valeur résiduelle",
+    "es": "Valor residual",
+    "de": "Restwert",
+    "nl": "Restwaarde",
+    "it": "Valore residuo",
+    "pt_BR": "Valor residual"
+  },
+  "Already depreciated": {
+    "fr": "Déjà amorti",
+    "es": "Ya amortizado",
+    "de": "Bereits abgeschrieben",
+    "nl": "Reeds afgeschreven",
+    "it": "Già ammortizzato",
+    "pt_BR": "Já depreciado"
+  },
+  "Depreciated": {
+    "fr": "Amorti",
+    "es": "Amortizado",
+    "de": "Abgeschrieben",
+    "nl": "Afgeschreven",
+    "it": "Ammortizzato",
+    "pt_BR": "Depreciado"
+  },
+  "Remaining": {
+    "fr": "Restant",
+    "es": "Pendiente",
+    "de": "Restbuchwert",
+    "nl": "Resterend",
+    "it": "Residuo",
+    "pt_BR": "Remanescente"
+  },
+  "Remaining value": {
+    "fr": "Valeur restante",
+    "es": "Valor pendiente",
+    "de": "Restwert",
+    "nl": "Resterende waarde",
+    "it": "Valore residuo",
+    "pt_BR": "Valor remanescente"
+  },
+  "Net book value": {
+    "fr": "Valeur nette comptable",
+    "es": "Valor neto contable",
+    "de": "Nettobuchwert",
+    "nl": "Boekwaarde",
+    "it": "Valore contabile netto",
+    "pt_BR": "Valor contábil líquido"
+  },
+  "In service date": {
+    "fr": "Date de mise en service",
+    "es": "Fecha de puesta en servicio",
+    "de": "Inbetriebnahmedatum",
+    "nl": "Datum ingebruikname",
+    "it": "Data di entrata in funzione",
+    "pt_BR": "Data de entrada em operação"
+  },
+  "Duration (months)": {
+    "fr": "Durée (mois)",
+    "es": "Duración (meses)",
+    "de": "Dauer (Monate)",
+    "nl": "Looptijd (maanden)",
+    "it": "Durata (mesi)",
+    "pt_BR": "Duração (meses)"
+  },
+  "Months": {
+    "fr": "Mois",
+    "es": "Meses",
+    "de": "Monate",
+    "nl": "Maanden",
+    "it": "Mesi",
+    "pt_BR": "Meses"
+  },
+  "Periodicity": {
+    "fr": "Périodicité",
+    "es": "Periodicidad",
+    "de": "Periodizität",
+    "nl": "Periodiciteit",
+    "it": "Periodicità",
+    "pt_BR": "Periodicidade"
+  },
+  "Monthly": {
+    "fr": "Mensuelle",
+    "es": "Mensual",
+    "de": "Monatlich",
+    "nl": "Maandelijks",
+    "it": "Mensile",
+    "pt_BR": "Mensal"
+  },
+  "Quarterly": {
+    "fr": "Trimestrielle",
+    "es": "Trimestral",
+    "de": "Vierteljährlich",
+    "nl": "Per kwartaal",
+    "it": "Trimestrale",
+    "pt_BR": "Trimestral"
+  },
+  "Yearly": {
+    "fr": "Annuelle",
+    "es": "Anual",
+    "de": "Jährlich",
+    "nl": "Jaarlijks",
+    "it": "Annuale",
+    "pt_BR": "Anual"
+  },
+  "Prorata temporis": {
+    "fr": "Prorata temporis",
+    "es": "Prorata temporis",
+    "de": "Prorata temporis",
+    "nl": "Prorata temporis",
+    "it": "Prorata temporis",
+    "pt_BR": "Prorata temporis"
+  },
+  "Vendor": {
+    "fr": "Fournisseur",
+    "es": "Proveedor",
+    "de": "Lieferant",
+    "nl": "Leverancier",
+    "it": "Fornitore",
+    "pt_BR": "Fornecedor"
+  },
+  "Acquisition entry": {
+    "fr": "Écriture d'acquisition",
+    "es": "Asiento de adquisición",
+    "de": "Anschaffungsbuchung",
+    "nl": "Aanschafboeking",
+    "it": "Registrazione di acquisizione",
+    "pt_BR": "Lançamento de aquisição"
+  },
+  "Journal": {
+    "fr": "Journal",
+    "es": "Diario",
+    "de": "Journal",
+    "nl": "Dagboek",
+    "it": "Registro",
+    "pt_BR": "Diário"
+  },
+  "Asset account": {
+    "fr": "Compte d'immobilisation",
+    "es": "Cuenta de inmovilizado",
+    "de": "Anlagekonto",
+    "nl": "Activarekening",
+    "it": "Conto cespite",
+    "pt_BR": "Conta do ativo"
+  },
+  "Depreciation account": {
+    "fr": "Compte d'amortissement",
+    "es": "Cuenta de amortización",
+    "de": "Abschreibungskonto",
+    "nl": "Afschrijvingsrekening",
+    "it": "Conto ammortamento",
+    "pt_BR": "Conta de depreciação"
+  },
+  "Expense account": {
+    "fr": "Compte de charge",
+    "es": "Cuenta de gasto",
+    "de": "Aufwandskonto",
+    "nl": "Kostenrekening",
+    "it": "Conto di costo",
+    "pt_BR": "Conta de despesa"
+  },
+  "Net book value account": {
+    "fr": "Compte de valeur nette comptable",
+    "es": "Cuenta de valor neto contable",
+    "de": "Konto für den Nettobuchwert",
+    "nl": "Rekening boekwaarde",
+    "it": "Conto del valore contabile netto",
+    "pt_BR": "Conta do valor contábil líquido"
+  },
+  "Status": {
+    "fr": "État",
+    "es": "Estado",
+    "de": "Status",
+    "nl": "Status",
+    "it": "Stato",
+    "pt_BR": "Situação"
+  },
+  "Draft": {
+    "fr": "Brouillon",
+    "es": "Borrador",
+    "de": "Entwurf",
+    "nl": "Concept",
+    "it": "Bozza",
+    "pt_BR": "Rascunho"
+  },
+  "Running": {
+    "fr": "En cours",
+    "es": "En curso",
+    "de": "Laufend",
+    "nl": "Lopend",
+    "it": "In corso",
+    "pt_BR": "Em andamento"
+  },
+  "Fully depreciated": {
+    "fr": "Totalement amorti",
+    "es": "Totalmente amortizado",
+    "de": "Vollständig abgeschrieben",
+    "nl": "Volledig afgeschreven",
+    "it": "Completamente ammortizzato",
+    "pt_BR": "Totalmente depreciado"
+  },
+  "Disposed": {
+    "fr": "Cédé",
+    "es": "Dado de baja",
+    "de": "Abgegangen",
+    "nl": "Afgestoten",
+    "it": "Dismesso",
+    "pt_BR": "Baixado"
+  },
+  "Posted": {
+    "fr": "Comptabilisé",
+    "es": "Contabilizado",
+    "de": "Gebucht",
+    "nl": "Geboekt",
+    "it": "Confermato",
+    "pt_BR": "Lançado"
+  },
+  "To post": {
+    "fr": "À comptabiliser",
+    "es": "Por contabilizar",
+    "de": "Zu buchen",
+    "nl": "Te boeken",
+    "it": "Da confermare",
+    "pt_BR": "A lançar"
+  },
+  "Due": {
+    "fr": "Échu",
+    "es": "Vencido",
+    "de": "Fällig",
+    "nl": "Vervallen",
+    "it": "Scaduto",
+    "pt_BR": "Vencido"
+  },
+  "No.": {
+    "fr": "N°",
+    "es": "N.º",
+    "de": "Nr.",
+    "nl": "Nr.",
+    "it": "N.",
+    "pt_BR": "N.º"
+  },
+  "Due date": {
+    "fr": "Date d'échéance",
+    "es": "Fecha de vencimiento",
+    "de": "Fälligkeitsdatum",
+    "nl": "Vervaldatum",
+    "it": "Data di scadenza",
+    "pt_BR": "Data de vencimento"
+  },
+  "Depreciation": {
+    "fr": "Dotation",
+    "es": "Amortización",
+    "de": "Abschreibung",
+    "nl": "Afschrijving",
+    "it": "Ammortamento",
+    "pt_BR": "Depreciação"
+  },
+  "Cumulative": {
+    "fr": "Cumul",
+    "es": "Acumulado",
+    "de": "Kumuliert",
+    "nl": "Cumulatief",
+    "it": "Cumulato",
+    "pt_BR": "Acumulado"
+  },
+  "Journal entry": {
+    "fr": "Écriture comptable",
+    "es": "Asiento contable",
+    "de": "Buchung",
+    "nl": "Boeking",
+    "it": "Registrazione contabile",
+    "pt_BR": "Lançamento contábil"
+  },
+  "Instalments": {
+    "fr": "Échéances",
+    "es": "Cuotas",
+    "de": "Raten",
+    "nl": "Termijnen",
+    "it": "Rate",
+    "pt_BR": "Parcelas"
+  },
+  "Instalments to post": {
+    "fr": "Échéances à comptabiliser",
+    "es": "Cuotas por contabilizar",
+    "de": "Zu buchende Raten",
+    "nl": "Te boeken termijnen",
+    "it": "Rate da confermare",
+    "pt_BR": "Parcelas a lançar"
+  },
+  "Posted Count": {
+    "fr": "Nombre comptabilisé",
+    "es": "Número contabilizado",
+    "de": "Anzahl gebucht",
+    "nl": "Aantal geboekt",
+    "it": "Numero confermate",
+    "pt_BR": "Quantidade lançada"
+  },
+  "Total": {
+    "fr": "Total",
+    "es": "Total",
+    "de": "Gesamt",
+    "nl": "Totaal",
+    "it": "Totale",
+    "pt_BR": "Total"
+  },
+  "Compute board": {
+    "fr": "Calculer le tableau",
+    "es": "Calcular el cuadro",
+    "de": "Plan berechnen",
+    "nl": "Staat berekenen",
+    "it": "Calcola il piano",
+    "pt_BR": "Calcular quadro"
+  },
+  "Validate": {
+    "fr": "Valider",
+    "es": "Validar",
+    "de": "Bestätigen",
+    "nl": "Bevestigen",
+    "it": "Convalida",
+    "pt_BR": "Validar"
+  },
+  "Set to draft": {
+    "fr": "Remettre en brouillon",
+    "es": "Volver a borrador",
+    "de": "Auf Entwurf setzen",
+    "nl": "Terug naar concept",
+    "it": "Riporta a bozza",
+    "pt_BR": "Voltar para rascunho"
+  },
+  "Post": {
+    "fr": "Comptabiliser",
+    "es": "Contabilizar",
+    "de": "Buchen",
+    "nl": "Boeken",
+    "it": "Conferma",
+    "pt_BR": "Lançar"
+  },
+  "Dispose": {
+    "fr": "Céder",
+    "es": "Dar de baja",
+    "de": "Abgang buchen",
+    "nl": "Afstoten",
+    "it": "Dismetti",
+    "pt_BR": "Dar baixa"
+  },
+  "Cancel": {
+    "fr": "Annuler",
+    "es": "Cancelar",
+    "de": "Abbrechen",
+    "nl": "Annuleren",
+    "it": "Annulla",
+    "pt_BR": "Cancelar"
+  },
+  "Check consistency": {
+    "fr": "Contrôler la cohérence",
+    "es": "Comprobar la coherencia",
+    "de": "Konsistenz prüfen",
+    "nl": "Consistentie controleren",
+    "it": "Verifica la coerenza",
+    "pt_BR": "Verificar coerência"
+  },
+  "Disposal date": {
+    "fr": "Date de cession",
+    "es": "Fecha de baja",
+    "de": "Abgangsdatum",
+    "nl": "Datum van afstoting",
+    "it": "Data di dismissione",
+    "pt_BR": "Data da baixa"
+  },
+  "Disposal entry": {
+    "fr": "Écriture de cession",
+    "es": "Asiento de baja",
+    "de": "Abgangsbuchung",
+    "nl": "Afstotingsboeking",
+    "it": "Registrazione di dismissione",
+    "pt_BR": "Lançamento de baixa"
+  },
+  "Reason": {
+    "fr": "Motif",
+    "es": "Motivo",
+    "de": "Grund",
+    "nl": "Reden",
+    "it": "Motivo",
+    "pt_BR": "Motivo"
+  },
+  "Sold": {
+    "fr": "Vendu",
+    "es": "Vendido",
+    "de": "Verkauft",
+    "nl": "Verkocht",
+    "it": "Venduto",
+    "pt_BR": "Vendido"
+  },
+  "Scrapped": {
+    "fr": "Mis au rebut",
+    "es": "Desguazado",
+    "de": "Verschrottet",
+    "nl": "Afgedankt",
+    "it": "Rottamato",
+    "pt_BR": "Sucateado"
+  },
+  "Post instalments due first": {
+    "fr": "Comptabiliser d'abord les échéances échues",
+    "es": "Contabilizar antes las cuotas vencidas",
+    "de": "Fällige Raten zuerst buchen",
+    "nl": "Vervallen termijnen eerst boeken",
+    "it": "Confermare prima le rate scadute",
+    "pt_BR": "Lançar primeiro as parcelas vencidas"
+  },
+  "Acquisition Warning": {
+    "fr": "Avertissement d'acquisition",
+    "es": "Aviso de adquisición",
+    "de": "Anschaffungswarnung",
+    "nl": "Waarschuwing aanschaf",
+    "it": "Avviso di acquisizione",
+    "pt_BR": "Aviso de aquisição"
+  },
+  "Expense Type Warning": {
+    "fr": "Avertissement sur le type de compte",
+    "es": "Aviso sobre el tipo de cuenta",
+    "de": "Warnung zur Kontoart",
+    "nl": "Waarschuwing rekeningsoort",
+    "it": "Avviso sul tipo di conto",
+    "pt_BR": "Aviso sobre o tipo de conta"
+  },
+  "With instalments to post": {
+    "fr": "Avec des échéances à comptabiliser",
+    "es": "Con cuotas por contabilizar",
+    "de": "Mit zu buchenden Raten",
+    "nl": "Met te boeken termijnen",
+    "it": "Con rate da confermare",
+    "pt_BR": "Com parcelas a lançar"
+  },
+  "Record your first asset": {
+    "fr": "Enregistrez votre première immobilisation",
+    "es": "Registre su primer inmovilizado",
+    "de": "Erfassen Sie Ihr erstes Anlagegut",
+    "nl": "Leg uw eerste activum vast",
+    "it": "Registra il tuo primo cespite",
+    "pt_BR": "Registre seu primeiro ativo"
+  },
+  "e.g. Delivery van": {
+    "fr": "ex. Camionnette de livraison",
+    "es": "p. ej. Furgoneta de reparto",
+    "de": "z. B. Lieferwagen",
+    "nl": "bijv. Bestelwagen",
+    "it": "es. Furgone per consegne",
+    "pt_BR": "ex. Furgão de entrega"
+  },
+  "Asset fully depreciated.": {
+    "fr": "Immobilisation totalement amortie.",
+    "es": "Inmovilizado totalmente amortizado.",
+    "de": "Anlagegut vollständig abgeschrieben.",
+    "nl": "Activum volledig afgeschreven.",
+    "it": "Cespite completamente ammortizzato.",
+    "pt_BR": "Ativo totalmente depreciado."
+  },
+  "%(asset)s — disposal": {
+    "fr": "%(asset)s — cession",
+    "es": "%(asset)s — baja",
+    "de": "%(asset)s — Abgang",
+    "nl": "%(asset)s — afstoting",
+    "it": "%(asset)s — dismissione",
+    "pt_BR": "%(asset)s — baixa"
+  },
+  "fiscal year lock date": {
+    "fr": "date de verrouillage de l'exercice",
+    "es": "fecha de bloqueo del ejercicio",
+    "de": "Sperrdatum des Geschäftsjahres",
+    "nl": "vergrendelingsdatum boekjaar",
+    "it": "data di blocco dell'esercizio",
+    "pt_BR": "data de bloqueio do exercício"
+  },
+  "hard lock date": {
+    "fr": "date de verrouillage définitif",
+    "es": "fecha de bloqueo definitivo",
+    "de": "endgültiges Sperrdatum",
+    "nl": "definitieve vergrendelingsdatum",
+    "it": "data di blocco definitivo",
+    "pt_BR": "data de bloqueio definitivo"
+  },
+  "The acquisition value must be positive.": {
+    "fr": "La valeur d'acquisition doit être positive.",
+    "es": "El valor de adquisición debe ser positivo.",
+    "de": "Der Anschaffungswert muss positiv sein.",
+    "nl": "De aanschafwaarde moet positief zijn.",
+    "it": "Il valore di acquisizione deve essere positivo.",
+    "pt_BR": "O valor de aquisição deve ser positivo."
+  },
+  "The duration must be at least one month.": {
+    "fr": "La durée doit être d'au moins un mois.",
+    "es": "La duración debe ser de al menos un mes.",
+    "de": "Die Dauer muss mindestens einen Monat betragen.",
+    "nl": "De looptijd moet minstens één maand zijn.",
+    "it": "La durata deve essere di almeno un mese.",
+    "pt_BR": "A duração deve ser de pelo menos um mês."
+  },
+  "The salvage value cannot be negative.": {
+    "fr": "La valeur résiduelle ne peut pas être négative.",
+    "es": "El valor residual no puede ser negativo.",
+    "de": "Der Restwert darf nicht negativ sein.",
+    "nl": "De restwaarde mag niet negatief zijn.",
+    "it": "Il valore residuo non può essere negativo.",
+    "pt_BR": "O valor residual não pode ser negativo."
+  },
+  "This instalment has not been posted yet.": {
+    "fr": "Cette échéance n'est pas encore comptabilisée.",
+    "es": "Esta cuota aún no se ha contabilizado.",
+    "de": "Diese Rate wurde noch nicht gebucht.",
+    "nl": "Deze termijn is nog niet geboekt.",
+    "it": "Questa rata non è ancora stata confermata.",
+    "pt_BR": "Esta parcela ainda não foi lançada."
+  },
+  "Only a draft asset can be validated.": {
+    "fr": "Seule une immobilisation en brouillon peut être validée.",
+    "es": "Solo puede validarse un inmovilizado en borrador.",
+    "de": "Nur ein Anlagegut im Entwurf kann bestätigt werden.",
+    "nl": "Alleen een activum in concept kan worden bevestigd.",
+    "it": "Solo un cespite in bozza può essere convalidato.",
+    "pt_BR": "Somente um ativo em rascunho pode ser validado."
+  },
+  "Accumulated depreciation, credited by each instalment. This is a balance sheet account, never a profit and loss one (28x in the French chart, 281x in the Spanish one).": {
+    "fr": "Amortissements cumulés, crédités par chaque échéance. C'est un compte de bilan, jamais un compte de résultat (28x dans le plan français, 281x dans le plan espagnol).",
+    "es": "Amortización acumulada, abonada por cada cuota. Es una cuenta de balance, nunca de resultados (28x en el plan francés, 281x en el español).",
+    "de": "Kumulierte Abschreibungen, die mit jeder Rate im Haben gebucht werden. Ein Bilanzkonto, niemals ein Erfolgskonto (28x im französischen, 281x im spanischen Kontenplan).",
+    "nl": "Cumulatieve afschrijving, per termijn gecrediteerd. Dit is een balansrekening, nooit een resultatenrekening (28x in het Franse, 281x in het Spaanse schema).",
+    "it": "Fondo ammortamento, accreditato da ogni rata. È un conto patrimoniale, mai economico (28x nel piano francese, 281x in quello spagnolo).",
+    "pt_BR": "Depreciação acumulada, creditada por cada parcela. É uma conta patrimonial, nunca de resultado (28x no plano francês, 281x no espanhol)."
+  },
+  "Account charged with the remaining net book value. An expense account, distinct from the ongoing depreciation charge (675 in the French chart).": {
+    "fr": "Compte imputé de la valeur nette comptable restante. Un compte de charge, distinct de la dotation courante (675 dans le plan français).",
+    "es": "Cuenta a la que se imputa el valor neto contable pendiente. Una cuenta de gasto, distinta de la dotación corriente (675 en el plan francés).",
+    "de": "Konto, dem der verbleibende Nettobuchwert belastet wird. Ein Aufwandskonto, getrennt von der laufenden Abschreibung (675 im französischen Kontenplan).",
+    "nl": "Rekening waarop de resterende boekwaarde wordt geboekt. Een kostenrekening, los van de lopende afschrijving (675 in het Franse schema).",
+    "it": "Conto addebitato del valore contabile netto residuo. Un conto di costo, distinto dall'ammortamento corrente (675 nel piano francese).",
+    "pt_BR": "Conta debitada pelo valor contábil líquido remanescente. Uma conta de despesa, distinta da depreciação corrente (675 no plano francês)."
+  },
+  "Journal entry that brought this asset into the books. Optional, but without it nothing guarantees the asset actually exists in the ledger.": {
+    "fr": "Écriture qui a fait entrer cette immobilisation dans les comptes. Facultative, mais sans elle rien ne garantit que le bien existe réellement au grand livre.",
+    "es": "Asiento que dio entrada a este inmovilizado en la contabilidad. Opcional, pero sin él nada garantiza que el bien exista realmente en el libro mayor.",
+    "de": "Buchung, mit der dieses Anlagegut in die Bücher aufgenommen wurde. Optional, aber ohne sie ist nicht gewährleistet, dass das Gut im Hauptbuch tatsächlich existiert.",
+    "nl": "Boeking waarmee dit activum in de administratie is opgenomen. Optioneel, maar zonder deze boeking is niet gegarandeerd dat het activum werkelijk in het grootboek staat.",
+    "it": "Registrazione che ha fatto entrare questo cespite in contabilità. Facoltativa, ma senza di essa nulla garantisce che il bene esista davvero nel mastro.",
+    "pt_BR": "Lançamento que registrou este ativo na contabilidade. Opcional, mas sem ele nada garante que o bem realmente exista no razão."
+  },
+  "Depreciation already recognised before this asset was recorded here. Used when migrating an existing asset: the amount is excluded from the board without changing the end date.": {
+    "fr": "Amortissement déjà constaté avant l'enregistrement du bien ici. Sert lors d'une reprise d'antériorité : le montant est exclu du tableau sans décaler la date de fin.",
+    "es": "Amortización ya reconocida antes de registrar aquí el inmovilizado. Se usa al migrar un bien existente: el importe se excluye del cuadro sin cambiar la fecha final.",
+    "de": "Bereits vor der Erfassung hier verbuchte Abschreibung. Wird bei der Übernahme eines bestehenden Anlageguts verwendet: der Betrag bleibt aus dem Plan ausgeschlossen, ohne das Enddatum zu verschieben.",
+    "nl": "Afschrijving die al vóór de vastlegging hier is verwerkt. Wordt gebruikt bij migratie van een bestaand activum: het bedrag blijft buiten de staat zonder de einddatum te wijzigen.",
+    "it": "Ammortamento già rilevato prima della registrazione qui. Si usa nel riporto di un cespite esistente: l'importo è escluso dal piano senza spostare la data di fine.",
+    "pt_BR": "Depreciação já reconhecida antes do registro aqui. Usado na migração de um ativo existente: o valor é excluído do quadro sem alterar a data final."
+  },
+  "Portion of the value that is never depreciated.": {
+    "fr": "Part de la valeur qui n'est jamais amortie.",
+    "es": "Parte del valor que nunca se amortiza.",
+    "de": "Teil des Werts, der nie abgeschrieben wird.",
+    "nl": "Deel van de waarde dat nooit wordt afgeschreven.",
+    "it": "Quota del valore che non viene mai ammortizzata.",
+    "pt_BR": "Parcela do valor que nunca é depreciada."
+  },
+  "Reduce the first instalment to the number of days actually elapsed. An asset put in service on the 15th is not depreciated for the whole month.": {
+    "fr": "Réduit la première échéance au nombre de jours réellement écoulés. Un bien mis en service le 15 n'est pas amorti sur le mois entier.",
+    "es": "Reduce la primera cuota a los días realmente transcurridos. Un bien puesto en servicio el día 15 no se amortiza por el mes completo.",
+    "de": "Kürzt die erste Rate auf die tatsächlich verstrichenen Tage. Ein am 15. in Betrieb genommenes Gut wird nicht für den ganzen Monat abgeschrieben.",
+    "nl": "Beperkt de eerste termijn tot het werkelijk verstreken aantal dagen. Een activum dat op de 15e in gebruik wordt genomen, wordt niet over de hele maand afgeschreven.",
+    "it": "Riduce la prima rata ai giorni effettivamente trascorsi. Un bene entrato in funzione il 15 non si ammortizza per l'intero mese.",
+    "pt_BR": "Reduz a primeira parcela aos dias efetivamente decorridos. Um bem posto em operação no dia 15 não é depreciado pelo mês inteiro."
+  },
+  "Post the instalments falling on or before the disposal date, so that depreciation is recognised up to the day the asset leaves the books.": {
+    "fr": "Comptabilise les échéances tombant au plus tard à la date de cession, pour que l'amortissement soit constaté jusqu'au jour où le bien sort des comptes.",
+    "es": "Contabiliza las cuotas con vencimiento igual o anterior a la fecha de baja, para que la amortización se reconozca hasta el día en que el bien sale de la contabilidad.",
+    "de": "Bucht die bis zum Abgangsdatum fälligen Raten, damit die Abschreibung bis zu dem Tag erfasst wird, an dem das Gut die Bücher verlässt.",
+    "nl": "Boekt de termijnen die op of vóór de afstotingsdatum vallen, zodat de afschrijving wordt verwerkt tot de dag waarop het activum uit de administratie gaat.",
+    "it": "Conferma le rate con scadenza pari o anteriore alla data di dismissione, affinché l'ammortamento sia rilevato fino al giorno in cui il bene esce dai libri.",
+    "pt_BR": "Lança as parcelas com vencimento até a data da baixa, para que a depreciação seja reconhecida até o dia em que o bem sai da contabilidade."
+  },
+  "Set when the asset is not backed by a posted acquisition entry.": {
+    "fr": "Activé lorsque le bien n'est adossé à aucune écriture d'acquisition comptabilisée.",
+    "es": "Se activa cuando el bien no está respaldado por un asiento de adquisición contabilizado.",
+    "de": "Gesetzt, wenn dem Anlagegut keine gebuchte Anschaffungsbuchung zugrunde liegt.",
+    "nl": "Ingesteld wanneer het activum niet is onderbouwd met een geboekte aanschafboeking.",
+    "it": "Attivo quando il cespite non è sostenuto da una registrazione di acquisizione confermata.",
+    "pt_BR": "Definido quando o ativo não está respaldado por um lançamento de aquisição contabilizado."
+  },
+  "Set when the expense account is not typed as depreciation.": {
+    "fr": "Activé lorsque le compte de charge n'est pas typé « amortissement ».",
+    "es": "Se activa cuando la cuenta de gasto no está tipificada como amortización.",
+    "de": "Gesetzt, wenn das Aufwandskonto nicht als Abschreibung typisiert ist.",
+    "nl": "Ingesteld wanneer de kostenrekening niet als afschrijving is getypeerd.",
+    "it": "Attivo quando il conto di costo non è tipizzato come ammortamento.",
+    "pt_BR": "Definido quando a conta de despesa não está tipificada como depreciação."
+  },
+  "The salvage value must be lower than the acquisition value.": {
+    "fr": "La valeur résiduelle doit être inférieure à la valeur d'acquisition.",
+    "es": "El valor residual debe ser inferior al valor de adquisición.",
+    "de": "Der Restwert muss unter dem Anschaffungswert liegen.",
+    "nl": "De restwaarde moet lager zijn dan de aanschafwaarde.",
+    "it": "Il valore residuo deve essere inferiore al valore di acquisizione.",
+    "pt_BR": "O valor residual deve ser inferior ao valor de aquisição."
+  },
+  "A depreciation instalment must be strictly positive.": {
+    "fr": "Une dotation doit être strictement positive.",
+    "es": "Una cuota de amortización debe ser estrictamente positiva.",
+    "de": "Eine Abschreibungsrate muss strikt positiv sein.",
+    "nl": "Een afschrijvingstermijn moet strikt positief zijn.",
+    "it": "Una rata di ammortamento deve essere strettamente positiva.",
+    "pt_BR": "Uma parcela de depreciação deve ser estritamente positiva."
+  },
+  "The depreciation and expense accounts must be different: an instalment debits one and credits the other.": {
+    "fr": "Les comptes d'amortissement et de charge doivent être différents : une échéance débite l'un et crédite l'autre.",
+    "es": "Las cuentas de amortización y de gasto deben ser distintas: una cuota carga una y abona la otra.",
+    "de": "Abschreibungs- und Aufwandskonto müssen verschieden sein: eine Rate belastet das eine und erkennt dem anderen gut.",
+    "nl": "De afschrijvings- en kostenrekening moeten verschillen: een termijn debiteert de ene en crediteert de andere.",
+    "it": "I conti ammortamento e costo devono essere diversi: una rata addebita l'uno e accredita l'altro.",
+    "pt_BR": "As contas de depreciação e de despesa devem ser diferentes: uma parcela debita uma e credita a outra."
+  },
+  "%(account)s is a profit and loss account. Accumulated depreciation must be posted to a balance sheet account.": {
+    "fr": "%(account)s est un compte de résultat. Les amortissements cumulés doivent être portés sur un compte de bilan.",
+    "es": "%(account)s es una cuenta de resultados. La amortización acumulada debe registrarse en una cuenta de balance.",
+    "de": "%(account)s ist ein Erfolgskonto. Kumulierte Abschreibungen müssen auf einem Bilanzkonto gebucht werden.",
+    "nl": "%(account)s is een resultatenrekening. Cumulatieve afschrijving moet op een balansrekening worden geboekt.",
+    "it": "%(account)s è un conto economico. Il fondo ammortamento deve essere registrato su un conto patrimoniale.",
+    "pt_BR": "%(account)s é uma conta de resultado. A depreciação acumulada deve ser lançada em uma conta patrimonial."
+  },
+  "The amount already depreciated (%(done).2f) exceeds the depreciable base (%(base).2f).": {
+    "fr": "Le montant déjà amorti (%(done).2f) dépasse la base amortissable (%(base).2f).",
+    "es": "El importe ya amortizado (%(done).2f) supera la base amortizable (%(base).2f).",
+    "de": "Der bereits abgeschriebene Betrag (%(done).2f) übersteigt die Abschreibungsbasis (%(base).2f).",
+    "nl": "Het reeds afgeschreven bedrag (%(done).2f) overschrijdt de afschrijvingsbasis (%(base).2f).",
+    "it": "L'importo già ammortizzato (%(done).2f) supera la base ammortizzabile (%(base).2f).",
+    "pt_BR": "O valor já depreciado (%(done).2f) excede a base depreciável (%(base).2f)."
+  },
+  "An asset with posted instalments cannot be set back to draft.": {
+    "fr": "Une immobilisation dont des échéances sont comptabilisées ne peut pas revenir en brouillon.",
+    "es": "Un inmovilizado con cuotas contabilizadas no puede volver a borrador.",
+    "de": "Ein Anlagegut mit gebuchten Raten kann nicht auf Entwurf zurückgesetzt werden.",
+    "nl": "Een activum met geboekte termijnen kan niet terug naar concept.",
+    "it": "Un cespite con rate confermate non può tornare in bozza.",
+    "pt_BR": "Um ativo com parcelas lançadas não pode voltar para rascunho."
+  },
+  "Only a running or fully depreciated asset can be disposed of.": {
+    "fr": "Seule une immobilisation en cours ou totalement amortie peut être cédée.",
+    "es": "Solo puede darse de baja un inmovilizado en curso o totalmente amortizado.",
+    "de": "Nur ein laufendes oder vollständig abgeschriebenes Anlagegut kann abgehen.",
+    "nl": "Alleen een lopend of volledig afgeschreven activum kan worden afgestoten.",
+    "it": "Solo un cespite in corso o completamente ammortizzato può essere dismesso.",
+    "pt_BR": "Somente um ativo em andamento ou totalmente depreciado pode ser baixado."
+  },
+  "A posted instalment cannot be deleted. Reverse its journal entry instead, so the ledger keeps a trace.": {
+    "fr": "Une échéance comptabilisée ne peut pas être supprimée. Contrepassez son écriture, pour que le grand livre en garde la trace.",
+    "es": "Una cuota contabilizada no puede eliminarse. Revierta su asiento, para que el libro mayor conserve el rastro.",
+    "de": "Eine gebuchte Rate kann nicht gelöscht werden. Stornieren Sie stattdessen ihre Buchung, damit das Hauptbuch eine Spur behält.",
+    "nl": "Een geboekte termijn kan niet worden verwijderd. Storneer in plaats daarvan de boeking, zodat het grootboek een spoor houdt.",
+    "it": "Una rata confermata non può essere eliminata. Storna invece la sua registrazione, così il mastro ne conserva traccia.",
+    "pt_BR": "Uma parcela lançada não pode ser excluída. Estorne o lançamento, para que o razão mantenha o rastro."
+  },
+  "%(assets)s cannot be deleted: %(count)d depreciation entries have already been posted, and deleting the asset would leave them in the ledger with nothing to justify them. Dispose of the asset instead — the ledger then keeps a trace of what happened.": {
+    "fr": "%(assets)s ne peut pas être supprimé : %(count)d écritures de dotation sont déjà comptabilisées, et supprimer le bien les laisserait au grand livre sans rien pour les justifier. Cédez plutôt l'immobilisation — le grand livre garde alors la trace de ce qui s'est passé.",
+    "es": "%(assets)s no puede eliminarse: ya hay %(count)d asientos de amortización contabilizados, y borrar el bien los dejaría en el libro mayor sin nada que los justifique. Dé de baja el inmovilizado — así el libro mayor conserva el rastro de lo ocurrido.",
+    "de": "%(assets)s kann nicht gelöscht werden: %(count)d Abschreibungsbuchungen sind bereits gebucht, und das Löschen des Guts würde sie ohne Begründung im Hauptbuch zurücklassen. Lassen Sie das Anlagegut stattdessen abgehen — so bleibt im Hauptbuch nachvollziehbar, was geschehen ist.",
+    "nl": "%(assets)s kan niet worden verwijderd: er zijn al %(count)d afschrijvingsboekingen geboekt, en het verwijderen zou ze zonder onderbouwing in het grootboek achterlaten. Stoot het activum in plaats daarvan af — dan houdt het grootboek een spoor van wat er is gebeurd.",
+    "it": "%(assets)s non può essere eliminato: %(count)d registrazioni di ammortamento sono già confermate, ed eliminare il bene le lascerebbe nel mastro senza nulla a giustificarle. Dismetti invece il cespite — così il mastro conserva traccia di quanto accaduto.",
+    "pt_BR": "%(assets)s não pode ser excluído: %(count)d lançamentos de depreciação já foram contabilizados, e excluir o bem os deixaria no razão sem nada que os justifique. Dê baixa no ativo — assim o razão mantém o rastro do que aconteceu."
+  },
+  "“%(asset)s” already has %(count)d posted instalment(s). Recomputing the board would desynchronise it from the ledger. Dispose of the asset and record a new one instead.": {
+    "fr": "« %(asset)s » compte déjà %(count)d échéance(s) comptabilisée(s). Recalculer le tableau le désynchroniserait du grand livre. Cédez l'immobilisation et enregistrez-en une nouvelle.",
+    "es": "«%(asset)s» ya tiene %(count)d cuota(s) contabilizada(s). Recalcular el cuadro lo desincronizaría del libro mayor. Dé de baja el inmovilizado y registre uno nuevo.",
+    "de": "„%(asset)s“ hat bereits %(count)d gebuchte Rate(n). Eine Neuberechnung des Plans würde ihn vom Hauptbuch entkoppeln. Lassen Sie das Anlagegut abgehen und erfassen Sie ein neues.",
+    "nl": "“%(asset)s” heeft al %(count)d geboekte termijn(en). De staat opnieuw berekenen zou hem uit de pas laten lopen met het grootboek. Stoot het activum af en leg een nieuw vast.",
+    "it": "«%(asset)s» ha già %(count)d rata/e confermata/e. Ricalcolare il piano lo disallineerebbe dal mastro. Dismetti il cespite e registrane uno nuovo.",
+    "pt_BR": "“%(asset)s” já tem %(count)d parcela(s) lançada(s). Recalcular o quadro o dessincronizaria do razão. Dê baixa no ativo e registre um novo."
+  },
+  "“%(asset)s” is not running: validate the asset first.": {
+    "fr": "« %(asset)s » n'est pas en cours : validez d'abord l'immobilisation.",
+    "es": "«%(asset)s» no está en curso: valide antes el inmovilizado.",
+    "de": "„%(asset)s“ läuft nicht: bestätigen Sie zuerst das Anlagegut.",
+    "nl": "“%(asset)s” is niet lopend: bevestig eerst het activum.",
+    "it": "«%(asset)s» non è in corso: convalida prima il cespite.",
+    "pt_BR": "“%(asset)s” não está em andamento: valide o ativo primeiro."
+  },
+  "Instalment %(no)d of “%(asset)s” is already posted.": {
+    "fr": "L'échéance %(no)d de « %(asset)s » est déjà comptabilisée.",
+    "es": "La cuota %(no)d de «%(asset)s» ya está contabilizada.",
+    "de": "Rate %(no)d von „%(asset)s“ ist bereits gebucht.",
+    "nl": "Termijn %(no)d van “%(asset)s” is al geboekt.",
+    "it": "La rata %(no)d di «%(asset)s» è già confermata.",
+    "pt_BR": "A parcela %(no)d de “%(asset)s” já foi lançada."
+  },
+  "Instalment %(no)d falls due on %(date)s, which is in the future. Depreciation is recognised as it is incurred, not in advance.": {
+    "fr": "L'échéance %(no)d tombe le %(date)s, dans le futur. L'amortissement se constate au fur et à mesure, pas par avance.",
+    "es": "La cuota %(no)d vence el %(date)s, en el futuro. La amortización se reconoce a medida que se devenga, no por anticipado.",
+    "de": "Rate %(no)d wird am %(date)s fällig, also in der Zukunft. Abschreibungen werden erfasst, sobald sie anfallen, nicht im Voraus.",
+    "nl": "Termijn %(no)d vervalt op %(date)s, in de toekomst. Afschrijving wordt verwerkt naarmate zij ontstaat, niet vooraf.",
+    "it": "La rata %(no)d scade il %(date)s, nel futuro. L'ammortamento si rileva man mano che matura, non in anticipo.",
+    "pt_BR": "A parcela %(no)d vence em %(date)s, no futuro. A depreciação é reconhecida conforme incorre, não antecipadamente."
+  },
+  "Instalment %(no)d falls on %(date)s, which is covered by the %(lock)s (%(lock_date)s). Adjust the lock date or the asset's in-service date.": {
+    "fr": "L'échéance %(no)d tombe le %(date)s, couvert par la %(lock)s (%(lock_date)s). Ajustez la date de verrouillage ou la date de mise en service.",
+    "es": "La cuota %(no)d cae el %(date)s, cubierto por la %(lock)s (%(lock_date)s). Ajuste la fecha de bloqueo o la de puesta en servicio.",
+    "de": "Rate %(no)d fällt auf den %(date)s, der vom %(lock)s (%(lock_date)s) erfasst ist. Passen Sie das Sperrdatum oder das Inbetriebnahmedatum an.",
+    "nl": "Termijn %(no)d valt op %(date)s, dat onder de %(lock)s (%(lock_date)s) valt. Pas de vergrendelingsdatum of de datum van ingebruikname aan.",
+    "it": "La rata %(no)d cade il %(date)s, coperto dalla %(lock)s (%(lock_date)s). Modifica la data di blocco o quella di entrata in funzione.",
+    "pt_BR": "A parcela %(no)d cai em %(date)s, coberto pela %(lock)s (%(lock_date)s). Ajuste a data de bloqueio ou a de entrada em operação."
+  },
+  "Entry %(move)s has no line on the asset account %(account)s. It cannot be the acquisition entry of “%(asset)s”.": {
+    "fr": "L'écriture %(move)s ne comporte aucune ligne sur le compte d'immobilisation %(account)s. Elle ne peut pas être l'écriture d'acquisition de « %(asset)s ».",
+    "es": "El asiento %(move)s no tiene ninguna línea en la cuenta de inmovilizado %(account)s. No puede ser el asiento de adquisición de «%(asset)s».",
+    "de": "Buchung %(move)s enthält keine Zeile auf dem Anlagekonto %(account)s. Sie kann nicht die Anschaffungsbuchung von „%(asset)s“ sein.",
+    "nl": "Boeking %(move)s heeft geen regel op de activarekening %(account)s. Zij kan niet de aanschafboeking van “%(asset)s” zijn.",
+    "it": "La registrazione %(move)s non ha righe sul conto cespite %(account)s. Non può essere la registrazione di acquisizione di «%(asset)s».",
+    "pt_BR": "O lançamento %(move)s não possui linha na conta do ativo %(account)s. Ele não pode ser o lançamento de aquisição de “%(asset)s”."
+  },
+  "Entry %(move)s debits only %(debit).2f on the asset account, less than the acquisition value %(value).2f of “%(asset)s”.": {
+    "fr": "L'écriture %(move)s ne débite que %(debit).2f sur le compte d'immobilisation, moins que la valeur d'acquisition %(value).2f de « %(asset)s ».",
+    "es": "El asiento %(move)s solo carga %(debit).2f en la cuenta de inmovilizado, menos que el valor de adquisición %(value).2f de «%(asset)s».",
+    "de": "Buchung %(move)s belastet das Anlagekonto nur mit %(debit).2f, weniger als der Anschaffungswert %(value).2f von „%(asset)s“.",
+    "nl": "Boeking %(move)s debiteert slechts %(debit).2f op de activarekening, minder dan de aanschafwaarde %(value).2f van “%(asset)s”.",
+    "it": "La registrazione %(move)s addebita solo %(debit).2f sul conto cespite, meno del valore di acquisizione %(value).2f di «%(asset)s».",
+    "pt_BR": "O lançamento %(move)s debita apenas %(debit).2f na conta do ativo, menos que o valor de aquisição %(value).2f de “%(asset)s”."
+  },
+  "Depreciation board for “%(asset)s”: %(error)s": {
+    "fr": "Tableau d'amortissement de « %(asset)s » : %(error)s",
+    "es": "Cuadro de amortización de «%(asset)s»: %(error)s",
+    "de": "Abschreibungsplan für „%(asset)s“: %(error)s",
+    "nl": "Afschrijvingsstaat voor “%(asset)s”: %(error)s",
+    "it": "Piano di ammortamento di «%(asset)s»: %(error)s",
+    "pt_BR": "Quadro de depreciação de “%(asset)s”: %(error)s"
+  },
+  "No acquisition entry is linked. Nothing guarantees this asset exists in the ledger: it could be depreciated while absent from the balance sheet.": {
+    "fr": "Aucune écriture d'acquisition n'est rattachée. Rien ne garantit que ce bien existe au grand livre : il pourrait être amorti tout en étant absent du bilan.",
+    "es": "No hay ningún asiento de adquisición vinculado. Nada garantiza que este bien exista en el libro mayor: podría amortizarse estando ausente del balance.",
+    "de": "Es ist keine Anschaffungsbuchung verknüpft. Nichts gewährleistet, dass dieses Gut im Hauptbuch existiert: es könnte abgeschrieben werden, obwohl es in der Bilanz fehlt.",
+    "nl": "Er is geen aanschafboeking gekoppeld. Niets garandeert dat dit activum in het grootboek bestaat: het zou kunnen worden afgeschreven terwijl het niet op de balans staat.",
+    "it": "Nessuna registrazione di acquisizione è collegata. Nulla garantisce che questo bene esista nel mastro: potrebbe essere ammortizzato pur essendo assente dal bilancio.",
+    "pt_BR": "Nenhum lançamento de aquisição está vinculado. Nada garante que este bem exista no razão: ele poderia ser depreciado estando ausente do balanço."
+  },
+  "No instalment is due yet. Future instalments are posted when their due date is reached.": {
+    "fr": "Aucune échéance n'est encore échue. Les échéances futures se comptabilisent lorsque leur date est atteinte.",
+    "es": "Todavía no vence ninguna cuota. Las cuotas futuras se contabilizan al llegar su fecha.",
+    "de": "Noch ist keine Rate fällig. Künftige Raten werden gebucht, sobald ihr Fälligkeitsdatum erreicht ist.",
+    "nl": "Nog geen enkele termijn is vervallen. Toekomstige termijnen worden geboekt zodra hun vervaldatum is bereikt.",
+    "it": "Nessuna rata è ancora scaduta. Le rate future si confermano al raggiungimento della loro data.",
+    "pt_BR": "Nenhuma parcela venceu ainda. As parcelas futuras são lançadas quando sua data é atingida."
+  },
+  "Asset validated. %(count)d instalment(s) to be posted, each requiring confirmation.": {
+    "fr": "Immobilisation validée. %(count)d échéance(s) à comptabiliser, chacune demandant confirmation.",
+    "es": "Inmovilizado validado. %(count)d cuota(s) por contabilizar, cada una requiere confirmación.",
+    "de": "Anlagegut bestätigt. %(count)d zu buchende Rate(n), jede erfordert eine Bestätigung.",
+    "nl": "Activum bevestigd. %(count)d te boeken termijn(en), elk vraagt om bevestiging.",
+    "it": "Cespite convalidato. %(count)d rata/e da confermare, ciascuna richiede conferma.",
+    "pt_BR": "Ativo validado. %(count)d parcela(s) a lançar, cada uma exigindo confirmação."
+  },
+  "Instalment %(no)d posted: %(amount)s on %(date)s (%(move)s).": {
+    "fr": "Échéance %(no)d comptabilisée : %(amount)s le %(date)s (%(move)s).",
+    "es": "Cuota %(no)d contabilizada: %(amount)s el %(date)s (%(move)s).",
+    "de": "Rate %(no)d gebucht: %(amount)s am %(date)s (%(move)s).",
+    "nl": "Termijn %(no)d geboekt: %(amount)s op %(date)s (%(move)s).",
+    "it": "Rata %(no)d confermata: %(amount)s il %(date)s (%(move)s).",
+    "pt_BR": "Parcela %(no)d lançada: %(amount)s em %(date)s (%(move)s)."
+  },
+  "%(count)d instalments posted, from %(first)s to %(last)s, totalling %(total)s.": {
+    "fr": "%(count)d échéances comptabilisées, du %(first)s au %(last)s, pour un total de %(total)s.",
+    "es": "%(count)d cuotas contabilizadas, del %(first)s al %(last)s, por un total de %(total)s.",
+    "de": "%(count)d Raten gebucht, vom %(first)s bis %(last)s, insgesamt %(total)s.",
+    "nl": "%(count)d termijnen geboekt, van %(first)s tot %(last)s, in totaal %(total)s.",
+    "it": "%(count)d rate confermate, dal %(first)s al %(last)s, per un totale di %(total)s.",
+    "pt_BR": "%(count)d parcelas lançadas, de %(first)s a %(last)s, totalizando %(total)s."
+  },
+  "%(asset)s — depreciation %(no)d/%(total)d": {
+    "fr": "%(asset)s — dotation %(no)d/%(total)d",
+    "es": "%(asset)s — amortización %(no)d/%(total)d",
+    "de": "%(asset)s — Abschreibung %(no)d/%(total)d",
+    "nl": "%(asset)s — afschrijving %(no)d/%(total)d",
+    "it": "%(asset)s — ammortamento %(no)d/%(total)d",
+    "pt_BR": "%(asset)s — depreciação %(no)d/%(total)d"
+  },
+  "Asset disposed of on %(date)s (%(reason)s). Net book value %(value)s charged to %(account)s. Entry %(move)s. %(cancelled)d remaining instalment(s) cancelled.": {
+    "fr": "Immobilisation cédée le %(date)s (%(reason)s). Valeur nette comptable %(value)s imputée à %(account)s. Écriture %(move)s. %(cancelled)d échéance(s) restante(s) annulée(s).",
+    "es": "Inmovilizado dado de baja el %(date)s (%(reason)s). Valor neto contable %(value)s imputado a %(account)s. Asiento %(move)s. %(cancelled)d cuota(s) restante(s) cancelada(s).",
+    "de": "Anlagegut am %(date)s abgegangen (%(reason)s). Nettobuchwert %(value)s auf %(account)s gebucht. Buchung %(move)s. %(cancelled)d verbleibende Rate(n) storniert.",
+    "nl": "Activum afgestoten op %(date)s (%(reason)s). Boekwaarde %(value)s geboekt op %(account)s. Boeking %(move)s. %(cancelled)d resterende termijn(en) geannuleerd.",
+    "it": "Cespite dismesso il %(date)s (%(reason)s). Valore contabile netto %(value)s imputato a %(account)s. Registrazione %(move)s. %(cancelled)d rata/e residua/e annullata/e.",
+    "pt_BR": "Ativo baixado em %(date)s (%(reason)s). Valor contábil líquido %(value)s imputado a %(account)s. Lançamento %(move)s. %(cancelled)d parcela(s) restante(s) cancelada(s)."
+  },
+  "Every asset account matches the asset cards recorded against it.": {
+    "fr": "Chaque compte d'immobilisation concorde avec les fiches qui y sont rattachées.",
+    "es": "Cada cuenta de inmovilizado concuerda con las fichas registradas en ella.",
+    "de": "Jedes Anlagekonto stimmt mit den darauf erfassten Anlagegütern überein.",
+    "nl": "Elke activarekening komt overeen met de erop vastgelegde activa.",
+    "it": "Ogni conto cespite concorda con le schede registrate su di esso.",
+    "pt_BR": "Cada conta de ativo concorda com as fichas registradas nela."
+  },
+  "%(count)d asset account(s) do not match:\n\n%(details)s": {
+    "fr": "%(count)d compte(s) d'immobilisation ne concordent pas :\n\n%(details)s",
+    "es": "%(count)d cuenta(s) de inmovilizado no concuerdan:\n\n%(details)s",
+    "de": "%(count)d Anlagekonto/-konten stimmen nicht überein:\n\n%(details)s",
+    "nl": "%(count)d activarekening(en) komen niet overeen:\n\n%(details)s",
+    "it": "%(count)d conto/i cespite non concordano:\n\n%(details)s",
+    "pt_BR": "%(count)d conta(s) de ativo não concordam:\n\n%(details)s"
+  },
+  "%(account)s: %(cards).2f recorded on asset cards, %(ledger).2f in the ledger (difference %(gap).2f)": {
+    "fr": "%(account)s : %(cards).2f sur les fiches d'immobilisation, %(ledger).2f au grand livre (écart %(gap).2f)",
+    "es": "%(account)s: %(cards).2f en las fichas de inmovilizado, %(ledger).2f en el libro mayor (diferencia %(gap).2f)",
+    "de": "%(account)s: %(cards).2f auf den Anlagenkarten, %(ledger).2f im Hauptbuch (Differenz %(gap).2f)",
+    "nl": "%(account)s: %(cards).2f op de activakaarten, %(ledger).2f in het grootboek (verschil %(gap).2f)",
+    "it": "%(account)s: %(cards).2f sulle schede cespite, %(ledger).2f nel mastro (scostamento %(gap).2f)",
+    "pt_BR": "%(account)s: %(cards).2f nas fichas de ativo, %(ledger).2f no razão (diferença %(gap).2f)"
+  },
+  "The depreciation board is computed from the acquisition\n                    value, the in-service date and the duration. Nothing is\n                    posted to the ledger until you confirm each instalment.": {
+    "fr": "Le tableau d'amortissement se calcule à partir de la valeur d'acquisition, de la date de mise en service et de la durée. Rien n'est porté au grand livre tant que vous n'avez pas confirmé chaque échéance.",
+    "es": "El cuadro de amortización se calcula a partir del valor de adquisición, la fecha de puesta en servicio y la duración. Nada se registra en el libro mayor hasta que confirme cada cuota.",
+    "de": "Der Abschreibungsplan wird aus Anschaffungswert, Inbetriebnahmedatum und Dauer berechnet. Nichts wird im Hauptbuch gebucht, bevor Sie jede Rate bestätigt haben.",
+    "nl": "De afschrijvingsstaat wordt berekend uit de aanschafwaarde, de datum van ingebruikname en de looptijd. Er wordt niets in het grootboek geboekt totdat u elke termijn bevestigt.",
+    "it": "Il piano di ammortamento si calcola dal valore di acquisizione, dalla data di entrata in funzione e dalla durata. Nulla viene registrato nel mastro finché non confermi ogni rata.",
+    "pt_BR": "O quadro de depreciação é calculado a partir do valor de aquisição, da data de entrada em operação e da duração. Nada é lançado no razão até que você confirme cada parcela."
+  },
+  "The sale proceeds are not recorded here. Issue the\n                        customer invoice as usual: the gain or loss on disposal\n                        will appear in the profit and loss statement, as the\n                        difference between the proceeds and the net book value\n                        charged by this entry.": {
+    "fr": "Le produit de la vente ne s'enregistre pas ici. Établissez la facture client comme d'habitude : la plus ou moins-value de cession apparaîtra au compte de résultat, comme différence entre le produit et la valeur nette comptable imputée par cette écriture.",
+    "es": "El importe de la venta no se registra aquí. Emita la factura de cliente como de costumbre: el beneficio o la pérdida de la baja aparecerá en la cuenta de resultados, como diferencia entre el importe y el valor neto contable imputado por este asiento.",
+    "de": "Der Verkaufserlös wird hier nicht erfasst. Stellen Sie die Kundenrechnung wie gewohnt aus: der Gewinn oder Verlust aus dem Abgang erscheint in der Gewinn- und Verlustrechnung als Differenz zwischen Erlös und dem mit dieser Buchung belasteten Nettobuchwert.",
+    "nl": "De verkoopopbrengst wordt hier niet vastgelegd. Maak de verkoopfactuur zoals gebruikelijk: de winst of het verlies bij afstoting verschijnt in de winst- en verliesrekening, als verschil tussen de opbrengst en de met deze boeking geboekte boekwaarde.",
+    "it": "Il ricavo della vendita non si registra qui. Emetti la fattura al cliente come di consueto: la plusvalenza o minusvalenza da dismissione comparirà nel conto economico, come differenza tra il ricavo e il valore contabile netto imputato da questa registrazione.",
+    "pt_BR": "O produto da venda não é registrado aqui. Emita a fatura ao cliente normalmente: o ganho ou perda na baixa aparecerá na demonstração de resultados, como diferença entre o produto e o valor contábil líquido imputado por este lançamento."
+  },
+  "Reminder: the sale proceeds are not recorded here. Issue the customer invoice as usual — the gain or loss on disposal will then appear in the profit and loss statement, as the difference between the proceeds and the net book value just charged.": {
+    "fr": "Rappel : le produit de la vente ne s'enregistre pas ici. Établissez la facture client comme d'habitude — la plus ou moins-value de cession apparaîtra alors au compte de résultat, comme différence entre le produit et la valeur nette comptable qui vient d'être imputée.",
+    "es": "Recordatorio: el importe de la venta no se registra aquí. Emita la factura de cliente como de costumbre — el beneficio o la pérdida de la baja aparecerá entonces en la cuenta de resultados, como diferencia entre el importe y el valor neto contable recién imputado.",
+    "de": "Hinweis: der Verkaufserlös wird hier nicht erfasst. Stellen Sie die Kundenrechnung wie gewohnt aus — der Gewinn oder Verlust aus dem Abgang erscheint dann in der Gewinn- und Verlustrechnung als Differenz zwischen Erlös und dem soeben belasteten Nettobuchwert.",
+    "nl": "Ter herinnering: de verkoopopbrengst wordt hier niet vastgelegd. Maak de verkoopfactuur zoals gebruikelijk — de winst of het verlies bij afstoting verschijnt dan in de winst- en verliesrekening, als verschil tussen de opbrengst en de zojuist geboekte boekwaarde.",
+    "it": "Promemoria: il ricavo della vendita non si registra qui. Emetti la fattura al cliente come di consueto — la plusvalenza o minusvalenza da dismissione comparirà allora nel conto economico, come differenza tra il ricavo e il valore contabile netto appena imputato.",
+    "pt_BR": "Lembrete: o produto da venda não é registrado aqui. Emita a fatura ao cliente normalmente — o ganho ou perda na baixa aparecerá então na demonstração de resultados, como diferença entre o produto e o valor contábil líquido recém-imputado."
+  },
+  "Neither the expense account %(expense)s nor the depreciation account %(depreciation)s carries a type the cash flow statement recognises. Depreciation will still be posted correctly, but it will be reported inside the net result instead of being added back separately. Type the expense account as “Depreciation”, or the depreciation account as “Fixed Assets”.": {
+    "fr": "Ni le compte de charge %(expense)s ni le compte d’amortissement %(depreciation)s ne porte un type que le tableau de flux de trésorerie sache lire. La dotation sera comptabilisée correctement, mais elle figurera dans le résultat net au lieu d’être réintégrée à part. Typez le compte de charge en « dotation aux amortissements », ou le compte d’amortissement en « immobilisations ».",
+    "es": "Ni la cuenta de gasto %(expense)s ni la cuenta de amortización %(depreciation)s tienen un tipo que el estado de flujos de efectivo reconozca. La amortización se contabilizará correctamente, pero figurará dentro del resultado neto en lugar de añadirse por separado. Tipifique la cuenta de gasto como «amortización» o la cuenta de amortización como «inmovilizado».",
+    "de": "Weder das Aufwandskonto %(expense)s noch das Abschreibungskonto %(depreciation)s trägt einen Typ, den die Kapitalflussrechnung erkennt. Die Abschreibung wird korrekt gebucht, erscheint aber im Jahresergebnis statt gesondert hinzugerechnet zu werden. Typisieren Sie das Aufwandskonto als „Abschreibung“ oder das Abschreibungskonto als „Anlagevermögen“.",
+    "nl": "Noch de kostenrekening %(expense)s, noch de afschrijvingsrekening %(depreciation)s heeft een type dat het kasstroomoverzicht herkent. De afschrijving wordt correct geboekt, maar verschijnt in het nettoresultaat in plaats van afzonderlijk te worden teruggeteld. Typeer de kostenrekening als “afschrijving” of de afschrijvingsrekening als “vaste activa”.",
+    "it": "Né il conto di costo %(expense)s né il conto di ammortamento %(depreciation)s ha un tipo riconosciuto dal rendiconto finanziario. L’ammortamento sarà registrato correttamente, ma comparirà nel risultato netto anziché essere riaggiunto separatamente. Tipizzare il conto di costo come «ammortamento» o il conto di ammortamento come «immobilizzazioni».",
+    "pt_BR": "Nem a conta de despesa %(expense)s nem a conta de depreciação %(depreciation)s tem um tipo que a demonstração dos fluxos de caixa reconheça. A depreciação será lançada corretamente, mas aparecerá dentro do resultado líquido em vez de ser somada separadamente. Tipifique a conta de despesa como “depreciação” ou a conta de depreciação como “imobilizado”."
+  }
+}

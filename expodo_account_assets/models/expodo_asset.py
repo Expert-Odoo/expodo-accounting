@@ -243,33 +243,50 @@ class ExpodoAsset(models.Model):
         help="Set when the expense account is not typed as depreciation.",
     )
 
-    @api.depends("account_expense_id")
+    @api.depends("account_expense_id", "account_depreciation_id")
     def _compute_expense_type_warning(self):
-        """Signale un compte de dotation mal typé.
+        """Signale une dotation que le tableau de flux ne saura pas relire.
 
-        Le tableau de flux de trésorerie réintègre les dotations comme charge
-        sans effet de trésorerie, en s'appuyant sur le type de compte. Si le
-        compte choisi est typé « charge » plutôt que « dotation », les
-        montants tombent dans le résultat net au lieu d'apparaître à part.
+        Le tableau réintègre les dotations comme charge sans effet de
+        trésorerie. Il les reconnaît de deux façons : par le type du compte
+        de charge, « dotation aux amortissements », ou par l'écriture
+        elle-même, dès qu'elle touche un compte d'immobilisation. Une
+        dotation passée contre un compte 28 typé « immobilisations » est donc
+        lue correctement, même si le compte de charge est une charge
+        ordinaire — et le plan comptable français type précisément 681120
+        ainsi.
 
-        Le total reste juste — c'est pourquoi rien ne le signale autrement —
-        mais la lecture du tableau devient fausse. Le cas est courant : le
-        plan comptable français type 681120 en charge ordinaire.
+        L'avertissement ne portait que sur le compte de charge : il se
+        déclenchait sur la totalité des biens d'une société française et
+        réclamait un retypage du plan comptable qui n'aurait rien changé. Un
+        avertissement qui se trompe une fois sur deux n'est plus lu du tout,
+        y compris les fois où il a raison.
+
+        Le total reste juste dans tous les cas — c'est pourquoi rien d'autre
+        ne le signale — mais la lecture du tableau devient fausse.
         """
         for asset in self:
-            compte = asset.account_expense_id
+            charge = asset.account_expense_id
+            amortissement = asset.account_depreciation_id
             asset.expense_type_warning = False
-            if compte and compte.account_type != "expense_depreciation":
-                asset.expense_type_warning = self.env._(
-                    "The expense account %(account)s is typed “%(type)s” rather "
-                    "than “Depreciation”. Depreciation will still be posted "
-                    "correctly, but the cash flow statement will report it "
-                    "inside the net result instead of adding it back "
-                    "separately.",
-                    account=compte.display_name,
-                    type=dict(compte._fields["account_type"].selection).get(
-                        compte.account_type, compte.account_type),
-                )
+            if not charge:
+                continue
+            if charge.account_type == "expense_depreciation":
+                continue
+            if amortissement and amortissement.account_type == "asset_fixed":
+                continue
+            asset.expense_type_warning = self.env._(
+                "Neither the expense account %(expense)s nor the depreciation "
+                "account %(depreciation)s carries a type the cash flow "
+                "statement recognises. Depreciation will still be posted "
+                "correctly, but it will be reported inside the net result "
+                "instead of being added back separately. Type the expense "
+                "account as “Depreciation”, or the depreciation account as "
+                "“Fixed Assets”.",
+                expense=charge.display_name,
+                depreciation=(amortissement.display_name
+                              if amortissement else "—"),
+            )
 
     @api.depends("original_move_id")
     def _compute_acquisition_warning(self):
