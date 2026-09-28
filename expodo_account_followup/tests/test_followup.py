@@ -150,6 +150,32 @@ class TestRelances(TransactionCase):
         self.assertAlmostEqual(self.client.followup_amount_due, 600.0, places=2)
         self.assertTrue(self.client.followup_level_id)
 
+    def test_un_reglement_ancien_ne_fixe_pas_le_retard(self):
+        """Le retard se lit sur les seules factures : un règlement ancien non
+        lettré, pris comme plus ancienne échéance, faisait franchir des
+        niveaux de relance qu'aucune facture ne justifiait."""
+        self._facture(montant=1000.0, jours_de_retard=10)
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        ancien = fields.Date.context_today(self.env.user) - relativedelta(days=90)
+        reglement = self.env["account.move"].create({
+            "journal_id": banque.id, "date": ancien,
+            "line_ids": [
+                Command.create({
+                    "name": "Règlement ancien", "account_id": self.compte_client.id,
+                    "partner_id": self.client.id, "date_maturity": ancien,
+                    "debit": 0.0, "credit": 200.0}),
+                Command.create({
+                    "name": "Règlement ancien", "account_id": self.compte_vente.id,
+                    "debit": 200.0, "credit": 0.0}),
+            ],
+        })
+        reglement.action_post()
+        self.client.invalidate_recordset()
+        self.assertAlmostEqual(self.client.followup_amount_due, 800.0, places=2)
+        self.assertEqual(self.client.followup_days_overdue, 10)
+        self.assertEqual(self.client.followup_level_id.delay_days, 7)
+
     def test_une_ligne_marquee_non_relancable_est_respectee(self):
         """Elle a été marquée pour une raison, saisie une fois."""
         self._facture(exclue=True)

@@ -19,23 +19,22 @@ class EtatFinancier(models.Model):
         montant.
         """
         donnees, lignes = super()._expodo_export_rows(options, limite=limite)
+        self._expodo_annoter(options, lignes)
+        return donnees, lignes
 
+    def _expodo_annoter(self, options, lignes):
+        """Lecture unique de la période, partagée par l'écran et l'export :
+        les deux ne peuvent plus afficher des notes différentes."""
         periode = (options or {}).get("date") or {}
         debut, fin = periode.get("date_from"), periode.get("date_to")
         if not (debut and fin):
-            return donnees, lignes
-
+            return
         par_ligne = self.env["expodo.report.annotation"].pour_periode(
             self.env.company, debut, fin)
-        if not par_ligne:
-            return donnees, lignes
-
         for ligne in lignes:
-            notes = par_ligne.get(ligne.get("line_id"))
+            notes = par_ligne.get(ligne.get("line_id")) if par_ligne else None
             if notes:
                 ligne["annotations"] = [n.text for n in notes]
-
-        return donnees, lignes
 
     def _expodo_serialize_report_lines(self, options, values_by_group):
         """Mêmes annotations à l'écran qu'à l'export.
@@ -45,15 +44,5 @@ class EtatFinancier(models.Model):
         l'écran, là où on la cherche d'abord (constaté au port 20.0).
         """
         lignes = super()._expodo_serialize_report_lines(options, values_by_group)
-        periode = (options or {}).get("date") or {}
-        debut, fin = periode.get("date_from"), periode.get("date_to")
-        if not (debut and fin):
-            return lignes
-        par_ligne = self.env["expodo.report.annotation"].pour_periode(
-            self.env.company, debut, fin)
-        if par_ligne:
-            for ligne in lignes:
-                notes = par_ligne.get(ligne.get("line_id"))
-                if notes:
-                    ligne["annotations"] = [n.text for n in notes]
+        self._expodo_annoter(options, lignes)
         return lignes
