@@ -518,3 +518,93 @@ class TestSoldesIntermediairesDeGestion(TransactionCase):
             v["SIG_CONSOMMATIONS"], consommations_brutes,
             "Les consommations doivent exclure les achats de marchandises, "
             "déjà portés à la marge commerciale")
+
+
+@tagged("post_install", "-at_install")
+class TestAffectationDuResultat(TransactionCase):
+    """Affectation du résultat par le compte de résultat non affecté d'Odoo.
+
+    Odoo ne passe pas d'écriture de clôture : le résultat d'un exercice clos
+    reste dans les comptes de gestion, et le bilan le présente comme résultat
+    non affecté. Pour l'affecter, l'utilisateur débite le compte de type
+    « Current Year Earnings » (999999) et crédite les réserves ou le report à
+    nouveau. C'est la méthode standard d'Odoo, et celle que suit l'édition
+    Enterprise.
+
+    Constaté lors de la comparaison avec Enterprise (port 20.0) : notre bilan
+    français ignorait ce compte, hors des classes 1 à 7. Après affectation, les
+    réserves augmentaient sans que le résultat antérieur diminue, et le bilan
+    se déséquilibrait du montant affecté. Le bilan universel, lui, restait
+    équilibré mais rangeait ce compte dans « Capital et réserves » : les
+    réserves paraissaient inchangées et le résultat non affecté gonflé.
+    """
+
+    def setUp(self):
+        super().setUp()
+        pays = (self.env.company.account_fiscal_country_id.code
+                or self.env.company.country_id.code)
+        if pays != "FR":
+            self.skipTest("Contrôles propres au plan comptable français")
+        societe = self.env.company
+        comptes = self.env["account.account"]
+
+        def compte(domaine):
+            trouve = comptes.search(
+                domaine + [("company_ids", "in", societe.id)], limit=1, order="code")
+            if not trouve:
+                self.skipTest("Plan comptable incomplet : %s" % domaine)
+            return trouve
+
+        self.client_ = compte([("code", "=like", "411%")])
+        self.vente = compte([("code", "=like", "706%")])
+        self.reserves = compte([("code", "=like", "1068%")])
+        self.non_affecte = compte([("account_type", "=", "equity_unaffected")])
+        self.journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+
+    def _ecriture(self, jour, debit, credit, montant):
+        ecriture = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour, "ref": "AFFECTATION",
+            "line_ids": [
+                Command.create({"name": "A", "account_id": debit.id,
+                                "debit": montant, "credit": 0.0}),
+                Command.create({"name": "A", "account_id": credit.id,
+                                "debit": 0.0, "credit": montant}),
+            ],
+        })
+        ecriture.action_post()
+
+    def _valeurs(self, xmlid, annee):
+        rapport = self.env.ref(xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 1, 1), "date_to": date(annee, 12, 31)}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def _scenario(self):
+        # Exercice 2031 : un bénéfice de 1 000. Exercice 2032 : affectation
+        # intégrale aux réserves, sans autre opération.
+        self._ecriture(date(2031, 6, 1), self.client_, self.vente, 1000.0)
+        self._ecriture(date(2032, 5, 31), self.non_affecte, self.reserves, 1000.0)
+
+    def test_le_bilan_francais_reste_equilibre_apres_affectation(self):
+        self._scenario()
+        valeurs = self._valeurs("expodo_account_reports.report_bilan_fr", 2032)
+        self.assertAlmostEqual(valeurs[("BILAN_ECART", "balance")], 0.0, places=2,
+                               msg="Le bilan doit rester équilibré après affectation")
+        self.assertAlmostEqual(valeurs[("BILAN_REPORT", "balance")], 0.0, places=2,
+                               msg="Le résultat affecté ne doit plus figurer en report")
+        self.assertAlmostEqual(valeurs[("BILAN_RESULTAT", "balance")], 0.0, places=2)
+
+    def test_le_bilan_universel_range_l_affectation_dans_le_resultat(self):
+        self._scenario()
+        avant = self._valeurs("expodo_account_reports.report_balance_sheet", 2031)
+        apres = self._valeurs("expodo_account_reports.report_balance_sheet", 2032)
+        self.assertAlmostEqual(
+            apres[("BS_CAPITAL", "balance")] - avant[("BS_CAPITAL", "balance")],
+            1000.0, places=2,
+            msg="Les réserves doivent augmenter du montant affecté")
+        self.assertAlmostEqual(
+            apres[("BS_RESULT", "balance")] - avant[("BS_RESULT", "balance")],
+            -1000.0, places=2,
+            msg="Le résultat non affecté doit diminuer du montant affecté")
