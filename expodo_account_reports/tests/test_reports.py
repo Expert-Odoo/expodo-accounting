@@ -3060,3 +3060,131 @@ class TestFluxDeTresorerieAffectation(TransactionCase):
             self.assertAlmostEqual(
                 apres[(code, "balance")] - avant[(code, "balance")], 0.0, places=2,
                 msg="%s ne doit pas bouger : une dotation n'est pas un flux" % code)
+
+
+@tagged("post_install", "-at_install")
+class TestLivresEtListeUE(TransactionCase):
+    """Livre de caisse et liste des ventes UE, comparés à Enterprise (port 20.0).
+
+    - La liste UE retenait tout client d'un pays membre, y compris ceux du pays
+      de la société : un avoir à un client français y figurait (total 1 900
+      contre 2 000 chez Enterprise, qui ne retient que le client allemand).
+    - Le livre de caisse retenait toute ligne d'un compte de trésorerie passée
+      au journal de caisse : un versement de la caisse à la banque y comptait
+      deux fois, en entrée (côté banque) et en sortie (côté caisse).
+    """
+
+    def _valeurs(self, xmlid, debut, fin):
+        rapport = self.env.ref("expodo_account_reports." + xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom", "date_from": debut, "date_to": fin}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def test_la_liste_ue_ignore_les_clients_du_pays_de_la_societe(self):
+        societe = self.env.company
+        taxe_ue = self.env.ref("account.%s_tva_sale_good_intra_0" % societe.id,
+                               raise_if_not_found=False)
+        taxe_fr = self.env.ref("account.%s_tva_normale" % societe.id,
+                               raise_if_not_found=False)
+        if not taxe_ue or not taxe_fr or societe.account_fiscal_country_id.code != "FR":
+            self.skipTest("Taxes du plan comptable français")
+        client_fr = self.env["res.partner"].create(
+            {"name": "Client domestique", "country_id": self.env.ref("base.fr").id})
+        client_de = self.env["res.partner"].create(
+            {"name": "Kunde", "country_id": self.env.ref("base.de").id, "vat": "DE136695976"})
+
+        def facture(client, montant, taxe):
+            move = self.env["account.move"].create({
+                "move_type": "out_invoice", "partner_id": client.id,
+                "invoice_date": date(2032, 4, 10), "date": date(2032, 4, 10),
+                "invoice_line_ids": [Command.create({
+                    "name": "UE", "quantity": 1, "price_unit": montant,
+                    "tax_ids": [Command.set(taxe.ids)]})],
+            })
+            move.action_post()
+
+        periode = (date(2032, 4, 1), date(2032, 6, 30))
+        avant = self._valeurs("report_ec_sales_list", *periode)[("EC_SALES_PARTNERS", "balance")]
+        facture(client_fr, 100.0, taxe_fr)
+        facture(client_de, 2000.0, taxe_ue)
+        apres = self._valeurs("report_ec_sales_list", *periode)[("EC_SALES_PARTNERS", "balance")]
+        self.assertAlmostEqual(apres - avant, 2000.0, places=2)
+
+    def test_un_versement_de_la_caisse_a_la_banque_ne_compte_qu_une_fois(self):
+        societe = self.env.company
+        caisse = self.env["account.journal"].search(
+            [("type", "=", "cash"), ("company_id", "=", societe.id)], limit=1) \
+            or self.env["account.journal"].create(
+                {"name": "Caisse test", "type": "cash", "code": "CSHT", "company_id": societe.id})
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", societe.id)], limit=1)
+        periode = (date(2032, 6, 1), date(2032, 6, 30))
+        avant = self._valeurs("report_livre_caisse_fr", *periode)
+        self.env["account.move"].create({
+            "journal_id": caisse.id, "date": date(2032, 6, 20),
+            "line_ids": [
+                Command.create({"name": "Versement", "account_id": banque.default_account_id.id,
+                                "debit": 50.0}),
+                Command.create({"name": "Versement", "account_id": caisse.default_account_id.id,
+                                "credit": 50.0}),
+            ],
+        }).action_post()
+        apres = self._valeurs("report_livre_caisse_fr", *periode)
+        self.assertAlmostEqual(apres[("LC_CAISSE", "debit")] - avant[("LC_CAISSE", "debit")], 0.0, places=2,
+                               msg="Le côté banque du versement n'est pas une entrée de caisse")
+        self.assertAlmostEqual(apres[("LC_CAISSE", "credit")] - avant[("LC_CAISSE", "credit")], 50.0, places=2)
+
+
+@tagged("post_install", "-at_install")
+class TestFluxMethodeDirecte(TransactionCase):
+    """Méthode directe : seuls les mouvements qui touchent la trésorerie.
+
+    Constaté en comparant avec Enterprise (port 20.0) : nos lignes additionnaient
+    tous les mouvements des comptes étiquetés, trésorerie ou pas. Un achat non
+    payé réduisait les flux d'exploitation (Achats -25 500), et un encaissement
+    client, sur un compte 411 non étiqueté, tombait en « non classés ».
+    Enterprise classe l'encaissement client en exploitation et ignore l'achat
+    non payé.
+    """
+
+    def test_seuls_les_mouvements_de_tresorerie_sont_classes(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        client = comptes.search([("account_type", "=", "asset_receivable"),
+                                 ("company_ids", "in", societe.id)], limit=1)
+        fournisseur = comptes.search([("account_type", "=", "liability_payable"),
+                                      ("company_ids", "in", societe.id)], limit=1)
+        achat = comptes.search([("tag_ids", "in", self.env.ref("account.account_tag_operating").ids),
+                                ("internal_group", "=", "expense"),
+                                ("company_ids", "in", societe.id)], limit=1)
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", societe.id)], limit=1)
+        divers = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        if not achat:
+            self.skipTest("Aucune charge étiquetée « Operating » dans ce plan")
+        rapport = self.env.ref("expodo_account_reports.report_cash_flow_direct")
+
+        def valeurs():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 1, 1), "date_to": date(2032, 12, 31)}})
+            return rapport._expodo_compute_values(options, "main")
+
+        def ecriture(journal, debit, credit, montant):
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": date(2032, 3, 1),
+                "line_ids": [
+                    Command.create({"name": "F", "account_id": debit.id, "debit": montant}),
+                    Command.create({"name": "F", "account_id": credit.id, "credit": montant}),
+                ],
+            }).action_post()
+
+        avant = valeurs()
+        ecriture(divers, achat, fournisseur, 700.0)                    # achat non payé
+        ecriture(banque, banque.default_account_id, client, 300.0)    # encaissement client
+        apres = valeurs()
+        delta = lambda code: apres[(code, "balance")] - avant[(code, "balance")]  # noqa: E731
+        self.assertAlmostEqual(delta("CFD_OPERATING"), 300.0, places=2)
+        self.assertAlmostEqual(delta("CFD_UNCLASSIFIED"), 0.0, places=2)
+        self.assertAlmostEqual(delta("CFD_NET_CHANGE"), 300.0, places=2)

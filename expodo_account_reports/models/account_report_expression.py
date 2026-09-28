@@ -26,6 +26,37 @@ from ..engine.accounts import account_coefficients, sum_account_codes
 from ..engine.formula import AGED_RE, parse_account_codes_formula
 
 
+def expodo_resolve_domain_tokens(env, domain):
+    """Remplace les jetons d'un domaine par leur valeur pour la société.
+
+    Un domaine de rapport est une constante (`ast.literal_eval`) : il ne peut
+    pas désigner « le pays de la société » ni « les comptes des journaux de
+    caisse ». Trois jetons le permettent, remplacés à l'exécution :
+
+    - ``__company_fiscal_country__`` : pays fiscal de la société active ;
+    - ``__bank_journal_accounts__`` / ``__cash_journal_accounts__`` : comptes
+      par défaut des journaux de banque / de caisse des sociétés actives.
+    """
+    def valeur(jeton):
+        if jeton == "__company_fiscal_country__":
+            societe = env.company
+            return (societe.account_fiscal_country_id or societe.country_id).id or 0
+        if jeton in ("__bank_journal_accounts__", "__cash_journal_accounts__"):
+            type_ = "bank" if jeton.startswith("__bank") else "cash"
+            journaux = env["account.journal"].sudo().search([
+                ("type", "=", type_), ("company_id", "in", env.companies.ids)])
+            return journaux.default_account_id.ids or [0]
+        return jeton
+
+    resolu = []
+    for element in domain:
+        if isinstance(element, (list, tuple)) and len(element) == 3 \
+                and isinstance(element[2], str) and element[2].startswith("__"):
+            element = (element[0], element[1], valeur(element[2]))
+        resolu.append(element)
+    return resolu
+
+
 class AccountReportExpression(models.Model):
     _inherit = "account.report.expression"
 
@@ -226,7 +257,8 @@ class AccountReportExpression(models.Model):
         self.ensure_one()
         if self.engine == "domain":
             try:
-                return ast.literal_eval(self.formula or "[]")
+                return expodo_resolve_domain_tokens(
+                    self.env, ast.literal_eval(self.formula or "[]"))
             except (ValueError, SyntaxError) as erreur:
                 raise ValidationError(
                     self.env._(
@@ -323,7 +355,8 @@ class AccountReportExpression(models.Model):
             subqueries = []
             for expression in expressions:
                 try:
-                    domain = ast.literal_eval(expression.formula)
+                    domain = expodo_resolve_domain_tokens(
+                        self.env, ast.literal_eval(expression.formula))
                 except (ValueError, SyntaxError) as error:
                     raise ValidationError(
                         self.env._(

@@ -599,11 +599,16 @@
                         contrepartie et une fois en sortie pour la banque. Les
                         deux colonnes portaient le même total et le solde
                         valait invariablement zéro, sur toutes les périodes.
+
+                        Restreint ensuite au compte par défaut des journaux du
+                        même type (jeton résolu à l'exécution) : un versement de
+                        la caisse à la banque, passé au journal de caisse,
+                        comptait aussi son côté banque comme entrée de caisse.
                     -->
 <field name="expression_ids">
                         <record id="expr_lb_debit" model="account.report.expression">
                             <field name="label">debit</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id', 'in', '__bank_journal_accounts__')]</field>
                             <field name="subformula">sum_debit</field>
                             <!--
                                 Mouvements de la période affichée.
@@ -619,7 +624,7 @@
                         </record>
                         <record id="expr_lb_credit" model="account.report.expression">
                             <field name="label">credit</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id', 'in', '__bank_journal_accounts__')]</field>
                             <field name="subformula">sum_credit</field>
                             <!--
                                 Mouvements de la période affichée.
@@ -635,7 +640,7 @@
                         </record>
                         <record id="expr_lb_solde" model="account.report.expression">
                             <field name="label">balance</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'bank'), ('account_id', 'in', '__bank_journal_accounts__')]</field>
                             <field name="subformula">sum</field>
                             <!--
                                 Solde arrêté à la date de clôture.
@@ -715,11 +720,16 @@
                         contrepartie et une fois en sortie pour la banque. Les
                         deux colonnes portaient le même total et le solde
                         valait invariablement zéro, sur toutes les périodes.
+
+                        Restreint ensuite au compte par défaut des journaux du
+                        même type (jeton résolu à l'exécution) : un versement de
+                        la caisse à la banque, passé au journal de caisse,
+                        comptait aussi son côté banque comme entrée de caisse.
                     -->
 <field name="expression_ids">
                         <record id="expr_lc_debit" model="account.report.expression">
                             <field name="label">debit</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id', 'in', '__cash_journal_accounts__')]</field>
                             <field name="subformula">sum_debit</field>
                             <!--
                                 Mouvements de la période affichée.
@@ -735,7 +745,7 @@
                         </record>
                         <record id="expr_lc_credit" model="account.report.expression">
                             <field name="label">credit</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id', 'in', '__cash_journal_accounts__')]</field>
                             <field name="subformula">sum_credit</field>
                             <!--
                                 Mouvements de la période affichée.
@@ -751,7 +761,7 @@
                         </record>
                         <record id="expr_lc_solde" model="account.report.expression">
                             <field name="label">balance</field><field name="engine">domain</field>
-                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id.account_type', '=', 'asset_cash')]</field>
+                            <field name="formula">[('journal_id.type', '=', 'cash'), ('account_id', 'in', '__cash_journal_accounts__')]</field>
                             <field name="subformula">sum</field>
                             <!--
                                 Solde arrêté à la date de clôture.

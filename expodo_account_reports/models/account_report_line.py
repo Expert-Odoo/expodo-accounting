@@ -28,6 +28,7 @@ from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
 from ..engine.formula import AGED_RE
+from .account_report_expression import expodo_resolve_domain_tokens
 
 #: Agrégats calculés en une passe pour toute ligne groupée.
 #: Clé = sous-formule de l'expression, valeur = expression SQL.
@@ -332,7 +333,8 @@ class AccountReportLine(models.Model):
 
         for formula, group in by_domain.items():
             try:
-                domain = ast.literal_eval(formula) if formula.strip() else []
+                domain = expodo_resolve_domain_tokens(
+                    self.env, ast.literal_eval(formula)) if formula.strip() else []
             except (ValueError, SyntaxError) as error:
                 raise ValidationError(
                     self.env._(

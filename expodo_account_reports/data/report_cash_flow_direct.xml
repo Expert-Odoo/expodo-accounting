@@ -91,6 +91,15 @@
                     </field>
                 </record>
 
+                <!--
+                    Port 20.0, comparaison avec Enterprise : chaque ligne ne lit
+                    que les contreparties des écritures qui touchent la
+                    trésorerie. Elles additionnaient tous les mouvements des
+                    comptes étiquetés : un achat non payé réduisait les flux
+                    d'exploitation. Les comptes clients et fournisseurs, non
+                    étiquetés dans les plans d'Odoo, relèvent de l'exploitation,
+                    comme dans l'édition Enterprise.
+                -->
                 <record id="cfd_operating" model="account.report.line">
                     <field name="name">Cash flow from operating activities</field>
                     <field name="name@fr">Flux de trésorerie d'exploitation</field>
@@ -103,7 +112,7 @@
                         compte de produit — solde négatif — et constitue une
                         entrée d'argent, donc positive au tableau de flux.
                     -->
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_operating')"/>
+                    <field name="domain_formula" eval="&quot;-sum([('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))])&quot; % ref('account.account_tag_operating')"/>
                     <field name="groupby">account_id</field>
                 </record>
 
@@ -113,7 +122,7 @@
                     <field name="code">CFD_INVESTING</field>
                     <field name="hierarchy_level" eval="0"/>
                     <field name="sequence" eval="30"/>
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_investing')"/>
+                    <field name="domain_formula" eval="&quot;-sum([('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), ('account_id.account_type', 'not in', ('asset_receivable', 'liability_payable')), ('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_investing')"/>
                     <field name="groupby">account_id</field>
                 </record>
 
@@ -123,7 +132,7 @@
                     <field name="code">CFD_FINANCING</field>
                     <field name="hierarchy_level" eval="0"/>
                     <field name="sequence" eval="40"/>
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_financing')"/>
+                    <field name="domain_formula" eval="&quot;-sum([('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), ('account_id.account_type', 'not in', ('asset_receivable', 'liability_payable')), ('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_financing')"/>
                     <field name="groupby">account_id</field>
                 </record>
 
