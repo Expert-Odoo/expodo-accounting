@@ -176,6 +176,21 @@ class TestBudgets(TransactionCase):
             self.budget.total_variance,
             self.budget.total_actual - self.budget.total_planned, places=2)
 
+    def test_un_budget_mixte_se_lit_par_son_effet_sur_le_resultat(self):
+        """Ventes sous le prévu et charges au-dessus sont deux écarts
+        défavorables : ils s'additionnent, ils ne se compensent pas."""
+        self._mouvement(self.compte_charge, 6500.0)
+        self._mouvement(self.compte_vente, -13000.0)
+        self._ligne(self.compte_charge, 1000.0)
+        self._ligne(self.compte_vente, 20000.0)
+        self.assertTrue(self.budget.mixed_natures)
+        # Charges : 5 500 au-dessus du prévu ; ventes : 7 000 en dessous.
+        self.assertAlmostEqual(self.budget.total_impact, -12500.0, places=2)
+
+    def test_un_budget_homogene_garde_ses_totaux(self):
+        self._ligne(self.compte_charge, 10000.0)
+        self.assertFalse(self.budget.mixed_natures)
+
     def test_une_ligne_ouvre_les_ecritures_de_son_realise(self):
         """Un écart qu'on ne peut pas ouvrir se discute indéfiniment."""
         self._mouvement(self.compte_charge, 4000.0)

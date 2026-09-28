@@ -61,12 +61,32 @@ class Budget(models.Model):
     total_variance = fields.Monetary(
         string="Variance", compute="_compute_totals", currency_field="currency_id")
 
-    @api.depends("line_ids.planned_amount", "line_ids.actual_amount")
+    # Produits et charges se saisissent tous deux en positif. Leur somme n'a
+    # donc aucun sens dès qu'un budget mêle les deux : 60 000 de ventes et
+    # 20 000 d'achats donnaient « Prévu 80 000 », et un manque de ventes de
+    # 7 000 compensait un dépassement d'achats de 5 500 en un écart de
+    # -1 500, alors que les deux écarts sont défavorables (constaté au port
+    # 20.0). Les totaux bruts ne s'affichent plus que sur un budget homogène ;
+    # l'effet sur le résultat, lui, se lit toujours.
+    mixed_natures = fields.Boolean(compute="_compute_totals")
+    total_impact = fields.Monetary(
+        string="Impact on result", compute="_compute_totals",
+        currency_field="currency_id",
+        help="Effect of all variances on the result: income above plan and "
+             "expenses below plan count positively, the reverse negatively.")
+
+    @api.depends("line_ids.planned_amount", "line_ids.actual_amount",
+                 "line_ids.account_id")
     def _compute_totals(self):
         for budget in self:
             budget.total_planned = sum(budget.line_ids.mapped("planned_amount"))
             budget.total_actual = sum(budget.line_ids.mapped("actual_amount"))
             budget.total_variance = budget.total_actual - budget.total_planned
+            natures = set(budget.line_ids.mapped("account_id.internal_group"))
+            budget.mixed_natures = {"income", "expense"} <= natures
+            budget.total_impact = sum(
+                (l.variance if l.account_id.internal_group == "income" else -l.variance)
+                for l in budget.line_ids)
 
     @api.constrains("date_from", "date_to")
     def _verifier_periode(self):
@@ -122,6 +142,8 @@ class LigneBudgetaire(models.Model):
         currency_field="currency_id",
         help="Actual minus planned. Positive means over the planned amount — "
              "which is bad news for an expense and good news for income.")
+    account_internal_group = fields.Selection(
+        related="account_id.internal_group", string="Account nature")
     achievement = fields.Float(
         string="Achieved (%)", compute="_compute_actual",
         help="Actual as a percentage of the planned amount.")
