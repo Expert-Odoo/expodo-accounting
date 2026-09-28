@@ -3365,3 +3365,85 @@ class TestBesoinEnFondsDeRoulement(TransactionCase):
         self.assertIn(
             "EXEC_AUTRES_DETTES", bfr.expression_ids.mapped("formula")[0],
             "Les autres dettes doivent être retranchées du besoin")
+
+
+@tagged("post_install", "-at_install")
+class TestPositionNetteDeTresorerie(TransactionCase):
+    """La ligne qui répond à « puis-je payer mes fournisseurs ce mois-ci ».
+
+    Elle retranchait le besoin en fonds de roulement des disponibilités.
+    Or le besoin est déjà un solde net : ce que les tiers doivent moins ce
+    qu'on leur doit. Le retrancher inversait le signe des deux composantes.
+    Une facture fournisseur impayée améliorait la position, une créance
+    client la dégradait, c'est-à-dire l'inverse de ce que le dirigeant qui
+    lit cette ligne a besoin de savoir.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.societe = self.env.company
+        self.journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", self.societe.id)], limit=1)
+
+    def _compte(self, type_compte):
+        return self.env["account.account"].search(
+            [("account_type", "=", type_compte),
+             ("company_ids", "in", self.societe.id)], limit=1, order="code")
+
+    def _ecrire(self, jour, compte_debit, compte_credit, montant):
+        self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour,
+            "line_ids": [
+                Command.create({"name": "x", "account_id": compte_debit.id,
+                                "debit": montant}),
+                Command.create({"name": "x", "account_id": compte_credit.id,
+                                "credit": montant}),
+            ]}).action_post()
+
+    def _valeurs(self):
+        rapport = self.env.ref(
+            "expodo_account_reports.report_executive_summary")
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2032, 8, 1), "date_to": date(2032, 8, 31)}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def _position(self, valeurs):
+        return valeurs.get(("EXEC_POSITION_NETTE", "balance"), 0.0)
+
+    def test_une_dette_fournisseur_degrade_la_position(self):
+        """Devoir mille de plus ne peut pas améliorer la position."""
+        depart = self._position(self._valeurs())
+        self._ecrire(date(2032, 8, 10), self._compte("expense"),
+                     self._compte("liability_payable"), 1000.0)
+        apres = self._position(self._valeurs())
+        self.assertAlmostEqual(
+            apres - depart, -1000.0, places=2,
+            msg="Une facture fournisseur non payée pèse sur la capacité à "
+                "payer, elle ne l'améliore pas")
+
+    def test_une_creance_client_compense_une_dette_de_meme_montant(self):
+        """Devoir mille et se voir devoir mille laisse la position inchangée."""
+        depart = self._position(self._valeurs())
+        self._ecrire(date(2032, 8, 10), self._compte("expense"),
+                     self._compte("liability_payable"), 1000.0)
+        self._ecrire(date(2032, 8, 11), self._compte("asset_receivable"),
+                     self._compte("income"), 1000.0)
+        apres = self._position(self._valeurs())
+        self.assertAlmostEqual(
+            apres - depart, 0.0, places=2,
+            msg="Une créance et une dette de même montant se compensent")
+
+    def test_la_position_est_l_actif_circulant_net(self):
+        """Identité de lecture : ce qui est disponible ou le deviendra,
+        moins ce qui est dû à court terme."""
+        v = self._valeurs()
+        attendu = (v.get(("EXEC_DISPO", "balance"), 0.0)
+                   + v.get(("EXEC_CREANCES", "balance"), 0.0)
+                   + v.get(("EXEC_STOCKS", "balance"), 0.0)
+                   - v.get(("EXEC_DETTES", "balance"), 0.0)
+                   - v.get(("EXEC_AUTRES_DETTES", "balance"), 0.0))
+        self.assertAlmostEqual(
+            self._position(v), attendu, places=2,
+            msg="Disponibilités plus besoin en fonds de roulement, et non "
+                "moins : le besoin est déjà un solde net")

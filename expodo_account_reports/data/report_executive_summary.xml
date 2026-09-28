@@ -339,27 +339,41 @@
 
                         <record id="exec_summary_position_nette" model="account.report.line">
                             <field name="sequence" eval="130"/>
-                            <field name="name">Net cash position</field>
-                            <field name="name@fr">Position nette de trésorerie</field>
-                            <field name="name@es">Posición neta de tesorería</field>
-                            <field name="name@de">Nettoliquidität</field>
-                            <field name="name@nl">Netto liquiditeitspositie</field>
-                            <field name="name@it">Posizione finanziaria netta</field>
-                            <field name="name@pt_BR">Posição líquida de caixa</field>
+                            <field name="name">Net working capital</field>
+                            <field name="name@fr">Fonds de roulement net</field>
+                            <field name="name@es">Fondo de maniobra neto</field>
+                            <field name="name@de">Nettoumlaufvermögen</field>
+                            <field name="name@nl">Netto werkkapitaal</field>
+                            <field name="name@it">Capitale circolante netto</field>
+                            <field name="name@pt_BR">Capital de giro líquido</field>
                             <field name="code">EXEC_POSITION_NETTE</field>
                             <field name="hierarchy_level" eval="1"/>
                             <!--
-                                Trésorerie moins besoin en fonds de roulement.
+                                Disponibilités **plus** besoin en fonds de
+                                roulement : ce qui est disponible ou le
+                                deviendra, moins ce qui est dû à court terme.
 
                                 C'est le chiffre qui répond à « puis-je payer
-                                mes fournisseurs ce mois-ci ». Une trésorerie
-                                confortable adossée à un besoin en fonds de
-                                roulement supérieur n'est pas une trésorerie
-                                confortable, et c'est exactement ce qu'un
-                                dirigeant ne voit pas en regardant son seul
-                                solde bancaire.
+                                mes fournisseurs ce mois-ci » : un solde
+                                bancaire confortable adossé à des dettes
+                                supérieures ne l'est pas, et c'est exactement
+                                ce qu'un dirigeant ne voit pas en regardant sa
+                                seule banque.
+
+                                Le besoin en fonds de roulement est déjà un
+                                solde net — ce que les tiers doivent moins ce
+                                qu'on leur doit. Le retrancher inversait le
+                                signe de ses deux composantes : une facture
+                                fournisseur impayée améliorait la position, une
+                                créance client la dégradait. La ligne disait
+                                donc le contraire de ce qu'on lui demande.
+
+                                Le libellé suit le calcul : disponibilités,
+                                créances et stocks moins les dettes à court
+                                terme sont un fonds de roulement, pas une
+                                position de trésorerie.
                             -->
-                            <field name="aggregation_formula">EXEC_DISPO.balance - EXEC_BFR.balance</field>
+                            <field name="aggregation_formula">EXEC_DISPO.balance + EXEC_BFR.balance</field>
                         </record>
                     </field>
                 </record>

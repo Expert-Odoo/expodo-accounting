@@ -40,7 +40,7 @@ activity, VAT groups across companies.
 
 Built and maintained by Expodo — https://expodo.fr
     """,
-    "version": "19.0.1.0.6",
+    "version": "19.0.1.0.7",
     "category": "Accounting/Accounting",
     # Vignette de la fiche App Store. Sans cette clé, le module
     # est le seul de la suite à n'en avoir aucune.
