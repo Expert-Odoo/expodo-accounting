@@ -109,10 +109,26 @@
                     -->
                     <field name="groupby">partner_id,id</field>
                     <field name="expression_ids">
+                        <!--
+                            Le pays de la société est exclu des trois
+                            expressions.
+
+                            Une liste des ventes intracommunautaires recense
+                            les livraisons vers les *autres* États membres :
+                            retenir tout client d'un pays membre y faisait
+                            entrer les clients nationaux, qui en forment
+                            l'essentiel. La déclaration transmise à
+                            l'administration était donc fausse, et d'un
+                            montant qui saute aux yeux.
+
+                            Le pays n'est connu qu'à l'exécution : le jeton
+                            `__company_fiscal_country__` est remplacé par son
+                            identifiant après lecture du domaine.
+                        -->
                         <record id="ec_sales_balance" model="account.report.expression">
                             <field name="label">balance</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids', '!=', False)]</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids', '!=', False), ('partner_id.country_id', '!=', '__company_fiscal_country__')]</field>
                             <!-- Les ventes ont un solde créditeur : on
                                  renverse pour déclarer des montants positifs,
                                  comme le fait tout formulaire déclaratif. -->
@@ -121,13 +137,13 @@
                         <record id="ec_sales_goods" model="account.report.expression">
                             <field name="label">goods</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'consu')]</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'consu'), ('partner_id.country_id', '!=', '__company_fiscal_country__')]</field>
                             <field name="subformula">-sum</field>
                         </record>
                         <record id="ec_sales_services" model="account.report.expression">
                             <field name="label">services</field>
                             <field name="engine">domain</field>
-                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'service')]</field>
+                            <field name="formula">[('account_id.internal_group', '=', 'income'), ('partner_id.country_id.country_group_ids.name', 'ilike', 'europ'), ('tax_ids.tax_scope', '=', 'service'), ('partner_id.country_id', '!=', '__company_fiscal_country__')]</field>
                             <field name="subformula">-sum</field>
                         </record>
                     </field>

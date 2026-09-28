@@ -28,6 +28,12 @@ export class ExpodoAccountReport extends Component {
         this.action = useService("action");
         this.notification = useService("notification");
 
+        // Numéro du chargement en cours. Deux chargements lancés coup sur
+        // coup se chevauchent — la saisie d'une date au clavier en produit
+        // plusieurs — et les réponses ne reviennent pas dans l'ordre des
+        // appels. Seul le dernier demandé a le droit d'écrire dans l'état.
+        this.loadSeq = 0;
+
         this.reportId =
             this.props.action.context.report_id ||
             this.props.action.params?.report_id;
@@ -77,6 +83,11 @@ export class ExpodoAccountReport extends Component {
         const previouslyUnfolded = keepUnfolded
             ? this.state.lines.filter((l) => l.unfolded && !l.parent_id).map((l) => l.id)
             : [];
+        // Pris **avant** le premier appel réseau, et comparé après chaque
+        // attente. Le champ peut ne pas exister lorsque le composant est
+        // instancié hors montage, d'où la valeur de repli.
+        this.loadSeq = (this.loadSeq || 0) + 1;
+        const chargement = this.loadSeq;
         this.state.loading = true;
         try {
             const data = await this.orm.call(
@@ -84,6 +95,12 @@ export class ExpodoAccountReport extends Component {
                 "expodo_get_report_data",
                 [[this.reportId], previousOptions]
             );
+            if (chargement !== this.loadSeq) {
+                // Un chargement plus récent est parti pendant l'attente : sa
+                // réponse fait foi. Écrire ici remplacerait ses lignes par
+                // celles d'une période que l'utilisateur ne demande plus.
+                return;
+            }
             Object.assign(this.state, {
                 report: data.report,
                 options: data.options,
@@ -103,13 +120,20 @@ export class ExpodoAccountReport extends Component {
             });
             throw error;
         } finally {
-            this.state.loading = false;
+            // Un chargement dépassé n'éteint pas le voyant d'un chargement
+            // encore en cours.
+            if (chargement === this.loadSeq) {
+                this.state.loading = false;
+            }
         }
 
         for (const id of previouslyUnfolded) {
+            if (chargement !== this.loadSeq) {
+                return;
+            }
             const line = this.state.lines.find((l) => l.id === id);
             if (line && line.unfoldable) {
-                await this.onToggleLine(line);
+                await this.onToggleLine(line, chargement);
             }
         }
     }
@@ -217,7 +241,11 @@ export class ExpodoAccountReport extends Component {
     // Dépliage
     // ------------------------------------------------------------------
 
-    async onToggleLine(line) {
+    async onToggleLine(line, chargement = null) {
+        // Au clic, la ligne appartient forcément au chargement affiché. Le
+        // rétablissement du dépliage, lui, transmet le sien : il peut avoir
+        // été dépassé pendant que le serveur calculait les enfants.
+        const attendu = chargement === null ? this.loadSeq : chargement;
         if (!line.unfoldable) {
             return;
         }
@@ -254,6 +282,12 @@ export class ExpodoAccountReport extends Component {
 
         // Nouvelle vérification après l'attente : l'état a pu changer.
         if (line.unfolded) {
+            return;
+        }
+        // Les enfants d'un chargement dépassé s'inséraient dans la liste du
+        // chargement suivant : les comptes apparaissaient deux ou trois fois,
+        // et ceux d'une période abandonnée se mêlaient aux nouveaux.
+        if (attendu !== this.loadSeq) {
             return;
         }
         const index = this.state.lines.findIndex((l) => l.id === line.id);

@@ -3104,3 +3104,264 @@ class TestBorneDExport(TransactionCase):
             self.assertTrue(
                 any(l.get("id") == "expodo_truncated" for l in lignes),
                 "Un export tronqué doit le dire au lecteur")
+
+
+@tagged("post_install", "-at_install")
+class TestJetonsDeDomaine(TransactionCase):
+    """Trois états ont besoin de données que le domaine ne peut pas nommer.
+
+    Une formule de domaine est lue par ``literal_eval``, qui refuse tout appel
+    de fonction : c'est voulu, un domaine ne doit pas pouvoir exécuter de code.
+    Elle ne peut donc désigner ni le pays de la société, ni les comptes de ses
+    journaux, connus seulement à l'exécution. Des jetons littéraux, remplacés
+    après lecture, comblent le manque sans rouvrir la porte.
+
+    Trois défauts trouvés au port 20.0 en comparant avec Enterprise, vérifiés
+    ici avant correction.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.societe = self.env.company
+        self.journal_general = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", self.societe.id)], limit=1)
+
+    def _compte(self, domaine):
+        return self.env["account.account"].search(
+            domaine + [("company_ids", "in", self.societe.id)], limit=1, order="code")
+
+    def _ecrire(self, journal, jour, lignes):
+        self.env["account.move"].create({
+            "journal_id": journal.id, "date": jour,
+            "line_ids": [Command.create(l) for l in lignes],
+        }).action_post()
+
+    def _valeurs(self, xmlid, d1, d2):
+        rapport = self.env.ref("expodo_account_reports." + xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom", "date_from": d1, "date_to": d2}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def test_la_liste_des_ventes_ue_exclut_le_pays_de_la_societe(self):
+        """Une déclaration intracommunautaire recense les *autres* États.
+
+        Retenir tout client d'un pays membre y faisait entrer les clients
+        nationaux, qui en forment l'essentiel : la déclaration transmise à
+        l'administration était fausse d'un montant considérable.
+        """
+        pays = self.societe.account_fiscal_country_id or self.societe.country_id
+        if pays.code != "FR":
+            self.skipTest("Scénario écrit pour une société française")
+        taxe = self.env["account.tax"].search(
+            [("type_tax_use", "=", "sale"), ("company_id", "=", self.societe.id)], limit=1)
+        if not taxe:
+            self.skipTest("Aucune taxe de vente dans cette base")
+
+        rapport = self.env.ref("expodo_account_reports.report_ec_sales_list")
+        ligne = rapport.line_ids[0]
+
+        def total():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 4, 1), "date_to": date(2032, 4, 30)}})
+            lignes = ligne._expodo_expand(rapport, options, "main")
+            return (round(sum((x["values"].get("balance") or 0.0) for x in lignes), 2),
+                    {x["name"] for x in lignes})
+
+        avant, _noms = total()
+        francais = self.env["res.partner"].create(
+            {"name": "Client national", "country_id": self.env.ref("base.fr").id})
+        allemand = self.env["res.partner"].create(
+            {"name": "Client allemand", "country_id": self.env.ref("base.de").id})
+        for tiers, montant in ((francais, 100.0), (allemand, 2000.0)):
+            self.env["account.move"].create({
+                "move_type": "out_invoice", "partner_id": tiers.id,
+                "invoice_date": date(2032, 4, 10), "date": date(2032, 4, 10),
+                "invoice_line_ids": [Command.create({
+                    "name": "UE", "quantity": 1, "price_unit": montant,
+                    "tax_ids": [Command.set(taxe.ids)]})]}).action_post()
+
+        apres, noms = total()
+        self.assertAlmostEqual(
+            apres - avant, 2000.0, places=2,
+            msg="Seul le client allemand relève de la liste intracommunautaire")
+        self.assertNotIn(
+            francais.display_name, noms,
+            "Un client du pays de la société n'a rien à faire dans la liste")
+
+    def test_le_livre_de_caisse_ne_retient_que_le_compte_de_caisse(self):
+        """Un versement vers la banque n'est pas une entrée de caisse.
+
+        L'état retenait toute ligne d'un compte de trésorerie passée au
+        journal : un versement de la caisse vers la banque comptait son côté
+        banque en entrée, et le total des entrées était faux du montant
+        versé.
+        """
+        journaux = self.env["account.journal"]
+        banque = journaux.search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        caisse = journaux.search(
+            [("type", "=", "cash"), ("company_id", "=", self.societe.id)], limit=1)
+        if not banque:
+            self.skipTest("Aucun journal de banque dans cette base")
+        if not caisse:
+            # La V20 ne crée plus de journal de caisse par défaut ; la V19 non
+            # plus sur toutes les localisations.
+            caisse = journaux.create({
+                "name": "Caisse", "type": "cash", "code": "CSH19",
+                "company_id": self.societe.id})
+
+        rapport = self.env.ref("expodo_account_reports.report_livre_caisse_fr")
+        ligne = rapport.line_ids[0]
+
+        def mouvements():
+            options = rapport._expodo_get_options({"date": {
+                "mode": "range", "filter": "custom",
+                "date_from": date(2032, 5, 1), "date_to": date(2032, 5, 31)}})
+            lignes = ligne._expodo_expand(rapport, options, "main")
+            return {k: round(sum((x["values"].get(k) or 0.0) for x in lignes), 2)
+                    for k in ("debit", "credit")}
+
+        avant = mouvements()
+        self._ecrire(caisse, date(2032, 5, 12), [
+            {"name": "versement", "account_id": banque.default_account_id.id, "debit": 50.0},
+            {"name": "versement", "account_id": caisse.default_account_id.id, "credit": 50.0}])
+        apres = mouvements()
+        self.assertAlmostEqual(
+            apres["debit"] - avant["debit"], 0.0, places=2,
+            msg="Le côté banque du versement n'est pas une entrée de caisse")
+        self.assertAlmostEqual(
+            apres["credit"] - avant["credit"], 50.0, places=2,
+            msg="Seule la sortie de caisse doit être retenue")
+
+    def test_les_flux_directs_ne_comptent_que_ce_qui_passe_par_la_caisse(self):
+        """La méthode directe ne connaît que l'encaissé et le décaissé.
+
+        Les lignes additionnaient tous les mouvements des comptes étiquetés :
+        un achat resté impayé réduisait l'exploitation sans qu'un euro soit
+        sorti, et l'encaissement d'un client, dont le compte 411 ne porte
+        aucune étiquette, tombait en « mouvements non classés ». C'est
+        précisément la différence avec la méthode indirecte qui disparaissait.
+        """
+        banque = self.env["account.journal"].search(
+            [("type", "=", "bank"), ("company_id", "=", self.societe.id)], limit=1)
+        if not banque:
+            self.skipTest("Aucun journal de banque dans cette base")
+        achats = self.env["account.journal"].search(
+            [("type", "=", "purchase"), ("company_id", "=", self.societe.id)],
+            limit=1) or self.journal_general
+
+        codes = ("CFD_OPERATING", "CFD_UNCLASSIFIED", "CFD_NET_CHANGE", "CFD_ACTUAL")
+        avant = self._valeurs("report_cash_flow_direct",
+                              date(2032, 6, 1), date(2032, 6, 30))
+
+        self._ecrire(achats, date(2032, 6, 5), [
+            {"name": "achat non payé",
+             "account_id": self._compte([("account_type", "=", "expense")]).id,
+             "debit": 700.0},
+            {"name": "achat non payé",
+             "account_id": self._compte([("account_type", "=", "liability_payable")]).id,
+             "credit": 700.0}])
+        self._ecrire(banque, date(2032, 6, 20), [
+            {"name": "encaissement", "account_id": banque.default_account_id.id,
+             "debit": 300.0},
+            {"name": "encaissement",
+             "account_id": self._compte([("account_type", "=", "asset_receivable")]).id,
+             "credit": 300.0}])
+
+        apres = self._valeurs("report_cash_flow_direct",
+                              date(2032, 6, 1), date(2032, 6, 30))
+        ecart = {c: round(apres.get((c, "balance"), 0.0)
+                          - avant.get((c, "balance"), 0.0), 2) for c in codes}
+        self.assertAlmostEqual(
+            ecart["CFD_OPERATING"], 300.0, places=2,
+            msg="Seul l'encaissement est un flux d'exploitation ; l'achat "
+                "impayé n'a rien décaissé")
+        self.assertAlmostEqual(
+            ecart["CFD_UNCLASSIFIED"], 0.0, places=2,
+            msg="L'encaissement client doit être classé, pas laissé de côté")
+        self.assertAlmostEqual(
+            ecart["CFD_NET_CHANGE"], 300.0, places=2,
+            msg="La variation de trésorerie est celle des comptes de trésorerie")
+
+
+@tagged("post_install", "-at_install")
+class TestBesoinEnFondsDeRoulement(TransactionCase):
+    """Le besoin en fonds de roulement du résumé général.
+
+    Le besoin en fonds de roulement mesure ce que le cycle d'exploitation
+    immobilise : ce que les clients doivent, plus les stocks, moins ce qui
+    reste dû aux tiers. Une taxe collectée est encaissée du client et reversée
+    à l'État : elle gonfle la créance et la dette du même montant, et ne pèse
+    donc pas sur le besoin.
+
+    L'état retenait la créance sans la dette. Chaque vente gonflait le besoin
+    du montant de la taxe, et la position nette de trésorerie, qui s'en
+    déduit, paraissait d'autant plus mauvaise.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.societe = self.env.company
+        self.journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", self.societe.id)], limit=1)
+
+    def _compte(self, type_compte):
+        return self.env["account.account"].search(
+            [("account_type", "=", type_compte),
+             ("company_ids", "in", self.societe.id)], limit=1, order="code")
+
+    def _valeurs(self):
+        rapport = self.env.ref(
+            "expodo_account_reports.report_executive_summary")
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2032, 7, 1), "date_to": date(2032, 7, 31)}})
+        return rapport._expodo_compute_values(options, "main")
+
+    def test_la_taxe_collectee_ne_gonfle_pas_le_besoin_en_fonds_de_roulement(self):
+        """Une vente de 1 200 dont 200 de taxe immobilise 1 000, pas 1 200."""
+        avant = self._valeurs()
+        self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": date(2032, 7, 15),
+            "line_ids": [
+                Command.create({
+                    "name": "vente",
+                    "account_id": self._compte("asset_receivable").id,
+                    "debit": 1200.0}),
+                Command.create({
+                    "name": "vente",
+                    "account_id": self._compte("income").id,
+                    "credit": 1000.0}),
+                Command.create({
+                    "name": "taxe collectée",
+                    "account_id": self._compte("liability_current").id,
+                    "credit": 200.0}),
+            ]}).action_post()
+        apres = self._valeurs()
+        ecart = apres.get(("EXEC_BFR", "balance"), 0.0) - avant.get(
+            ("EXEC_BFR", "balance"), 0.0)
+        self.assertAlmostEqual(
+            ecart, 1000.0, places=2,
+            msg="La taxe collectée est due à l'État : elle ne fait pas partie "
+                "de ce que le cycle d'exploitation immobilise")
+
+    def test_les_autres_dettes_sont_une_composante_du_besoin(self):
+        """La ligne doit exister, et se lire depuis l'origine comme les autres.
+
+        Un solde de bilan lu sur la seule période afficherait sa variation.
+        L'erreur reste invisible sur une base montée sur un seul exercice.
+        """
+        rapport = self.env.ref(
+            "expodo_account_reports.report_executive_summary")
+        ligne = rapport.line_ids.filtered(
+            lambda l: l.code == "EXEC_AUTRES_DETTES")
+        self.assertTrue(
+            ligne, "Le besoin en fonds de roulement doit montrer les autres "
+                   "dettes d'exploitation, pas seulement les fournisseurs")
+        for expression in ligne.expression_ids:
+            self.assertEqual(expression.date_scope, "from_beginning")
+        bfr = rapport.line_ids.filtered(lambda l: l.code == "EXEC_BFR")
+        self.assertIn(
+            "EXEC_AUTRES_DETTES", bfr.expression_ids.mapped("formula")[0],
+            "Les autres dettes doivent être retranchées du besoin")

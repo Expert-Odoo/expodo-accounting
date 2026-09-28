@@ -103,7 +103,23 @@
                         compte de produit — solde négatif — et constitue une
                         entrée d'argent, donc positive au tableau de flux.
                     -->
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_operating')"/>
+                    <!--
+                        Seules les contreparties d'une écriture qui touche la
+                        trésorerie sont retenues.
+
+                        La ligne additionnait tous les mouvements des comptes
+                        étiquetés, qu'ils passent ou non par la banque. Un
+                        achat resté impayé réduisait donc l'exploitation alors
+                        qu'aucun euro n'était sorti, et l'encaissement du
+                        client, dont le compte 411 ne porte aucune étiquette,
+                        tombait en « non classés ». La méthode directe ne
+                        connaît que ce qui est encaissé ou décaissé : c'est
+                        toute sa différence avec la méthode indirecte.
+
+                        Les lignes de trésorerie elles-mêmes sont exclues,
+                        sans quoi chaque mouvement serait compté deux fois.
+                    -->
+                    <field name="domain_formula" eval="&quot;-sum(['&amp;', ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), ('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), '|', ('account_id.tag_ids', 'in', [%s]), ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))])&quot; % ref('account.account_tag_operating')"/>
                     <field name="groupby">account_id</field>
                 </record>
 
@@ -113,7 +129,7 @@
                     <field name="code">CFD_INVESTING</field>
                     <field name="hierarchy_level" eval="0"/>
                     <field name="sequence" eval="30"/>
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_investing')"/>
+                    <field name="domain_formula" eval="&quot;-sum(['&amp;', ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), ('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('account_id.tag_ids', 'in', [%s]), '!', ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))])&quot; % ref('account.account_tag_investing')"/>
                     <field name="groupby">account_id</field>
                 </record>
 
@@ -123,7 +139,7 @@
                     <field name="code">CFD_FINANCING</field>
                     <field name="hierarchy_level" eval="0"/>
                     <field name="sequence" eval="40"/>
-                    <field name="domain_formula" eval="&quot;-sum([('account_id.tag_ids', 'in', [%s])])&quot; % ref('account.account_tag_financing')"/>
+                    <field name="domain_formula" eval="&quot;-sum(['&amp;', ('account_id.account_type', 'not in', ('asset_cash', 'liability_credit_card')), ('move_id.line_ids.account_id.account_type', 'in', ('asset_cash', 'liability_credit_card')), ('account_id.tag_ids', 'in', [%s]), '!', ('account_id.account_type', 'in', ('asset_receivable', 'liability_payable'))])&quot; % ref('account.account_tag_financing')"/>
                     <field name="groupby">account_id</field>
                 </record>
 

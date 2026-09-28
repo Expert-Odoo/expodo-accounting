@@ -18,7 +18,7 @@ s'effondrerait sur une base volumineuse.
 import ast
 from collections import defaultdict
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
@@ -51,6 +51,65 @@ class AccountReportExpression(models.Model):
     # ------------------------------------------------------------------
     # Utilitaires de requêtage
     # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # Jetons de domaine
+    # ------------------------------------------------------------------
+    #
+    #: Une formule de domaine est une constante : elle est lue par
+    #: `literal_eval`, qui refuse tout appel de fonction — et c'est voulu, un
+    #: domaine ne doit pas pouvoir exécuter de code. Elle ne peut donc pas
+    #: désigner le pays de la société ni les comptes de ses journaux, qui ne
+    #: sont connus qu'à l'exécution.
+    #:
+    #: Ces jetons comblent le manque sans rouvrir la porte : ce sont des
+    #: chaînes littérales, remplacées par des données après la lecture du
+    #: domaine. Aucun code utilisateur n'est jamais évalué.
+    EXPODO_DOMAIN_TOKENS = (
+        "__company_fiscal_country__",
+        "__bank_journal_accounts__",
+        "__cash_journal_accounts__",
+    )
+
+    @api.model
+    def _expodo_token_values(self):
+        """Valeur de chaque jeton pour la société active."""
+        societe = self.env.company
+        pays = societe.account_fiscal_country_id or societe.country_id
+
+        def comptes_de(type_journal):
+            journaux = self.env["account.journal"].search([
+                ("type", "=", type_journal),
+                ("company_id", "=", societe.id),
+            ])
+            return journaux.default_account_id.ids
+
+        return {
+            "__company_fiscal_country__": pays.id,
+            "__bank_journal_accounts__": comptes_de("bank"),
+            "__cash_journal_accounts__": comptes_de("cash"),
+        }
+
+    @api.model
+    def _expodo_resolve_tokens(self, domaine, valeurs=None):
+        """Remplace les jetons d'un domaine déjà lu par leurs valeurs.
+
+        Le domaine arrive sous forme de listes et de tuples imbriqués : on le
+        parcourt à l'identique, en ne touchant qu'aux chaînes reconnues.
+        """
+        if valeurs is None:
+            valeurs = self._expodo_token_values()
+
+        def remplacer(valeur):
+            if isinstance(valeur, str):
+                return valeurs.get(valeur, valeur)
+            if isinstance(valeur, tuple):
+                return tuple(remplacer(x) for x in valeur)
+            if isinstance(valeur, list):
+                return [remplacer(x) for x in valeur]
+            return valeur
+
+        return remplacer(domaine)
 
     def _expodo_group_by_date_scope(self):
         """Regroupe les expressions par portée de date.
@@ -231,7 +290,8 @@ class AccountReportExpression(models.Model):
         self.ensure_one()
         if self.engine == "domain":
             try:
-                return ast.literal_eval(self.formula or "[]")
+                return self._expodo_resolve_tokens(
+                    ast.literal_eval(self.formula or "[]"))
             except (ValueError, SyntaxError) as erreur:
                 raise ValidationError(
                     self.env._(
@@ -323,12 +383,14 @@ class AccountReportExpression(models.Model):
         import ast
 
         results = {}
+        jetons = self._expodo_token_values()
 
         for date_scope, expressions in self._expodo_group_by_date_scope().items():
             subqueries = []
             for expression in expressions:
                 try:
-                    domain = ast.literal_eval(expression.formula)
+                    domain = self._expodo_resolve_tokens(
+                        ast.literal_eval(expression.formula), jetons)
                 except (ValueError, SyntaxError) as error:
                     raise ValidationError(
                         self.env._(

@@ -600,3 +600,66 @@ class TestMessagesDAccueil(unittest.TestCase):
         self.assertEqual(
             manquants, [],
             "Paragraphes d'accueil non traduits : %s" % ", ".join(manquants))
+
+
+class TestScriptsDeMigration(unittest.TestCase):
+    """Un script de migration mal formé empêche le module de se charger.
+
+    Odoo exécute ces fichiers pendant la construction du registre et vérifie
+    la signature de ``migrate``. Une signature ``(env, version)`` — celle que
+    suggère le reste du code d'Odoo 19 — fait échouer le chargement de la
+    base entière, pas seulement du module. L'erreur ne se voit qu'à la mise à
+    jour d'une installation existante, jamais sur une base neuve, donc jamais
+    en développement.
+    """
+
+    def _scripts(self):
+        racine = os.path.join(os.path.dirname(RACINE), "migrations")
+        if not os.path.isdir(racine):
+            return []
+        trouves = []
+        for version in sorted(os.listdir(racine)):
+            dossier = os.path.join(racine, version)
+            if not os.path.isdir(dossier):
+                continue
+            for nom in sorted(os.listdir(dossier)):
+                if nom.endswith(".py"):
+                    trouves.append(os.path.join(dossier, nom))
+        return trouves
+
+    def test_chaque_script_expose_migrate_cr_version(self):
+        for chemin in self._scripts():
+            with open(chemin, encoding="utf-8") as fichier:
+                texte = fichier.read()
+            with self.subTest(script=os.path.basename(chemin)):
+                self.assertIn(
+                    "def migrate(cr, version)", texte,
+                    "Odoo attend la signature (cr, version) ; toute autre "
+                    "interrompt le chargement du registre")
+
+    def test_chaque_script_est_compilable(self):
+        for chemin in self._scripts():
+            with open(chemin, encoding="utf-8") as fichier:
+                texte = fichier.read()
+            with self.subTest(script=os.path.basename(chemin)):
+                compile(texte, chemin, "exec")
+
+    def test_chaque_version_de_migration_existe_au_manifeste(self):
+        """Un dossier dont la version dépasse celle du module ne tourne jamais."""
+        manifeste = os.path.join(
+            os.path.dirname(RACINE), "__manifest__.py")
+        with open(manifeste, encoding="utf-8") as fichier:
+            version = re.search(r'"version"\s*:\s*"([^"]+)"',
+                                fichier.read()).group(1)
+        racine = os.path.join(os.path.dirname(RACINE), "migrations")
+        if not os.path.isdir(racine):
+            return
+        for dossier in sorted(os.listdir(racine)):
+            if not os.path.isdir(os.path.join(racine, dossier)):
+                continue
+            with self.subTest(migration=dossier):
+                self.assertLessEqual(
+                    [int(x) for x in dossier.split(".")],
+                    [int(x) for x in version.split(".")],
+                    "Le module doit porter au moins la version du script, "
+                    "sinon Odoo ne l'exécute pas")
