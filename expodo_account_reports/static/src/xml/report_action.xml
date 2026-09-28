@@ -153,6 +153,12 @@
                                           t-out="line.unfolded ? '-' : '+'"/>
                                     <span t-att-class="line.unfoldable ? 'o_expodo_clickable' : ''"
                                           t-on-click="() => this.onToggleLine(line)" t-out="line.name"/>
+                                    <!-- Annotations (module expodo_account_annotation) :
+                                         affichées sous le libellé, comme à l'export. -->
+                                    <div t-if="line.annotations and line.annotations.length"
+                                         class="o_expodo_note text-muted small fst-italic fw-normal">
+                                        <div t-foreach="line.annotations" t-as="note" t-key="note_index" t-out="note"/>
+                                    </div>
                                 </td>
                                 <t t-foreach="this.state.columnGroups" t-as="group" t-key="group.key">
                                     <t t-foreach="line.columns" t-as="column" t-key="column.label">

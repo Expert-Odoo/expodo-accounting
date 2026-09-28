@@ -92,6 +92,16 @@ class TestAnnotations(TransactionCase):
             "ZZ note de contr", texte,
             "Le document PDF doit porter la note")
 
+    def test_une_note_s_affiche_aussi_a_l_ecran(self):
+        """La note s'imprimait dans le PDF et restait invisible dans l'état
+        ouvert à l'écran, là où on la cherche d'abord."""
+        self._annoter("Visible à l'écran")
+        donnees = self.rapport.expodo_get_report_data({"date": {
+            "date_from": "2026-01-01", "date_to": "2026-12-31",
+            "filter": "custom", "mode": "range"}})
+        self.assertEqual(self._annotations_de_la_ligne(donnees["lines"]),
+                         ["Visible à l'écran"])
+
     def test_sans_note_le_classeur_ne_porte_pas_de_colonne_vide(self):
         """La colonne de notes n'apparaît que lorsqu'il y a des notes."""
         import io

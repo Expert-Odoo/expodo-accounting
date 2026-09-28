@@ -36,3 +36,24 @@ class EtatFinancier(models.Model):
                 ligne["annotations"] = [n.text for n in notes]
 
         return donnees, lignes
+
+    def _expodo_serialize_report_lines(self, options, values_by_group):
+        """Mêmes annotations à l'écran qu'à l'export.
+
+        Elles n'étaient ajoutées qu'aux lignes exportées : la note saisie
+        s'imprimait dans le PDF mais restait invisible dans l'état ouvert à
+        l'écran, là où on la cherche d'abord (constaté au port 20.0).
+        """
+        lignes = super()._expodo_serialize_report_lines(options, values_by_group)
+        periode = (options or {}).get("date") or {}
+        debut, fin = periode.get("date_from"), periode.get("date_to")
+        if not (debut and fin):
+            return lignes
+        par_ligne = self.env["expodo.report.annotation"].pour_periode(
+            self.env.company, debut, fin)
+        if par_ligne:
+            for ligne in lignes:
+                notes = par_ligne.get(ligne.get("line_id"))
+                if notes:
+                    ligne["annotations"] = [n.text for n in notes]
+        return lignes
