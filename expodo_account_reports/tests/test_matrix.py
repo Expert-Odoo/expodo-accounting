@@ -1573,3 +1573,97 @@ class TestDroitsDUnComptable(TransactionCase):
             ouverts,
             "Ces opérations devraient être réservées au gestionnaire : %s"
             % ", ".join(ouverts))
+
+
+@tagged("post_install", "-at_install")
+class TestLignesDeControle(TransactionCase):
+    """Les lignes « must be zero » comparent deux chemins de calcul
+    indépendants : écart actif-passif, résultat du bilan contre résultat du
+    compte de résultat, flux classés contre mouvement réel de trésorerie.
+    Elles s'affichaient sans que rien ne les lise.
+
+    Lues ici sur deux exercices, dont le second s'ouvre après affectation du
+    résultat du premier, avec des écritures qui touchent chaque famille de
+    comptes : sur une base vide, tous les contrôles valent zéro par
+    construction et le test ne prouverait rien.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        societe = cls.env.company
+        comptes = cls.env["account.account"]
+
+        def compte(type_, code=None):
+            domaine = [("account_type", "=", type_), ("company_ids", "in", societe.id)]
+            if code:
+                domaine.append(("code", "=like", code + "%"))
+            return comptes.search(domaine, limit=1, order="code")
+
+        journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        tiers = cls.env["res.partner"].create({"name": "Tiers contrôle"})
+        c = {
+            "capital": compte("equity"), "banque": compte("asset_cash"),
+            "client": compte("asset_receivable"), "fournisseur": compte("liability_payable"),
+            "vente": compte("income"), "achat": compte("expense"),
+            "tva_col": compte("liability_current"), "tva_ded": compte("asset_current"),
+            "immo": compte("asset_fixed"), "non_affecte": compte("equity_unaffected"),
+        }
+        for cle, valeur in c.items():
+            assert valeur, "Compte introuvable : %s" % cle
+
+        def ecriture(jour, lignes):
+            cls.env["account.move"].create({
+                "journal_id": journal.id, "date": jour,
+                "line_ids": [Command.create({
+                    "name": "Contrôle", "account_id": c[k].id, "partner_id": tiers.id,
+                    "debit": max(m, 0.0), "credit": max(-m, 0.0)}) for k, m in lignes],
+            }).action_post()
+
+        for annee in (2026, 2027):
+            ecriture(date(annee, 1, 5), [("banque", 50000.0), ("capital", -50000.0)])
+            ecriture(date(annee, 3, 10), [("client", 12000.0), ("vente", -10000.0), ("tva_col", -2000.0)])
+            ecriture(date(annee, 4, 2), [("achat", 4000.0), ("tva_ded", 800.0), ("fournisseur", -4800.0)])
+            ecriture(date(annee, 5, 20), [("banque", 12000.0), ("client", -12000.0)])
+            ecriture(date(annee, 6, 15), [("fournisseur", 4800.0), ("banque", -4800.0)])
+            ecriture(date(annee, 7, 1), [("immo", 6000.0), ("banque", -6000.0)])
+        # Affectation du résultat 2026 en capitaux, au cours de 2027.
+        ecriture(date(2027, 6, 30), [("non_affecte", 6000.0), ("capital", -6000.0)])
+
+    def _etats_pertinents(self):
+        """Un état national dont le plan n'est pas celui de la société n'est
+        jamais proposé : ses préfixes tomberaient sur d'autres comptes."""
+        etats = self.env["account.report"]
+        for rapport in self.env["account.report"].search([]):
+            identifiant = rapport.get_external_id().get(rapport.id) or ""
+            if not identifiant.startswith("expodo_account_reports."):
+                continue
+            if rapport.expodo_chart_prefix and not rapport._expodo_chart_matches():
+                continue
+            etats |= rapport
+        return etats
+
+    def test_aucun_controle_ne_signale_d_ecart(self):
+        controles = 0
+        for rapport in self._etats_pertinents():
+            # Repérage par le libellé, pas par le code : OHADA_ECART_ACTIF et
+            # OHADA_ECART_PASSIF sont des postes comptables.
+            lignes = rapport.line_ids.filtered(
+                lambda l: "must be zero" in (l.with_context(lang="en_US").name or ""))
+            for ligne in lignes:
+                controles += 1
+                for annee in (2026, 2027):
+                    options = rapport._expodo_get_options({"date": {
+                        "mode": "range", "filter": "custom",
+                        "date_from": date(annee, 1, 1), "date_to": date(annee, 12, 31)}})
+                    valeurs = rapport._expodo_compute_values(options, "main")
+                    valeur = valeurs.get((ligne.code, "balance"), 0.0)
+                    with self.subTest(etat=rapport.name, ligne=ligne.code, exercice=annee):
+                        self.assertAlmostEqual(
+                            valeur, 0.0, places=2,
+                            msg="L'état se déclare lui-même en écart")
+        self.assertGreaterEqual(
+            controles, 5,
+            "Lignes de contrôle repérées par « must be zero » : si le compte "
+            "tombe, la convention a changé et le test ne contrôle plus rien")
