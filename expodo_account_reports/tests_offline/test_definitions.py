@@ -12,6 +12,8 @@ corrigée dans la base et jamais dans le module, le test passait au vert, et
 une installation neuve serait repartie avec l'ancien comportement.
 """
 
+import ast
+import io
 import os
 import re
 from xml.etree import ElementTree
@@ -725,3 +727,53 @@ class TestChampsPosesEtJamaisLus(unittest.TestCase):
             "Ces champs sont renseignés dans les définitions et lus nulle "
             "part : %s. Soit le moteur doit les honorer, soit ils n'ont rien "
             "à faire dans les données." % ignores)
+
+
+class TestDescriptionsDesManifestes(unittest.TestCase):
+    """La description d'un module est sa fiche de vente.
+
+    Odoo la rend en reStructuredText sur l'App Store et dans l'écran
+    Applications. Une indentation inattendue ou un bloc de citation mal
+    fermé passe sans bruit à l'installation, puis s'affiche de travers à
+    celui qui décide de télécharger. C'est la première chose qu'il voit du
+    module, et la seule avant qu'il ne l'installe.
+    """
+
+    def _modules(self):
+        racine = os.path.dirname(os.path.dirname(RACINE))
+        for nom in sorted(os.listdir(racine)):
+            manifeste = os.path.join(racine, nom, "__manifest__.py")
+            if nom.startswith("expodo_") and os.path.isfile(manifeste):
+                with open(manifeste, encoding="utf-8") as fichier:
+                    yield nom, ast.literal_eval(fichier.read())
+
+    def test_chaque_description_se_rend_sans_avertissement(self):
+        try:
+            from docutils.core import publish_string
+        except ImportError:
+            self.skipTest("docutils absent de cette image")
+
+        for nom, manifeste in self._modules():
+            description = (manifeste.get("description") or "").strip()
+            if not description:
+                continue
+            journal = io.StringIO()
+            with self.subTest(module=nom):
+                publish_string(
+                    source=description, writer_name="html",
+                    settings_overrides={"report_level": 1, "halt_level": 6,
+                                        "warning_stream": journal,
+                                        "input_encoding": "unicode"})
+                self.assertFalse(
+                    journal.getvalue().strip(),
+                    "La description ne se rend pas proprement :\n%s"
+                    % journal.getvalue()[:400])
+
+    def test_chaque_module_porte_une_description(self):
+        """Un module sans description s'affiche vide sur sa fiche."""
+        for nom, manifeste in self._modules():
+            with self.subTest(module=nom):
+                self.assertTrue(
+                    (manifeste.get("description") or "").strip()
+                    or (manifeste.get("summary") or "").strip(),
+                    "Ni description ni résumé : la fiche du module est muette")
