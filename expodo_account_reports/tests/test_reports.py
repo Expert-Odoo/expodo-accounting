@@ -517,7 +517,12 @@ class TestExpodoReports(TransactionCase):
         rows = report.line_ids[0]._expodo_expand(report, options, "main")
         self.assertTrue(rows, "Aucune journée : test sans valeur")
 
-        dates = [row["name"] for row in rows]
+        # L'ordre se contrôle sur la clé de groupement, jamais sur le
+        # libellé : celui-ci est formaté pour le lecteur, et « 15/03 » passe
+        # après « 12/10 » dans l'ordre alphabétique. Le test regardait le
+        # libellé, il ne tenait que parce que les dates sortaient alors au
+        # format de stockage.
+        dates = [str(row["group_id"]) for row in rows]
         self.assertEqual(
             dates, sorted(dates),
             "Le livre-journal doit être présenté dans l'ordre chronologique",
@@ -3636,3 +3641,99 @@ class TestEcrituresOuvertesAUneDatePassee(TransactionCase):
             self._ouvertes("report_open_items_fr", "OPEN_PARTENAIRES") - avant,
             0.0, places=2,
             msg="Réglée en juin, la facture n'est plus ouverte au 31 décembre")
+
+
+@tagged("post_install", "-at_install")
+class TestLibellesDesGroupes(TransactionCase):
+    """Ce qu'un groupe affiche doit suffire à l'identifier.
+
+    Deux défauts que seule une lecture d'écran révèle, et qu'aucun total
+    ne trahit.
+    """
+
+    def _groupes(self, xmlid, code, annee=2026):
+        rapport = self.env.ref("expodo_account_reports." + xmlid)
+        donnees = rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(annee, 1, 1), "date_to": date(annee, 12, 31)}})
+        ligne = [l for l in donnees["lines"] if l.get("code") == code][0]
+        enfants = rapport.expodo_expand_line(ligne["line_id"], donnees["options"])
+        lignes = enfants.get("lines") if isinstance(enfants, dict) else enfants
+        return [l.get("name") for l in lignes]
+
+    def test_le_livre_journal_date_ses_groupes_dans_la_langue_du_lecteur(self):
+        """Une date de groupe sortait telle qu'elle est stockée.
+
+        Le livre-journal affichait « 2026-01-31 » à un lecteur français, dans
+        un état dont la chronologie est la raison d'être. Les colonnes de date
+        du même écran, elles, étaient bien formatées : deux dates du même
+        tableau ne s'écrivaient pas de la même façon.
+        """
+        groupes = self._groupes("report_day_book", "DAYBOOK")
+        if not groupes:
+            self.skipTest("Aucune écriture sur la période")
+        for nom in groupes:
+            with self.subTest(groupe=nom):
+                self.assertNotRegex(
+                    nom or "", r"^\d{4}-\d{2}-\d{2}$",
+                    "Une date affichée telle qu'elle est stockée n'est pas "
+                    "une date lisible")
+
+    def test_le_livre_journal_reste_chronologique(self):
+        """La chronologie est la valeur probante de cet état.
+
+        Le tri se faisait sur le libellé affiché. Tant que les dates
+        sortaient au format de stockage, l'ordre alphabétique était l'ordre
+        chronologique, et le défaut dormait. Formatées pour le lecteur, elles
+        ne le sont plus : « 15/03 » passe après « 12/10 ». Un livre-journal
+        désordonné n'est plus un livre-journal.
+        """
+        rapport = self.env.ref("expodo_account_reports.report_day_book")
+        donnees = rapport.expodo_get_report_data({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2026, 1, 1), "date_to": date(2026, 12, 31)}})
+        ligne = [l for l in donnees["lines"]
+                 if l.get("code") == "DAYBOOK"][0]
+        enfants = rapport.expodo_expand_line(
+            ligne["line_id"], donnees["options"])
+        lignes = enfants.get("lines") if isinstance(enfants, dict) else enfants
+        if len(lignes) < 2:
+            self.skipTest("Moins de deux journées sur la période")
+        cles = [l.get("group", {}).get("id") for l in lignes]
+        cles = [str(c) for c in cles if c]
+        self.assertEqual(
+            cles, sorted(cles),
+            "Les journées doivent se suivre dans l'ordre du calendrier, quel "
+            "que soit le format d'affichage de la langue")
+
+    def test_deux_journaux_homonymes_restent_distincts(self):
+        """En multi-société, trois « Opérations diverses » se ressemblaient.
+
+        Le libellé se réduisait au nom du journal. Sur une base qui en porte
+        plusieurs, l'état des journaux alignait des lignes identiques, chacune
+        avec des montants différents et rien pour dire laquelle est laquelle.
+        """
+        journaux = self.env["account.journal"].search([
+            ("company_id", "in", self.env.companies.ids)])
+        noms = journaux.mapped("name")
+        homonymes = {nom for nom in noms if noms.count(nom) > 1}
+        if not homonymes:
+            self.skipTest("Aucun journal homonyme sur cette base")
+        groupes = self._groupes("report_journaux_fr", "JRN_JOURNAUX")
+        self.assertEqual(
+            len(groupes), len(set(groupes)),
+            "Deux lignes de l'état ne peuvent pas porter le même libellé : "
+            "le lecteur n'a aucun moyen de les distinguer")
+
+    def test_le_libelle_d_un_journal_porte_son_code(self):
+        """Comme pour un compte, le code prime : c'est ainsi qu'on lit un
+        journal."""
+        groupes = self._groupes("report_journaux_fr", "JRN_JOURNAUX")
+        if not groupes:
+            self.skipTest("Aucune écriture sur la période")
+        codes = self.env["account.journal"].search([
+            ("company_id", "in", self.env.companies.ids)]).mapped("code")
+        self.assertTrue(
+            any(any((code or "") in (nom or "") for code in codes)
+                for nom in groupes),
+            "Aucun libellé ne porte le code de son journal")

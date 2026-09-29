@@ -23,7 +23,14 @@ import ast
 from collections import defaultdict
 from datetime import timedelta
 
+import re
+from datetime import date, datetime
+
+#: Une clé de groupement qui est une date, au format de stockage.
+DATE_ISO = re.compile(r"^\d{4}-\d{2}-\d{2}")
+
 from odoo import fields, models
+from odoo.tools import format_date
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
@@ -300,7 +307,24 @@ class AccountReportLine(models.Model):
                 "level": level,
             })
 
-        results.sort(key=lambda row: (row["name"] or "").lower())
+        # Tri sur la **clé** quand elle porte un ordre propre, sur le libellé
+        # sinon.
+        #
+        # Trier sur le libellé suffisait tant que les dates sortaient au
+        # format de stockage : l'ordre alphabétique de « 2026-01-31 » est
+        # l'ordre chronologique. Formatées pour le lecteur, elles ne le sont
+        # plus : « 15/03/2026 » passe après « 12/10/2026 ». Le livre-journal
+        # perdait sa chronologie, c'est-à-dire sa raison d'être et sa valeur
+        # probante.
+        def rang(row):
+            cle = row.get("group_id")
+            if isinstance(cle, (date, datetime)):
+                return (0, cle.isoformat(), "")
+            if isinstance(cle, str) and DATE_ISO.match(cle):
+                return (0, cle, "")
+            return (1, "", (row["name"] or "").lower())
+
+        results.sort(key=rang)
         return results
 
     @staticmethod
@@ -579,13 +603,35 @@ class AccountReportLine(models.Model):
         model_name = ALLOWED_GROUPBY.get(field_name)
         real_keys = [key for key in keys if key is not None]
         if not model_name:
-            labels.update({key: str(key) for key in real_keys})
+            # Une date de groupe sortait telle qu'elle est stockée. Le
+            # livre-journal, dont la chronologie est la raison d'être,
+            # affichait « 2026-01-31 » à un lecteur français, alors que les
+            # colonnes de date du même tableau étaient bien formatées : deux
+            # dates du même écran ne s'écrivaient pas de la même façon.
+            champ = self.env["account.move.line"]._fields.get(field_name)
+            if champ is not None and champ.type in ("date", "datetime"):
+                labels.update({
+                    key: format_date(self.env, key) for key in real_keys})
+            else:
+                labels.update({key: str(key) for key in real_keys})
             return labels
 
         records = self.env[model_name].browse(real_keys).exists()
         if model_name == "account.account":
             # Le code prime sur le nom : c'est ainsi qu'une balance se lit.
             found = {r.id: "%s %s" % (r.code or "", r.name or "") for r in records}
+        elif model_name == "account.journal":
+            # Même règle que pour un compte, et la société en plus dès qu'il
+            # y en a plusieurs d'actives : trois journaux « Opérations
+            # diverses » s'alignaient à l'identique, chacun avec ses propres
+            # montants et rien pour dire lequel était lequel.
+            plusieurs = len(self.env.companies) > 1
+            found = {}
+            for journal in records:
+                libelle = ("%s %s" % (journal.code or "", journal.name or "")).strip()
+                if plusieurs and journal.company_id:
+                    libelle = "%s (%s)" % (libelle, journal.company_id.name)
+                found[journal.id] = libelle
         else:
             found = {r.id: r.display_name for r in records}
 
