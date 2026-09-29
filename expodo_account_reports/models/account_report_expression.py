@@ -16,9 +16,10 @@ s'effondrerait sur une base volumineuse.
 """
 
 import ast
+from datetime import date
 from collections import defaultdict
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import SQL
 
@@ -26,7 +27,7 @@ from ..engine.accounts import account_coefficients, sum_account_codes
 from ..engine.formula import AGED_RE, parse_account_codes_formula
 
 
-def expodo_resolve_domain_tokens(env, domain):
+def expodo_resolve_domain_tokens(env, domain, date_to=None):
     """Remplace les jetons d'un domaine par leur valeur pour la société.
 
     Un domaine de rapport est une constante (`ast.literal_eval`) : il ne peut
@@ -35,7 +36,13 @@ def expodo_resolve_domain_tokens(env, domain):
 
     - ``__company_fiscal_country__`` : pays fiscal de la société active ;
     - ``__bank_journal_accounts__`` / ``__cash_journal_accounts__`` : comptes
-      par défaut des journaux de banque / de caisse des sociétés actives.
+      par défaut des journaux de banque / de caisse des sociétés actives ;
+    - ``__date_to__`` : borne de fin de la portée évaluée. Les états de tiers
+      s'en servent pour tenir pour ouverte une ligne lettrée après la date
+      d'arrêté. Borne inconnue (contrôle de formule, appel sans contexte) :
+      ``date.max``, qui ne retient aucune ligne lettrée et laisse le domaine
+      se comporter comme un filtre « non lettré ». Le repli inverse ferait
+      ressortir des lignes soldées depuis des années.
     """
     def valeur(jeton):
         if jeton == "__company_fiscal_country__":
@@ -46,6 +53,8 @@ def expodo_resolve_domain_tokens(env, domain):
             journaux = env["account.journal"].sudo().search([
                 ("type", "=", type_), ("company_id", "in", env.companies.ids)])
             return journaux.default_account_id.ids or [0]
+        if jeton == "__date_to__":
+            return date_to or date.max
         return jeton
 
     resolu = []
@@ -59,6 +68,30 @@ def expodo_resolve_domain_tokens(env, domain):
 
 class AccountReportExpression(models.Model):
     _inherit = "account.report.expression"
+
+    @api.constrains("formula")
+    def _check_formula(self):
+        """Contrôle des domaines **après** résolution des jetons.
+
+        La contrainte du cœur exécute la recherche sur la formule brute. Un
+        jeton comparé à un champ relationnel passait, Odoo acceptant un nom ;
+        ``__date_to__`` comparé à une date fait échouer la recherche, et avec
+        elle le chargement du module entier. Les autres moteurs restent
+        contrôlés par le cœur.
+        """
+        domaines = self.filtered(lambda e: e.engine == "domain")
+        for expression in domaines:
+            try:
+                domaine = expodo_resolve_domain_tokens(
+                    self.env, ast.literal_eval(expression.formula))
+                self.env["account.move.line"]._search(domaine)
+            except Exception as erreur:
+                raise ValidationError(self.env._(
+                    "Invalid formula for expression '%(label)s' of line "
+                    "'%(line)s': %(formula)s",
+                    label=expression.label, line=expression.report_line_name,
+                    formula=expression.formula)) from erreur
+        return super(AccountReportExpression, self - domaines)._check_formula()
 
     # Portées propres aux balances : les comptes de bilan se lisent depuis
     # l'origine, les comptes de gestion depuis le début de l'exercice. C'est
@@ -258,7 +291,9 @@ class AccountReportExpression(models.Model):
         if self.engine == "domain":
             try:
                 return expodo_resolve_domain_tokens(
-                    self.env, ast.literal_eval(self.formula or "[]"))
+                    self.env, ast.literal_eval(self.formula or "[]"),
+                    date_to=report._expodo_get_date_bounds(
+                        options, column_group_key, self.date_scope)[1])
             except (ValueError, SyntaxError) as erreur:
                 raise ValidationError(
                     self.env._(
@@ -356,7 +391,9 @@ class AccountReportExpression(models.Model):
             for expression in expressions:
                 try:
                     domain = expodo_resolve_domain_tokens(
-                        self.env, ast.literal_eval(expression.formula))
+                        self.env, ast.literal_eval(expression.formula),
+                        date_to=report._expodo_get_date_bounds(
+                            options, column_group_key, date_scope)[1])
                 except (ValueError, SyntaxError) as error:
                     raise ValidationError(
                         self.env._(

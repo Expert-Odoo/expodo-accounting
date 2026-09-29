@@ -20,12 +20,16 @@ passe.
 """
 
 import ast
+import re
 from collections import defaultdict
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 from odoo import fields, models
 from odoo.exceptions import ValidationError
-from odoo.tools import SQL
+from odoo.tools import SQL, format_date
+
+#: Clé de groupement qui est une date au format de stockage.
+DATE_ISO = re.compile(r"^\d{4}-\d{2}-\d{2}")
 
 from ..engine.formula import AGED_RE
 from .account_report_expression import expodo_resolve_domain_tokens
@@ -299,7 +303,20 @@ class AccountReportLine(models.Model):
                 "level": level,
             })
 
-        results.sort(key=lambda row: (row["name"] or "").lower())
+        # Tri sur la clé quand elle porte un ordre propre (une date), sur le
+        # libellé sinon. Le libellé d'une date est formaté pour le lecteur :
+        # « 01/05/2026 » précède alors « 12/20/2025 » dans l'ordre
+        # alphabétique, et le livre-journal perdrait sa chronologie, qui fait
+        # sa valeur probante.
+        def rang(row):
+            cle = row.get("group_id")
+            if isinstance(cle, (date, datetime)):
+                return (0, cle.isoformat(), "")
+            if isinstance(cle, str) and DATE_ISO.match(cle):
+                return (0, cle, "")
+            return (1, "", (row["name"] or "").lower())
+
+        results.sort(key=rang)
         return results
 
     @staticmethod
@@ -334,7 +351,10 @@ class AccountReportLine(models.Model):
         for formula, group in by_domain.items():
             try:
                 domain = expodo_resolve_domain_tokens(
-                    self.env, ast.literal_eval(formula)) if formula.strip() else []
+                    self.env, ast.literal_eval(formula),
+                    date_to=report._expodo_get_date_bounds(
+                        options, column_group_key, date_scope)[1],
+                ) if formula.strip() else []
             except (ValueError, SyntaxError) as error:
                 raise ValidationError(
                     self.env._(
@@ -575,13 +595,31 @@ class AccountReportLine(models.Model):
         model_name = ALLOWED_GROUPBY.get(field_name)
         real_keys = [key for key in keys if key is not None]
         if not model_name:
-            labels.update({key: str(key) for key in real_keys})
+            # Une date de groupe sortait au format de stockage : « 2026-01-31 »
+            # dans le livre-journal, dont les colonnes de date sont pourtant
+            # formatées. Même format pour les deux.
+            champ = self.env["account.move.line"]._fields.get(field_name)
+            if champ is not None and champ.type in ("date", "datetime"):
+                labels.update({key: format_date(self.env, key) for key in real_keys})
+            else:
+                labels.update({key: str(key) for key in real_keys})
             return labels
 
         records = self.env[model_name].browse(real_keys).exists()
         if model_name == "account.account":
             # Le code prime sur le nom : c'est ainsi qu'une balance se lit.
             found = {r.id: "%s %s" % (r.code or "", r.name or "") for r in records}
+        elif model_name == "account.journal":
+            # Même règle qu'un compte, et la société dès que plusieurs sont
+            # actives : trois « Opérations diverses » s'alignaient à
+            # l'identique, rien ne disant lequel était lequel.
+            plusieurs = len(self.env.companies) > 1
+            found = {}
+            for journal in records:
+                libelle = ("%s %s" % (journal.code or "", journal.name or "")).strip()
+                if plusieurs and journal.company_id:
+                    libelle = "%s (%s)" % (libelle, journal.company_id.name)
+                found[journal.id] = libelle
         else:
             found = {r.id: r.display_name for r in records}
 

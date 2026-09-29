@@ -517,7 +517,9 @@ class TestExpodoReports(TransactionCase):
         rows = report.line_ids[0]._expodo_expand(report, options, "main")
         self.assertTrue(rows, "Aucune journée : test sans valeur")
 
-        dates = [row["name"] for row in rows]
+        # Chronologie lue sur la clé : le libellé est formaté pour le
+        # lecteur, et son ordre alphabétique n'est pas l'ordre des dates.
+        dates = [str(row["group_id"]) for row in rows]
         self.assertEqual(
             dates, sorted(dates),
             "Le livre-journal doit être présenté dans l'ordre chronologique",
@@ -3312,3 +3314,118 @@ class TestFluxMethodeDirecte(TransactionCase):
         self.assertAlmostEqual(delta("CFD_OPERATING"), 300.0, places=2)
         self.assertAlmostEqual(delta("CFD_UNCLASSIFIED"), 0.0, places=2)
         self.assertAlmostEqual(delta("CFD_NET_CHANGE"), 300.0, places=2)
+
+
+@tagged("post_install", "-at_install")
+class TestTiersALaDateDArrete(TransactionCase):
+    """Les états de tiers justifient le poste client du bilan à la date
+    d'arrêté. Filtrer sur « non lettré aujourd'hui » faisait disparaître de
+    l'état au 31 décembre une facture réglée en mars suivant, alors que le
+    bilan à la même date la portait toujours."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        societe = cls.env.company
+        comptes = cls.env["account.account"]
+        cls.client = comptes.search([
+            ("account_type", "=", "asset_receivable"), ("reconcile", "=", True),
+            ("company_ids", "in", societe.id)], limit=1)
+        cls.produit = comptes.search([
+            ("account_type", "=", "income"), ("company_ids", "in", societe.id)], limit=1)
+        cls.banque = comptes.search([
+            ("account_type", "=", "asset_cash"), ("company_ids", "in", societe.id)], limit=1)
+        cls.journal = cls.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        cls.tiers = cls.env["res.partner"].create({"name": "Tiers à l'arrêté"})
+
+    def _ecriture(self, jour, debit, credit, montant):
+        mouvement = self.env["account.move"].create({
+            "journal_id": self.journal.id, "date": jour,
+            "line_ids": [
+                Command.create({"name": "T", "account_id": debit.id, "debit": montant,
+                                "partner_id": self.tiers.id}),
+                Command.create({"name": "T", "account_id": credit.id, "credit": montant,
+                                "partner_id": self.tiers.id}),
+            ],
+        })
+        mouvement.action_post()
+        return mouvement.line_ids.filtered(lambda l: l.account_id == self.client)
+
+    def _facture_reglee(self, jour_facture, jour_reglement):
+        facture = self._ecriture(jour_facture, self.client, self.produit, 1000.0)
+        reglement = self._ecriture(jour_reglement, self.banque, self.client, 1000.0)
+        (facture | reglement).reconcile()
+        self.assertTrue(facture.full_reconcile_id)
+
+    def _valeur(self, xmlid, code, label, arrete):
+        rapport = self.env.ref(xmlid)
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(arrete.year, 1, 1), "date_to": arrete}})
+        return rapport._expodo_compute_values(options, "main")[(code, label)]
+
+    ETATS = [
+        ("expodo_account_reports.report_open_items_fr", "OPEN_PARTENAIRES", "balance"),
+        ("expodo_account_reports.report_aged_receivable_fr", "AGEDR", "balance"),
+        ("expodo_account_reports.report_customer_statement", "STATEMENT_CUSTOMERS", "balance"),
+    ]
+
+    def test_une_facture_reglee_apres_l_arrete_reste_ouverte_a_l_arrete(self):
+        arrete = date(2036, 12, 31)
+        avant = {e: self._valeur(*e, arrete) for e in self.ETATS}
+        self._facture_reglee(date(2036, 3, 1), date(2037, 2, 1))
+        for etat in self.ETATS:
+            self.assertAlmostEqual(
+                self._valeur(*etat, arrete) - avant[etat], 1000.0, places=2,
+                msg="%s : la facture était ouverte au 31/12/2036" % etat[0])
+
+    def test_une_facture_reglee_avant_l_arrete_ne_reapparait_pas(self):
+        arrete = date(2036, 12, 31)
+        avant = {e: self._valeur(*e, arrete) for e in self.ETATS}
+        self._facture_reglee(date(2036, 3, 1), date(2036, 6, 1))
+        for etat in self.ETATS:
+            self.assertAlmostEqual(
+                self._valeur(*etat, arrete) - avant[etat], 0.0, places=2,
+                msg="%s : la facture était soldée au 31/12/2036" % etat[0])
+
+
+@tagged("post_install", "-at_install")
+class TestLivreJournalLibelles(TransactionCase):
+    """Dates de groupe formatées, chronologie tenue sur la clé, journaux
+    identifiés par leur code."""
+
+    def test_dates_formatees_et_chronologie_sur_la_cle(self):
+        societe = self.env.company
+        comptes = self.env["account.account"]
+        a = comptes.search([("account_type", "=", "asset_current"),
+                            ("company_ids", "in", societe.id)], limit=1)
+        b = comptes.search([("account_type", "=", "liability_current"),
+                            ("company_ids", "in", societe.id)], limit=1)
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", societe.id)], limit=1)
+        # Formatées, « 01/05/2026 » précède « 12/20/2025 » alphabétiquement.
+        for jour in (date(2026, 1, 5), date(2025, 12, 20)):
+            self.env["account.move"].create({
+                "journal_id": journal.id, "date": jour,
+                "line_ids": [Command.create({"name": "L", "account_id": a.id, "debit": 10.0}),
+                             Command.create({"name": "L", "account_id": b.id, "credit": 10.0})],
+            }).action_post()
+        rapport = self.env.ref("expodo_account_reports.report_day_book")
+        options = rapport._expodo_get_options({"date": {
+            "mode": "range", "filter": "custom",
+            "date_from": date(2025, 12, 1), "date_to": date(2026, 1, 31)}})
+        rows = rapport.line_ids[0]._expodo_expand(rapport, options, "main")
+        cles = [str(r["group_id"]) for r in rows]
+        self.assertEqual(cles, sorted(cles))
+        self.assertIn("2025-12-20", cles[0])
+        for r in rows:
+            self.assertNotRegex(r["name"], r"^\d{4}-\d{2}-\d{2}",
+                                "Date de groupe au format de stockage")
+
+    def test_un_journal_porte_son_code(self):
+        journal = self.env["account.journal"].search(
+            [("type", "=", "general"), ("company_id", "=", self.env.company.id)], limit=1)
+        libelles = self.env["account.report.line"]._expodo_group_labels(
+            "journal_id", [journal.id])
+        self.assertEqual(libelles[journal.id], "%s %s" % (journal.code, journal.name))
