@@ -118,6 +118,12 @@ msgstr "Desde"
 #. module: expodo_account_reports
 #. odoo-javascript
 #: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Hide lines at zero"
+msgstr "Ocultar las líneas a cero"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
 msgid "Include drafts"
 msgstr "Incluir borradores"
 
@@ -400,3 +406,12 @@ msgstr "Extracto de cuenta de cliente"
 #: model:ir.actions.client,name:expodo_account_reports.action_ec_sales_list
 msgid "EC Sales List"
 msgstr "Declaración recapitulativa intracomunitaria"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_expression.py:0
+msgid ""
+"Invalid formula for expression '%(label)s' of line '%(line)s': %(formula)s"
+msgstr ""
+"Fórmula no válida para la expresión «%(label)s » de la línea «%(line)s »: %"
+"(formula)s"

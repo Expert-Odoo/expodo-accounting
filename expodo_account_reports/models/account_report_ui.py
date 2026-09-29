@@ -149,6 +149,18 @@ class AccountReport(models.Model):
                     for cell in cells for raw in cell["raw"].values()
                 ):
                     continue
+                # Le filtre que l'utilisateur coche. En sont exemptés
+                # l'intitulé de rubrique (aucune expression, cellules vides
+                # par nature), la ligne à développer (un total nul peut
+                # cacher des comptes mouvementés) et la ligne mère (ses
+                # filles resteraient orphelines).
+                if (options.get("hide_0_lines")
+                        and line.expression_ids
+                        and not line.children_ids
+                        and not has_groupby
+                        and all(not isinstance(raw, (int, float)) or abs(raw) < 0.005
+                                for cell in cells for raw in cell["raw"].values())):
+                    continue
 
                 serialized.append({
                     "id": self._expodo_line_id("line", line.id),
@@ -332,6 +344,8 @@ class AccountReport(models.Model):
                 "filter_partner": self.filter_partner,
                 "filter_show_draft": self.filter_show_draft,
                 "filter_unfold_all": self.filter_unfold_all,
+                "filter_period_comparison": self.filter_period_comparison,
+                "filter_hide_0_lines": self.filter_hide_0_lines,
                 "search_bar": self.search_bar,
             },
             "options": self._expodo_serialize_options(options),

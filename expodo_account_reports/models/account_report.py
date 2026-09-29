@@ -312,6 +312,13 @@ class AccountReport(models.Model):
             "company_ids": previous_options.get("company_ids")
                            or self.env.companies.ids,
             "unfolded_lines": previous_options.get("unfolded_lines", []),
+            # Masquage des lignes à zéro : l'état déclare s'il l'offre
+            # (`filter_hide_0_lines`) et s'il le veut coché d'emblée. Le champ
+            # était posé sur deux états et lu nulle part.
+            "hide_0_lines": (
+                previous_options["hide_0_lines"]
+                if "hide_0_lines" in previous_options
+                else self.filter_hide_0_lines == "by_default"),
             "column_groups": {},
         }
 

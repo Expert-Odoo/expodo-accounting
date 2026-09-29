@@ -118,6 +118,12 @@ msgstr "Van"
 #. module: expodo_account_reports
 #. odoo-javascript
 #: code:addons/expodo_account_reports/static/src/js/report_action.js:0
+msgid "Hide lines at zero"
+msgstr "Nulregels verbergen"
+
+#. module: expodo_account_reports
+#. odoo-javascript
+#: code:addons/expodo_account_reports/static/src/js/report_action.js:0
 msgid "Include drafts"
 msgstr "Concepten meenemen"
 
@@ -400,3 +406,12 @@ msgstr "Klantoverzicht"
 #: model:ir.actions.client,name:expodo_account_reports.action_ec_sales_list
 msgid "EC Sales List"
 msgstr "Opgaaf intracommunautaire leveringen"
+
+#. module: expodo_account_reports
+#. odoo-python
+#: code:addons/expodo_account_reports/models/account_report_expression.py:0
+msgid ""
+"Invalid formula for expression '%(label)s' of line '%(line)s': %(formula)s"
+msgstr ""
+"Ongeldige formule voor expression '%(label)s' van regel '%(line)s': %"
+"(formula)s"
