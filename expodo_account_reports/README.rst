@@ -3,11 +3,11 @@ Accounting Reports for Odoo Community
 =====================================
 
 .. |badge1| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
-.. |badge2| image:: https://img.shields.io/badge/Odoo-19.0-875A7B.png
+.. |badge2| image:: https://img.shields.io/badge/Odoo-20.0-875A7B.png
 
 |badge1| |badge2|
 
-Rapports financiers interactifs pour Odoo 19 Community : balance, grand livre,
+Rapports financiers interactifs pour Odoo 20 Community : balance, grand livre,
 balances âgées, journaux, écritures ouvertes et **la déclaration de taxes de
 votre pays**.
 
@@ -17,7 +17,7 @@ par la localisation installée, quelle qu'elle soit.
 Le problème
 ===========
 
-Odoo 19 Community contient déjà **la définition** des rapports comptables.
+Odoo 20 Community contient déjà **la définition** des rapports comptables.
 Le modèle ``account.report`` et ses satellites sont dans le module ``account``,
 et chaque localisation y déclare sa déclaration de taxes — la CA3 française
 compte 132 lignes et 349 expressions, présentes dans toute base française.

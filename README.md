@@ -1,6 +1,6 @@
 # Accounting for Community
 
-Financial statements and accounting tools for **Odoo 19 Community**.
+Financial statements and accounting tools for **Odoo 20 Community**.
 
 Odoo Community ships the accounting engine but keeps the report layer in
 Enterprise. This suite fills that gap: balance sheet, profit and loss, trial
@@ -52,7 +52,7 @@ Install **Accounting for Community** (`expodo_accounting`). It pulls in the
 fourteen modules of the suite. Each one also installs on its own if you only
 need part of it.
 
-Requires Odoo 19 Community with the `account` module.
+Requires Odoo 20 Community with the `account` module.
 
 ## Quality
 
